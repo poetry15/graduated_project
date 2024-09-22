@@ -107,7 +107,9 @@
         initializePage();
       }
     }).catch((err) => {
-      console.error('LIFF initialization failed', err);
+      console.error('LIFF initialization failed', err.code, err.message);
     });
+    // Using a callback
+    liff.init({ liffId: "123456-abcedfg" }, successCallback, errorCallback);
   });
 </script>
