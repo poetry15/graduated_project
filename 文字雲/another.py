@@ -79,7 +79,7 @@ def extract_keywords(text):
 def wordcloud(items):
 	# mask與color
 	d = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
-	color = np.array(Image.open(os.path.join(d, "../assets/alice_color.png")))
+	color = np.array(Image.open(os.path.join(d, "assets\\alice_color.png")))
 	color = color[::3, ::3]
 
 	mask = color.copy()
@@ -91,7 +91,7 @@ def wordcloud(items):
 	mask[edges > 0.08] = 255
 
 	# font
-	fontpath = "../assets/msjh.ttc"
+	fontpath = "assets\\msjh.ttc"
 
 	# Generate a word cloud image
 	wordcloud = WordCloud(
@@ -111,7 +111,7 @@ def wordcloud(items):
 	image_colors = ImageColorGenerator(color)
 	wordcloud.recolor(color_func=image_colors)
 	plt.imshow(wordcloud, interpolation="bilinear")
-	wordcloud.to_file("../assets/wordcloud.png")
+	wordcloud.to_file("assets\\wordcloud.png")
 	# 將圖片保存到二進位資料
 	img_buffer = io.BytesIO()
 	wordcloud.to_image().save(img_buffer, format="PNG")

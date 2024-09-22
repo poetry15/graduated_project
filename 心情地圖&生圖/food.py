@@ -58,7 +58,7 @@ response = openai.images.generate(
   n=1,
 )
 image_url = response.data[0].url
-urllib.request.urlretrieve(image_url, '../assets/positive_food.png')
+urllib.request.urlretrieve(image_url, 'assets\\positive_food.png')
 
 # response = openai.images.generate(
 #   model="dall-e-3",
