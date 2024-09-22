@@ -102,20 +102,6 @@
   }
 
   window.onload = function () {
-    liff.init({ liffId: "2004371526-BZpgmwjd" }).then(() => {
-      console.log('LIFF initialized successfully');
-      initializePage();
-      if (!liff.isInClient()) {
-        console.log('Not in LINE client');
-        //refreshInterval = setInterval(initializePage(), 60000);
-        //window.close();
-      } else {
-        console.log('In LINE client');
-        initializePage();
-      }
-    }).catch((err) => {
-      console.error('LIFF initialization failed', err.code, err.message);
-      alert(`LIFF initialization failed: ${err.code} ${err.message}`);
-    });
+    refreshInterval = setInterval(initializePage(), 30000);
   };
 </script>
