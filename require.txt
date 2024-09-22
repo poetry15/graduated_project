@@ -1,0 +1,12 @@
+flask
+pymongo
+bson.json_util
+flask_cors
+linebot.v3
+python-dotenv
+openai
+Pillow
+wordcloud
+numpy
+matplotlib
+scipy

@@ -1,0 +1,112 @@
+<!--https://liff.line.me/2004358826-B27pRRmy-->
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>情緒填寫</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+	<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+	<!-- <script>
+	// VConsole will be exported to `window.VConsole` by default.
+	var vConsole = new window.VConsole();
+	</script> -->
+	<link rel="stylesheet" href="static/style.css">
+	<script src="static/test.js"></script>
+	<script src="../config.js"></script>
+	<!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+</head>
+<body style="background-color: rgb(233, 206, 253);">
+	<p>User ID:<span id="userId"></span></p>
+	<p id="result">這裡是掃到的結果</p>
+
+	<p style="height: 20px;"></p>
+	<div class="container mt-3">
+		<p>你現在的感受如何呢?</p>
+		<span id="MoodText">普通</span>
+		<div class="form">
+			<input type="range" class="form-range" min="1" max="5" value="3" id="customRange" step="1" name="points" onchange="change()">
+			<p id="test"></p>
+			<label for="customRange" class="form-label">請選擇你覺得與你狀態相符的關鍵詞</label>
+			<p> </p>
+			<div id="keywords">
+				<!--參考資料：https://growingbar.co/list-of-emotions/ -->
+				<div class="button" id="Mood1" onclick="clickButton('Mood1')">空虛</div >
+				<div class="button" id="Mood2" onclick="clickButton('Mood2')">心痛</div >
+				<div class="button" id="Mood3" onclick="clickButton('Mood3')">沮喪</div >
+				<div class="button" id="Mood4" onclick="clickButton('Mood4')">快樂</div >
+				<div class="button" id="Mood5" onclick="clickButton('Mood5')">激動</div >
+				<div class="button" id="Mood6" onclick="clickButton('Mood6')">慌張</div >
+				<div class="button" id="Mood7" onclick="clickButton('Mood7')">驚恐</div >
+				<div class="button" id="Mood8" onclick="clickButton('Mood8')">生氣</div >
+				<div class="button" id="Mood9" onclick="clickButton('Mood9')">焦躁</div >
+				<div class="button" id="Mood10" onclick="clickButton('Mood10')">幸福</div >
+				<div class="button" id="Mood11" onclick="clickButton('Mood11')">煩悶</div >
+				<div class="button" id="Mood12" onclick="clickButton('Mood12')">興奮</div >
+			</div>
+			<p> </p>
+			<p>請試著寫下你現在的情緒與想法：</p>
+			<textarea style="width: 100%; height: 100px;" id="Text"></textarea>
+		</div>
+		<p> </p>
+		<button style="float:right" id="submit">完成</button>
+	</div>
+	<script>
+		// 維修 liff init 方法來自：https://narongdej.dev/blog/th/2024/04/04/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%81%E0%B8%81%E0%B9%89-type-error-failed-to-fetch-%E0%B9%83%E0%B8%99-line-liff-android
+		// 保存原始的 fetch 函數
+		const originalFetch = window.fetch;
+
+		// 自定義的 fetch 函數
+		function customFetch(URL, options) {
+			// 確保 URL 是字符串
+			if (typeof URL === 'object' && URL !== null)
+				URL = URL.toString();
+			// 檢查 URL 是否符合條件
+			if (URL.startsWith('https://liffsdk.line-scdn.net/xlt/') && URL.endsWith('.json'))
+				URL = URL + '?ts=' + Math.random();
+
+			// 調用原始的 fetch 函數
+			return originalFetch(URL, options);
+		}
+		// 替換 window.fetch 為自定義的 fetch 函數
+		window.fetch = customFetch;
+
+
+		function triggerLIFF() {
+			let liffID = "2004358826-B27pRRmy";
+			// LIFF init
+			liff.init({
+				liffId: liffID
+			})
+			.then(() => {
+				if (!liff.isLoggedIn()) { // 登入
+					liff.login();
+					return;
+				}
+				console.log("login: " + liff.isLoggedIn());
+				return liff.getProfile();
+			})
+			.then(profile => { // 確認可以抓取userid
+				userId = profile.userId;
+				document.getElementById('userId').textContent = userId;
+			})
+			.then(() => {
+				checkfivemin();
+				scancode();
+					
+			})
+			.catch(function(error) {
+				alert(error);
+			});
+		}
+		
+		window.onload = function(){
+			triggerLIFF();
+		}
+		
+		console.log("載入完成~~");
+	</script>
+</body>
+</html>
+

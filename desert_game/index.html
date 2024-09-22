@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>紓壓情緒小遊戲</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="get_desert()">
+    <div class="top_container">
+        <p style="margin-left: 30px;">吃掉的食物數：<span id="click_time">0</span></p>
+        <button style="margin-right: 30px; width: 90px" >食物清單</button>
+    </div>
+    
+    <br>
+    <div id="picture">
+        <img class="food" style="margin-bottom: 0;" id="desert">
+        <canvas class="food" id="eat" width="270" height="250" onclick="eat_desert()"></canvas>
+        <br>
+        <p id="tex" style="width: 100%; font-size: 20px;"></p>
+        <br>
+        <!-- <button style="width: 140px;" onclick="get_desert()">change desert</button> -->
+    </div>
+    
+</body>
+<script src="main.js"></script>
+</html>

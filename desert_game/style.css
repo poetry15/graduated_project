@@ -1,0 +1,32 @@
+.top_container p {
+  display: inline;
+}
+
+.top_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-top: 20px; */
+}
+
+#picture {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#picture p {
+  text-align: center;
+}
+
+#eat {
+  position: absolute;
+  width: 270px;
+  height: 250px;
+  /* border: 1px solid red; */
+}
+
+#desert {
+  margin-bottom: 5%;
+  height: 250px;
+}

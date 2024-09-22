@@ -1,0 +1,40 @@
+<!--https://liff.line.me/{2004358826-q4kZAA2J}-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>進入抒發情緒表單後請掃描此 Qrcode !</title>
+	<script src="../config.js"></script>
+</head>
+<body>
+	<p id="pw">密碼：</p>
+	<p id="refresh_time">刷新時間</p>
+	<img id="qrcode" width="200px">
+	<script>
+		let refresh_sec = 0;
+		const fetch_new_pw = setInterval(function() {
+			var refresh = document.getElementById("refresh_time");
+			refresh.innerHTML = "刷新時間: " + String(refresh_sec);
+			refresh_sec--;
+			if(refresh_sec == -1){
+				refresh_sec = 30;
+				console.log("倒數完成，刷新密碼");
+				fetch(url+"/qrcode/genpassword", {method:'GET'})
+					.then(res => res.text())
+					.then(text => {
+						console.log("刷新結果: " + text);
+						var qrcode = document.getElementById("qrcode");
+						var URL = 'https://quickchart.io/qr?text='+ text +'&size=256';
+
+						var pw = document.getElementById("pw");
+						pw.innerHTML = "密碼：" + text;
+						console.log("Qrcode url: " + URL);
+						qrcode.src = URL;
+					})
+					.catch(e => console.log('error' + e))
+				}
+		}, 1000);
+	</script>
+</body>
+</html>

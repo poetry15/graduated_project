@@ -1,0 +1,54 @@
+#MoodText {
+    text-align: center;
+    font-size: 35px;
+}
+/* 拖拉條 */
+input[type="range" i],
+input[type="range" i]::-webkit-slider-runnable-track,
+input[type="range" i]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+input[type="range" i]{
+    width: 80%;
+}
+input[type="range" i]::-webkit-slider-runnable-track{
+    background: rgb(215, 215, 215);
+    height: 8px;
+    border-radius: 4px;
+}
+input[type="range" i]::-webkit-slider-thumb{
+    height: 20px;
+    width: 20px;
+    margin-top: -5px; /*  微上調位置  */
+    border-radius: 50%;
+    border: 1px solid green;
+    background-color: rgb(153, 248, 69);
+    color:rgb(205, 242, 255);
+}
+#keywords{
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+#keywords .button{
+    height: 25px;
+    width: 30%;
+    background-color: white;
+    color: black;
+    text-align: center;
+    flex: 1 0 21%; /* 每個按鈕的寬度約為21%，這樣四個按鈕加起來大約是84%，剩下的空間用來間距 */
+    margin: 5px; /* 可以根據需要調整間距 */
+    box-sizing: border-box; /* 確保padding和border不會影響寬度計算 */
+    cursor: pointer; /* 鼠標懸停時顯示為指針 */
+    border-radius: 10%;
+    user-select: none; /* 禁止選中文字 */
+}
+#keywords .button.active{
+    background-color: black;
+    color: aliceblue;
+}
+
+.container{
+    width: 100%;
+    padding-right: 10%;
+    padding-left: 10%;
+}
