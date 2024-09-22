@@ -167,7 +167,7 @@ function pushMsg(mscore, mkeyword, mtext) {
 										"action": {
 											"type": "uri",
 											"label": "前往心情地圖察看結果",
-											"uri": "https://liff.line.me/2005965896-E06Nn4Vv"
+											"uri": "https://liff.line.me/2004371526-QNE54xpZ"
 										},
 									}
 								]

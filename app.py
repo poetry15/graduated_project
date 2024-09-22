@@ -137,9 +137,9 @@ def send_message():
 	)
 
 	if response.status_code == 200:
+		print(response.text)
 		return jsonify({"status": "success"}), 200
 	else:
-		# print(response.text)
 		return (
 			jsonify({"status": "error", "message": response.text}),
 			response.status_code,

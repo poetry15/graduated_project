@@ -2,39 +2,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>進入抒發情緒表單後請掃描此 Qrcode !</title>
-	<script src="../config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進入抒發情緒表單後請掃描此 Qrcode !</title>
+		<script src="../config.js"></script>
 </head>
 <body>
-	<p id="pw">密碼：</p>
-	<p id="refresh_time">刷新時間</p>
-	<img id="qrcode" width="200px">
-	<script>
-		let refresh_sec = 0;
-		const fetch_new_pw = setInterval(function() {
-			var refresh = document.getElementById("refresh_time");
-			refresh.innerHTML = "刷新時間: " + String(refresh_sec);
-			refresh_sec--;
-			if(refresh_sec == -1){
-				refresh_sec = 30;
-				console.log("倒數完成，刷新密碼");
-				fetch(url+"/qrcode/genpassword", {method:'GET'})
-					.then(res => res.text())
-					.then(text => {
-						console.log("刷新結果: " + text);
-						var qrcode = document.getElementById("qrcode");
-						var URL = 'https://quickchart.io/qr?text='+ text +'&size=256';
+    <p id="pw_number">密碼：</p>
+    <p id="refresh_time">刷新時間</p>
+    <img id="qrcode" width="200px">
+    <script>
+        const ngrok_url = url;
+        let refresh_sec = 0;
 
-						var pw = document.getElementById("pw");
-						pw.innerHTML = "密碼：" + text;
-						console.log("Qrcode url: " + URL);
-						qrcode.src = URL;
-					})
-					.catch(e => console.log('error' + e))
-				}
-		}, 1000);
-	</script>
+        function gen_password(length){
+            const cha_set = '012qrstNOPQ789ablR34uvwJKLM56xyzABCDEFcdefghnopSTUVWijkGHImXYZ';
+            let pw = '';
+            for(let i = 0 ; i < length ; i++){
+                let index = Math.floor(Math.random() * cha_set.length);
+                pw += cha_set[index];
+            }
+            console.log("pw is: " + pw);
+            return pw;
+        }
+
+        const fetch_new_pw = setInterval(function() {
+            var refresh = document.getElementById("refresh_time");
+            var pw;
+            refresh.innerHTML = "刷新時間: " + String(refresh_sec);
+            refresh_sec--;
+            if(refresh_sec == -1){
+                refresh_sec = 20;
+                console.log("倒數完成，刷新密碼");
+                var qrcode = document.getElementById("qrcode");
+                var pw_show = document.getElementById("pw_number");
+                pw = "https://line.me/R/ti/p/@547axzgh?text=" +  gen_password(10);
+                var URL = "https://quickchart.io/qr?text=" + pw + "&size=25";
+                qrcode.src = URL;
+                pw_show.innerHTML = URL;
+
+                console.log("刷新結果: " + pw + "\n完整url: " + URL);
+                fetch(ngrok_url + "qrcode/genpassword", {
+                    method:'POST',
+                    headers : {
+                        "ngrok-skip-browser-warning": true,
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "password" : pw
+                    })
+                })
+                // .then(req => {console.log(req)})
+                .catch(e => console.log('error' + e))
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
