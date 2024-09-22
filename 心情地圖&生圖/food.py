@@ -59,8 +59,7 @@ with All_Keywords.watch() as stream:
         n=1,
       )
       image_url = response.data[0].url
-      urllib.request.urlretrieve(image_url, 'assets\\positive_food.png')
-      print(image_url)
+      urllib.request.urlretrieve(image_url, '..\\assets\\positive_food.png')
 
 # response = openai.images.generate(
 #   model="dall-e-3",
