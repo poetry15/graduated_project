@@ -120,7 +120,7 @@ def save_data():
 @app.route("/picture", methods=["GET"])
 def show_picture():
 	# 指定圖片的路徑
-	image_path = "positive_food.png"
+	image_path = "assets/positive_food.png"
 	return send_file(image_path, mimetype="image/png")
 
 

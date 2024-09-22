@@ -221,7 +221,7 @@ function pushMsg(mscore, mkeyword, mtext) {
         console.error('There has been a problem with your fetch operation:', error);
       });
 
-      fetch(url+'/moodmap'),{
+      fetch(url+'/moodmap',{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ function pushMsg(mscore, mkeyword, mtext) {
           randomPoints: randomPoints,
           LineID: userId,
         }),
-      };
+      });
 }
 
 
