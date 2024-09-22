@@ -98,7 +98,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     liff.init({ liffId: "2004371526-D5ywvaQW" }).then(() => {
-      initializePage();
+      // initializePage();
       if (!liff.isInClient()) {
         refreshInterval = setInterval(initializePage(), 60000);
         window.close();
