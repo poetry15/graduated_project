@@ -137,7 +137,7 @@ function pushMsg(mscore, mkeyword, mtext) {
 									},
 									{
 										type: "image",
-										url: url + "/picture",
+										url: "https://cdb4-123-240-57-41.ngrok-free.app/picture",
 										size: "full",
 										aspectRatio: "1792:1024",
 									},
