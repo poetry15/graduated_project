@@ -115,7 +115,7 @@
         <div class="grid-item d-flex align-items-center justify-content-center" id="17"></div>
       </div>
       <div class="img">
-        <img src="../assets/positive_food.png" style="width: 1792px;visibility:visible">
+        <img id="Image" style="width: 1792px;visibility:visible">
       </div>
       <div class="col">
         <div class="grid-item d-flex align-items-center justify-content-center" id="41"></div>
@@ -170,6 +170,8 @@
     }
 
     async function InitializePage() {
+      const imgurl = url + '/image';
+      document.getElementById('Image').src = imgurl;
       step = await FetchData();
       const targetDiv = document.getElementById(step);
       const OldPerson = document.querySelector('.person');
