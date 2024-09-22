@@ -21,7 +21,7 @@
     </div>
     <div class="row-md-7 d-flex justify-content-center">
       <div id="wordcloud">
-        <img id="wordcloudImage" class="img-fluid mx-auto" style="object-fit: contain;"/> 
+        <img id="wordcloudImage" class="img-fluid mx-auto" style="object-fit: contain;" />
       </div>
     </div>
     <div class="row-md-4 my-3">
@@ -39,12 +39,14 @@
       </div>
     </div>
   </div>
+
 </html>
 
 <style>
   .container {
     display: none;
   }
+
   .tooltip-inner {
     transform: scale(1.5);
     margin-bottom: 10px;
@@ -57,7 +59,7 @@
 <script>
   async function fetchData() {
     try {
-      const response = await fetch(url+'/data', {
+      const response = await fetch(url + '/data', {
         method: 'GET',
         headers: {
           'ngrok-skip-browser-warning': 'true'
@@ -99,18 +101,21 @@
     document.querySelector('.container').style.display = 'block';
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  window.onload = function () {
     liff.init({ liffId: "2004371526-D5ywvaQW" }).then(() => {
-      // initializePage();
+      console.log('LIFF initialized successfully');
+      initializePage();
       if (!liff.isInClient()) {
+        console.log('Not in LINE client');
         //refreshInterval = setInterval(initializePage(), 60000);
         //window.close();
-      }
-      else {
+      } else {
+        console.log('In LINE client');
         initializePage();
       }
     }).catch((err) => {
       console.error('LIFF initialization failed', err.code, err.message);
+      alert(`LIFF initialization failed: ${err.code} ${err.message}`);
     });
-  });
+  };
 </script>
