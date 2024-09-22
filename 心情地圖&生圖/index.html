@@ -170,7 +170,7 @@
     }
 
     async function InitializePage() {
-      const imgurl = url + '/image';
+      const imgurl = url + '/picture';
       document.getElementById('Image').src = imgurl;
       step = await FetchData();
       const targetDiv = document.getElementById(step);
