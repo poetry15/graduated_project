@@ -137,7 +137,7 @@ function pushMsg(mscore, mkeyword, mtext) {
 									},
 									{
 										type: "image",
-										url: ur+"/picture",
+										url: url+"/picture",
 										size: "full",
 										aspectRatio: "1792:1024",
 									},
