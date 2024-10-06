@@ -25,13 +25,14 @@ input[type="range" i]::-webkit-slider-thumb{
     background-color: rgb(153, 248, 69);
     color:rgb(205, 242, 255);
 }
-#keywords{
+#moodButtonsContainer{
+    min-height: 40px;
     display: inline-flex;
     flex-wrap: wrap;
 }
-#keywords .button{
+#moodButtonsContainer .button{
     height: 25px;
-    width: 30%;
+    max-width: 55px;
     background-color: white;
     color: black;
     text-align: center;
@@ -42,7 +43,7 @@ input[type="range" i]::-webkit-slider-thumb{
     border-radius: 10%;
     user-select: none; /* 禁止選中文字 */
 }
-#keywords .button.active{
+#moodButtonsContainer .button.active{
     background-color: black;
     color: aliceblue;
 }
@@ -51,4 +52,8 @@ input[type="range" i]::-webkit-slider-thumb{
     width: 100%;
     padding-right: 10%;
     padding-left: 10%;
+}
+
+textarea {
+    padding: 0px 8px 0px 8px;
 }

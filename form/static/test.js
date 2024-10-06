@@ -1,3 +1,22 @@
+const container = document.getElementById("moodButtonsContainer");
+const moodLabels = [
+  "空虛",
+  "心痛",
+  "沮喪",
+  "煩悶",
+  "慌張",
+  "驚恐",
+  "生氣",
+  "焦躁",
+  "激動",
+  "幸福",
+  "快樂",
+  "興奮",
+  "滿足",
+  "平靜",
+  "自信",
+  "期待",
+];
 var color = ["rgb(254, 233, 254)","rgb(236, 213, 252)", "rgb(233, 206, 253)", "rgb(209, 214, 255)", "rgb(205, 242, 255)"]; // 冷色：寒冷冷靜放鬆，紫色：中性色，暖色：愉悅陽光熱情
 var keyword = [];
 var userId = 'no';
@@ -6,9 +25,12 @@ var alert_message = '';
 function change(){ // 拖拉條文字顯示
   let rangeValue = document.getElementById("customRange");
   let MoodText = document.getElementById("MoodText");
-  switch (rangeValue.value) { // 非常愉快、愉快 、、情緒中性 7等級
+  let MoodScore = rangeValue.value;
+  switch (
+    MoodScore // 非常愉快、愉快 、情緒中性 5等級
+  ) {
     case "1":
-      MoodText.innerHTML = "非常不開心";
+      MoodText.innerHTML = "非常不愉快";
       break;
     case "2":
       MoodText.innerHTML = "不太開心";
@@ -25,17 +47,36 @@ function change(){ // 拖拉條文字顯示
     default:
       MoodText.innerHTML = "Error";
   }
-  document.body.style.background = color[parseInt(rangeValue.value)-1];
-}
 
-function clickButton(name){
-  let but = document.getElementById(name);
-  if (but) {
-    but.classList.toggle('active');
-    console.log(`Element after toggle:`, but);
+  if (MoodScore <= 2) {
+    for (let i = 1; i < 9; i++) {
+      document.getElementById(`Mood${i}`).style.display = "block";
+      document.getElementById(
+        `Mood${moodLabels.length - i + 1}`
+      ).style.display = "none";
+      document.getElementById(
+        `Mood${moodLabels.length - i + 1}`
+      ).classList.remove('active');
+
+      document.getElementById('Text').innerHTML = "最近有什麼事情讓你覺得壓力大或不開心嗎？和我說說吧！"
+    }
+  } else if (MoodScore >= 4) {
+    for (let i = 9; i < moodLabels.length + 1; i++) {
+      document.getElementById(`Mood${i}`).style.display = "block";
+      document.getElementById(
+        `Mood${moodLabels.length - i + 1}`
+      ).style.display = "none";
+      document.getElementById(
+        `Mood${moodLabels.length - i + 1}`
+      ).classList.remove('active');
+      document.getElementById('Text').innerHTML = "最近有沒有什麼讓你最近特別開心或自豪的事呢？"
+    }
   } else {
-    console.error(`Element with ID '${name}' not found.`);
+    for (let i = 1; i < moodLabels.length + 1; i++)
+      document.getElementById(`Mood${i}`).style.display = "block";
+    document.getElementById('Text').innerHTML = "最近有發生什麼事可以與我分享嗎？"
   }
+  document.body.style.background = color[parseInt(rangeValue.value) - 1];
 }
 
 // 掃Qrcode、去 bot get 目前的密碼，兩邊檢查是否正確
@@ -249,5 +290,32 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("關鍵字是：" + keyword);
     pushMsg(parseInt($('#customRange').val()), keyword, $('#Text').val());
   });
+
+  moodLabels.forEach((label, index) => {
+    const button = document.createElement("div");
+    // 設置 class 和自動生成的 id（Mood + 編號）
+    button.className = "button";
+    button.id = `Mood${index + 1}`; // 使用 index + 1 生成 Mood1, Mood2, etc.
+    button.innerText = label;
+
+    // 綁定點擊事件
+    button.addEventListener("click", () => {
+      if (button) {
+        button.classList.toggle("active");
+        console.log(`Element after toggle:`, button);
+      } else {
+        console.error(`Element with ID '${button.id}' not found.`);
+      }
+      document.getElementById("MoodTextArea").style.display = "block";
+
+      let activeButtons = document.querySelectorAll('.button.active'); 
+      // if(activeButtons.length == 0)
+      //   document.getElementById("MoodTextArea").style.display = "none";
+      // else 
+      //   document.getElementById("MoodTextArea").style.display = "block";
+    });
+    // 將按鈕添加到容器中
+    container.appendChild(button);
+  }); 
 });
 
