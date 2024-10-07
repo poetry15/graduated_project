@@ -83,8 +83,8 @@ function change(){ // 拖拉條文字顯示
 function scancode() {
   liff.scanCodeV2()
     .then(result => {
-      const resultElement = document.getElementById('result');
-      resultElement.textContent = `QR Code result: ${result.value}`;
+      // const resultElement = document.getElementById('result');
+      // resultElement.textContent = `QR Code result: ${result.value}`;
       return result.value;
     })
     .then(scanresult => {
