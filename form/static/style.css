@@ -3,16 +3,19 @@
     font-size: 35px;
 }
 /* 拖拉條 */
+#customRange {
+    background: #d2dbe0;
+}
 input[type="range" i],
 input[type="range" i]::-webkit-slider-runnable-track,
 input[type="range" i]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
 input[type="range" i]{
-    width: 80%;
+    width: 100%;
 }
 input[type="range" i]::-webkit-slider-runnable-track{
-    background: rgb(215, 215, 215);
+    background: rgb(199, 199, 199);
     height: 8px;
     border-radius: 4px;
 }
@@ -21,39 +24,57 @@ input[type="range" i]::-webkit-slider-thumb{
     width: 20px;
     margin-top: -5px; /*  微上調位置  */
     border-radius: 50%;
-    border: 1px solid green;
-    background-color: rgb(153, 248, 69);
+    /* border: 1px solid rgb(70, 243, 255); */
+    background-color: rgb(182, 182, 182);
     color:rgb(205, 242, 255);
 }
-#moodButtonsContainer{
-    min-height: 40px;
-    display: inline-flex;
-    flex-wrap: wrap;
+
+/* 按鈕容器 */
+#EmotionFactorsContainer, #moodButtonsContainer{ /* 每行顯示4個項目，但如果只有少於三項，不應把格子變寬，且格子的寬度應該取決於內部文字的長度 */
+    display: grid;
+    grid-template-columns: repeat(4, 94px); /* 自適應每行的按鈕 */
+    gap: 6px; /* 按鈕之間的間距 */
+    justify-items: stretch; /* 每個按鈕的寬度隨容器擴展 */
+    margin-right: 20px;
 }
-#moodButtonsContainer .button{
-    height: 25px;
-    max-width: 55px;
-    background-color: white;
-    color: black;
+
+/* 選項按鈕 */
+#EmotionFactorsContainer .emotion-factor, #moodButtonsContainer .keyword {
+    white-space: nowrap; /* 禁止文字自動換行 */
+    padding: 3px 0px 3px 0px; /* 按鈕內部間距 上下相同 */
     text-align: center;
-    flex: 1 0 21%; /* 每個按鈕的寬度約為21%，這樣四個按鈕加起來大約是84%，剩下的空間用來間距 */
-    margin: 5px; /* 可以根據需要調整間距 */
+    /* 背景透明度設為70% */
+    background-color: rgba(255, 255, 255, 0.55);
+    font-size: 16px;
+    height: 31px;
+    border-radius: 8px;
+    margin: 2px; /* 可以根據需要調整間距 */
     box-sizing: border-box; /* 確保padding和border不會影響寬度計算 */
-    cursor: pointer; /* 鼠標懸停時顯示為指針 */
-    border-radius: 10%;
-    user-select: none; /* 禁止選中文字 */
-}
-#moodButtonsContainer .button.active{
-    background-color: black;
+  }
+
+#moodButtonsContainer .keyword.active, #EmotionFactorsContainer .emotion-factor.active{
+    background-color: rgba(0, 0, 0, 0.4);
     color: aliceblue;
 }
 
+#toggle-button {
+    background-color: transparent; /* 設定背景為透明 */
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.75);
+    border: none; /* 移除邊框 */
+}
 .container{
     width: 100%;
-    padding-right: 10%;
-    padding-left: 10%;
+    padding-right: 5%;
+    padding-left: 2%;
 }
 
 textarea {
-    padding: 0px 8px 0px 8px;
+    width: 100%;
+    height: 40px;
+    padding: 8px 8px 8px 8px; /* 內邊距上右下左 */
+    background-color: rgba(255, 255, 255, 0.65);
+    border-radius: 8px;
+    border: none;
+    resize: none;
 }

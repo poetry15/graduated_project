@@ -17,30 +17,43 @@
 	<script src="../config.js"></script>
 	<!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
 </head>
-<body style="background-color: rgb(233, 206, 253);">
-	<!-- <p>User ID:<span id="userId"></span></p>
-	<p id="result">這裡是掃到的結果</p> -->
+<body style="background-color: #B2DFDB;">
+    <!-- <p>User ID:<span id="userId"></span></p>
+    <p id="result">這裡是掃到的結果</p> -->
 
-	<p style="height: 20px;"></p>
-	<div class="container mt-3">
-		<p>你現在的感受如何呢?</p>
-		<span id="MoodText">普通</span>
-		<div class="form">
-			<input type="range" class="form-range" min="1" max="5" value="3" id="customRange" step="1" name="points" onchange="change()">
-			<p id="test"></p>
-			<label for="customRange" class="form-label">請選擇你覺得與你狀態相符的關鍵詞</label>
-			<div id="moodButtonsContainer"></div>
-			<p> </p>
-			<div id ="MoodTextArea" style="display: none;">
-                <p id="Text">是什麼事情讓你感到如此呢?</p>
-                <textarea style="width: 100%; height: 100px;"></textarea>
+    <p style="height: 10px;"></p>
+    <div class="container mt-3">
+        <p>你現在的感受如何呢?</p>
+        <span id="MoodText">情緒中性</span>
+
+        <div id="form1" style="display: block;margin-left: 2%;"> <!-- 表單第一頁 -->
+            <input type="range" min="0" max="100" value="50" id="customRange" step="1" name="points">
+            <p id="test"></p>
+            <label for="customRange" class="form-label">請先選擇你覺得與你狀態符合的關鍵詞</label>
+            <div id="moodButtonsContainer"></div>
+            <p> </p>
+            <button id="toggle-button" class="btn btn-secondary"></button>
+            <p> </p>
+            
+            <button id="nextstep" class="btn btn-secondary btn-sm" style="float:right; margin-right: 5px; margin-top: -20px;" onclick="nextstep()">下一步 ></button> <!-- 按鈕置右 -->
+        </div>
+
+        <div id="form2" style="display: none; margin-left: 2%;"> <!-- 表單第二頁 -->
+            <div id ="MoodTextArea">
+                <p></p>
+                <label class="form-label">說說你的感受吧！選擇影響你最大的原因</label>
+                <div id="EmotionFactorsContainer"></div>
                 <p> </p>
-                <button style="float:right" id="submit">完成</button>
+                <p>能多跟我分享分享嗎? 關鍵字或是完整事件都可以</p>
+                <!-- 提示文字半透明，輸入文字則正常 -->
+                <textarea id="Text" placeholder="請說說你的感受... (可多獲得骰子)" style="opacity: 0.7;" onfocus="this.style.opacity='1';" onblur="this.style.opacity='0.5';"></textarea>
+                <p> </p>
+                <button id="prevstep" class="btn btn-secondary btn-sm" style="margin-left: 2%; " onclick="previousstep()"> < 上一步</button> <!-- 按鈕置左 -->
+                <button class="btn btn-secondary btn-sm" style="float:right; width: 60px;" id="submit"> 完成 </button>
             </div>
-		</div>
-		<p> </p>
-		<button style="float:right" id="submit">完成</button>
-	</div>
+            
+        </div>
+    </div>
 	<script src="static/test.js"></script>
 	<script>
 		// 維修 liff init 方法來自：https://narongdej.dev/blog/th/2024/04/04/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%81%E0%B8%81%E0%B9%89-type-error-failed-to-fetch-%E0%B9%83%E0%B8%99-line-liff-android
