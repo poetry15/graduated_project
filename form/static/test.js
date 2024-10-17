@@ -245,7 +245,7 @@ function toggleMore() {
 // 顯示下一步
 function nextstep() {
   if (keyword_count == 0) {
-    // alert("請選擇至少一個關鍵字");
+    alert("請選擇至少一個關鍵字");
     return;
   }
   // alert("已選擇" + keyword_count + "個關鍵字");
