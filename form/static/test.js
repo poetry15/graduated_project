@@ -96,7 +96,7 @@ let additionalKeywords = neutraladdi; // 額外顯示的關鍵字集
 let previousMood = null; // 用來儲存前一次的情緒狀態
 
 const emotions = ["非常不愉快", "不太愉快", "情緒中性", "有點愉快", "非常愉快"];
-const colors = ["#d3d7f7", "#cbd5e6", "#d2dbe0", "#c8dfa4", "#fcdaba"];
+const colors = ["#6a4c93", "#1982c4", "#8ac926", "#ffca3a", "#ff595e"];
 
 // 分界點設置為20, 40, 60, 80
 const breakpoints = [0, 20, 40, 60, 80, 100];
@@ -137,7 +137,7 @@ function interpolateColor(color1, color2, fraction) {
   const g = Math.round(g1 + (g2 - g1) * fraction);
   const b = Math.round(b1 + (b2 - b1) * fraction);
 
-  return `rgb(${r}, ${g}, ${b})`;
+  return `rgb(${r}, ${g}, ${b}, 0.35)`;
 }
 function hexToRGB(hex) {
   let r = parseInt(hex.slice(1, 3), 16);
@@ -386,6 +386,7 @@ function pushMsg() {
   console.log("情緒因子：" + emotionFactor.join(", "));
   console.log("情緒關鍵詞：" + keyword.join(", "));
   console.log("情緒文字：" + document.getElementById("Text").value);
+  console.log("color: " + colors[Math.floor((slider.value - 1) / 20)]);
 
       const message = {
         //Line Flex Message
@@ -472,7 +473,8 @@ function pushMsg() {
         MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
         MoodKeyWord: keyword.join(", "),
         MoodFactor: emotionFactor.join(", "),
-        MoodWord: mtext,
+        MoodWord: document.getElementById("Text").value,
+        colors: colors[Math.floor((slider.value - 1) / 20)]
       };
 
       fetch(url + '/api', {
