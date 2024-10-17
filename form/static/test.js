@@ -114,10 +114,11 @@ function changebgcolor() {
       break;
     }
   }
-  const percentageBetween =
-    (value - breakpoints[moodscore]) /
-    (breakpoints[moodscore + 1] - breakpoints[moodscore]); // 當前值在兩個區間之間的百分比
-  // 逐漸過渡顏色
+  const percentageBetween = 
+    (value - colorplace[moodscore]) / 
+    (colorplace[moodscore + 1] - colorplace[moodscore]);
+
+  // document.getElementById("test123").innerHTML = String(value) + " " + String(percentageBetween);
   const currentColor = interpolateColor(
     colors[moodscore],
     colors[moodscore + 1] || colors[moodscore],
@@ -126,7 +127,6 @@ function changebgcolor() {
 
   // 更新背景顏色
   body.style.backgroundColor = currentColor;
-  slider.style.background = currentColor;
 }
 
 function interpolateColor(color1, color2, fraction) {
@@ -137,7 +137,7 @@ function interpolateColor(color1, color2, fraction) {
   const g = Math.round(g1 + (g2 - g1) * fraction);
   const b = Math.round(b1 + (b2 - b1) * fraction);
 
-  return `rgb(${r}, ${g}, ${b}, 0.35)`;
+  return `rgb(${r}, ${g}, ${b}, 0.38)`;
 }
 function hexToRGB(hex) {
   let r = parseInt(hex.slice(1, 3), 16);
@@ -260,6 +260,7 @@ function previousstep() {
 
 // 初次加載時初始化關鍵字
 updateKeywords();
+changebgcolor();
 showEmotionFactor();
 
 // 顯示情緒因子
@@ -386,8 +387,7 @@ function pushMsg() {
   console.log("情緒因子：" + emotionFactor.join(", "));
   console.log("情緒關鍵詞：" + keyword.join(", "));
   console.log("情緒文字：" + document.getElementById("Text").value);
-  console.log("color: " + colors[Math.floor((slider.value - 1) / 20)]);
-
+  
       const message = {
         //Line Flex Message
         to: userId,
@@ -473,8 +473,8 @@ function pushMsg() {
         MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
         MoodKeyWord: keyword.join(", "),
         MoodFactor: emotionFactor.join(", "),
-        MoodWord: document.getElementById("Text").value,
-        colors: colors[Math.floor((slider.value - 1) / 20)]
+        MoodWord: document.getElementById("Text").value
+        // 顏色後端自己抓
       };
 
       fetch(url + '/api', {

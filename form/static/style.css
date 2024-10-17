@@ -4,7 +4,7 @@
 }
 /* 拖拉條 */
 #customRange {
-    background: #d2dbe0;
+    background: none;
 }
 input[type="range" i],
 input[type="range" i]::-webkit-slider-runnable-track,
@@ -15,7 +15,7 @@ input[type="range" i]{
     width: 97%;
 }
 input[type="range" i]::-webkit-slider-runnable-track{
-    background: rgb(199, 199, 199);
+    background: rgb(167, 167, 167);
     height: 8px;
     border-radius: 4px;
 }
@@ -26,7 +26,6 @@ input[type="range" i]::-webkit-slider-thumb{
     border-radius: 50%;
     /* border: 1px solid rgb(70, 243, 255); */
     background-color: rgb(182, 182, 182);
-    color:rgb(205, 242, 255);
 }
 
 /* 按鈕容器 */
