@@ -12,7 +12,7 @@ input[type="range" i]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
 input[type="range" i]{
-    width: 100%;
+    width: 97%;
 }
 input[type="range" i]::-webkit-slider-runnable-track{
     background: rgb(199, 199, 199);
