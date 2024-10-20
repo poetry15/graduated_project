@@ -61,11 +61,10 @@ def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
 	userid =  reqdata["UserID"]
 	scanresult = reqdata["ScanResult"]
 	password = parameter.find_one({}, {'_id' : 0, 'password' : 1}) # 搜尋全部、去除id、要留password
-	print("scan：\t" + scanresult)
-	print("get：\t" + password['password'])
+	# print("scan：\t" + scanresult)
+	# print("get：\t" + password['password'])
 	
 	if scanresult == password['password']:
-		print("ok")
 		return "ok"
 	else: # Qrcode 錯誤，訊息告知
 		with ApiClient(configuration) as api_client:

@@ -331,18 +331,18 @@ function scancode() {
         .then(restext => {
           alert("restext" + restext);
             // console.log("scanres:  " + scanresult + "\npassword: " + restext)
-            if(restext != "ok"){
-              console.log("Qrcode wrong!");
-              if(liff.isInClient()){
-                liff.closeWindow(); // 關閉LIFF
-              }
-              else{
-                window.close(); // 關閉瀏覽器
-              }
-            }
-            else{
-              console.log("正確! " + scanresult);
-            }
+            // if(restext != "ok"){
+            //   console.log("Qrcode wrong!");
+            //   if(liff.isInClient()){
+            //     liff.closeWindow(); // 關閉LIFF
+            //   }
+            //   else{
+            //     window.close(); // 關閉瀏覽器
+            //   }
+            // }
+            // else{
+            //   console.log("正確! " + scanresult);
+            // }
         })
     })
     .catch(error => {
