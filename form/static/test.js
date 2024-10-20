@@ -1,4 +1,4 @@
-const url = "";
+// const url = "";
 const container = document.getElementById("moodButtonsContainer");
 const slider = document.getElementById("customRange");
 const body = document.body;
