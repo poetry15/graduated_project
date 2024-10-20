@@ -415,7 +415,7 @@ function checkfivemin(){
       liff.closeWindow();
       window.close();
       status = "reject";
-      // return Promise.reject('User is rejected due to time limit.');
+      return Promise.reject('User is rejected due to time limit.');
     }
     else {
       console.log("checkfivemin no problem");
