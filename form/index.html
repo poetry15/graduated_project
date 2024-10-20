@@ -99,8 +99,9 @@
 				// document.getElementById('userId').textContent = userId;
 			})
 			.then(() => {
-				let result = checkfivemin();
-				if(result == false)	return;
+				checkfivemin();
+			})
+			.then(() => {
 				scancode();
 			})
 			.catch(function(error) {

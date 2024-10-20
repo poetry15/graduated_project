@@ -98,6 +98,7 @@ let currentKeywords = neutralKeywords; // 當前顯示的關鍵字集
 let additionalKeywords = neutraladdi; // 額外顯示的關鍵字集
 let previousMood = null; // 用來儲存前一次的情緒狀態
 
+
 const emotions = ["非常不愉快", "不太愉快", "情緒中性", "有點愉快", "非常愉快"];
 const colors = ["#6a4c93", "#1982c4", "#8ac926", "#ffca3a", "#ff595e"];
 
@@ -406,11 +407,9 @@ function checkfivemin(){
     if( req == 'reject' ){ // 有找到 300 秒內輸入過
       alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
       liff.closeWindow();
-      return false;
     }
     else {
       console.log("checkfivemin no problem");
-      return true;
     }
   })
 }
