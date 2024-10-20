@@ -365,6 +365,136 @@ function checkfivemin(){
   })
 }
 
+// 創建好要送出的表單
+function flexMessage() {
+  let msg;
+  if(document.getElementById("Text").value != ""){
+    msg = {
+      //Line Flex Message
+      to: userId,
+      messages: [
+        {
+          type: "flex",
+          altText: "情緒分析結果",
+          contents: {
+            type: "bubble",
+            body: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "text",
+                  text: "目前圖片結果",
+                  size: "xl",
+                },
+                {
+                  type: "image",
+                  url: url + "picture",
+                  size: "full",
+                  aspectRatio: "1792:1024",
+                },
+                {
+                  type: "text",
+                  text: "紀錄時間：" + new Date().toLocaleString(),
+                },
+                {
+                  type: "text",
+                  text: `情緒分數：${Math.floor((slider.value - 1) / 20) + 1}`,
+                },
+                {
+                  type: "text",
+                  text: `情緒關鍵詞：${keyword.join(", ")}`,
+                },
+                {
+                  type: "text",
+                  text: `情緒因子：${emotionFactor.join(", ")}`,
+                },
+                {
+                  type: "text",
+                  text: `情緒文字：${document.getElementById("Text").value}。`,
+                },
+                {
+                  type: 'text',
+                  text: `你所擲出的點數為${randomPoints}`,
+                  size: 'xl',
+                },
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "uri",
+                    "label": "前往心情地圖察看結果",
+                    "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+                  },
+                }
+              ]
+            }
+          }
+        }]
+      };
+  }
+  else{
+    msg = {
+      //Line Flex Message
+      to: userId,
+      messages: [
+        {
+          type: "flex",
+          altText: "情緒分析結果",
+          contents: {
+            type: "bubble",
+            body: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "text",
+                  text: "目前圖片結果",
+                  size: "xl",
+                },
+                {
+                  type: "image",
+                  url: url + "picture",
+                  size: "full",
+                  aspectRatio: "1792:1024",
+                },
+                {
+                  type: "text",
+                  text: "紀錄時間：" + new Date().toLocaleString(),
+                },
+                {
+                  type: "text",
+                  text: `情緒分數：${Math.floor((slider.value - 1) / 20) + 1}`,
+                },
+                {
+                  type: "text",
+                  text: `情緒關鍵詞：${keyword.join(", ")}`,
+                },
+                {
+                  type: "text",
+                  text: `情緒因子：${emotionFactor.join(", ")}`,
+                },
+                {
+                  type: 'text',
+                  text: `你所擲出的點數為${randomPoints}`,
+                  size: 'xl',
+                },
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "uri",
+                    "label": "前往心情地圖察看結果",
+                    "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+                  },
+                }
+              ]
+            }
+          }
+        }]
+      };
+  }
+  return msg;
+}
+
 function pushMsg() {
   let randomPoints;
   if(document.getElementById("Text").value != ""){
@@ -379,69 +509,8 @@ function pushMsg() {
   console.log("情緒因子：" + emotionFactor.join(", "));
   console.log("情緒關鍵詞：" + keyword.join(", "));
   console.log("情緒文字：" + document.getElementById("Text").value);
-  
-      const message = {
-        //Line Flex Message
-        to: userId,
-        messages: [
-          {
-            type: "flex",
-            altText: "情緒分析結果",
-            contents: {
-              type: "bubble",
-              body: {
-                type: "box",
-                layout: "vertical",
-                contents: [
-                  {
-                    type: "text",
-                    text: "目前圖片結果",
-                    size: "xl",
-                  },
-                  {
-                    type: "image",
-                    url: url + "picture",
-                    size: "full",
-                    aspectRatio: "1792:1024",
-                  },
-                  {
-                    type: "text",
-                    text: "紀錄時間：" + new Date().toLocaleString(),
-                  },
-                  {
-                    type: "text",
-                    text: `情緒分數：${Math.floor((slider.value - 1) / 20) + 1}`,
-                  },
-                  {
-                    type: "text",
-                    text: `情緒關鍵詞：${keyword.join(", ")}`,
-                  },
-                  {
-                    type: "text",
-                    text: `情緒因子：${emotionFactor.join(", ")}`,
-                  },
-                  {
-                    type: "text",
-                    text: `情緒文字：${document.getElementById("Text").value}。`,
-                  },
-									{
-										type: 'text',
-										text: `你所擲出的點數為${randomPoints}`,
-										size: 'xl',
-									},
-									{
-										"type": "button",
-										"action": {
-											"type": "uri",
-											"label": "前往心情地圖察看結果",
-											"uri": "https://liff.line.me/2004371526-QNE54xpZ"
-										},
-									}
-								]
-							}
-						}
-					}]
-				};
+      
+      const message = flexMessage();
 
 				fetch(url+'/send-message', {
 					method: 'POST',
@@ -490,16 +559,16 @@ function pushMsg() {
         console.error('There has been a problem with your fetch operation:', error);
       });
 
-      fetch(url+'/moodmap',{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          randomPoints: randomPoints,
-          LineID: userId,
-        }),
-      });
+      // fetch(url+'/moodmap',{
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     randomPoints: randomPoints,
+      //     LineID: userId,
+      //   }),
+      // });
 }
 
 
