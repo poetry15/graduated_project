@@ -332,7 +332,12 @@ function scancode() {
             console.log("scanres:  " + scanresult + "\npassword: " + restext)
             if(restext != scanresult){
               console.log("Qrcode wrong!");
-              liff.closeWindow();
+              if(liff.isInClient()){
+                liff.closeWindow(); // 關閉LIFF
+              }
+              else{
+                window.close(); // 關閉瀏覽器
+              }
             }
             else{
               console.log("正確! " + scanresult);
@@ -530,12 +535,16 @@ function formData() {
 
 function pushMsg() {
   let randomPoints;
-  if(document.getElementById("Text").value != ""){
-    console.log("文字框不為空");
-    randomPoints = Math.floor(Math.random() * 4) + 2; // 2~5
+  if(document.getElementById("Text").value == "" && emotionFactor_count == 0){
+    alert("請至少選擇一個情緒因子或輸入情緒文字!");
+    return;
+  }
+  else if(document.getElementById("Text").value == "" || emotionFactor_count == 0){
+    console.log("其中一個為空");
+    randomPoints = Math.floor(Math.random() * 3) + 1; // 1~3
   }
   else {
-    randomPoints = Math.floor(Math.random() * 3) + 1; // 1~3
+    randomPoints = Math.floor(Math.random() * 4) + 2; // 2~5
   }
   console.log("點數：" + randomPoints);
   console.log("情緒分數：" + Math.floor((slider.value - 1) / 20) + 1);
@@ -585,6 +594,7 @@ function pushMsg() {
         return response.json();
       })
       .then(data => {
+        alert("已成功送出表單");
         console.log(data);
         liff.closeWindow();
       })
@@ -623,10 +633,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     console.log("第二頁情緒因子是：" + emotionFactor);
 
-    if(emotionFactor.length == 0){
-      alert("請選擇至少一個情緒因子");
-      return;
-    }
     // 送出資料
     pushMsg();
   });
