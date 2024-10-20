@@ -407,9 +407,12 @@ function checkfivemin(){
     if( req == 'reject' ){ // 有找到 300 秒內輸入過
       alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
       liff.closeWindow();
+      window.close();
+      return Promise.reject('User is rejected due to time limit.');
     }
     else {
       console.log("checkfivemin no problem");
+      return Promise.resolve(); // 正常情況下繼續
     }
   })
 }
