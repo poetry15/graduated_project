@@ -65,8 +65,10 @@ def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
 	# print("get：\t" + password['password'])
 	
 	if scanresult == password['password']:
+		print("scan：ok")
 		return "ok"
 	else: # Qrcode 錯誤，訊息告知
+		print("scan：ok")
 		# with ApiClient(configuration) as api_client:
 		# 	line_bot_api = MessagingApi(api_client)
 		# 	line_bot_api.push_message(

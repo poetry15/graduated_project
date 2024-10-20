@@ -441,7 +441,7 @@ function flexMessage(randomPoints) {
   },
   {
     type: "text",
-    text: `情緒分數：${Math.floor((slider.value - 1) / 20) + 1}`,
+    text: `情緒分數：` + moodscore,
   },
   {
     type: "text",
@@ -545,7 +545,7 @@ function getformData() {
     Time: date.toLocaleString(),
     TimeStamp: Math.floor(date.getTime() / 1000),
     LineID: userId,
-    MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
+    MoodVaule: moodscore,
     MoodKeyWord: keyword.join(", "),
   };
 
@@ -585,7 +585,7 @@ function pushMsg() {
     randomPoints = Math.floor(Math.random() * 4) + 2; // 2~5
   }
   console.log("點數：" + randomPoints);
-  console.log("情緒分數：" + Math.floor((slider.value - 1) / 20) + 1);
+  console.log("情緒分數：" + moodscore);
   console.log("情緒因子：" + emotionFactor.join(", "));
   console.log("情緒關鍵詞：" + keyword.join(", "));
   console.log("情緒文字：" + document.getElementById("Text").value);
