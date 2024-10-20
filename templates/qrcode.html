@@ -43,7 +43,7 @@
                 pw_show.innerHTML = URL;
 
                 console.log("刷新結果: " + pw + "\n完整url: " + URL);
-                fetch(ngrok_url + "qrcode/genpassword", {
+                fetch(ngrok_url + "/qrcode/genpassword", {
                     method:'POST',
                     headers : {
                         'content-type': 'application/json',
