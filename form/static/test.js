@@ -595,6 +595,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if(emotionFactor.length == 0){
       alert("請選擇至少一個情緒因子");
+      return;
     }
     // 送出資料
     pushMsg();
