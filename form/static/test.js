@@ -503,6 +503,31 @@ function flexMessage(randomPoints) {
   return msg;
 }
 
+function formData() {
+  const timestampInSeconds = Math.floor(date.getTime() / 1000);
+  if(document.getElementById("Text").value != ""){
+    return {
+      Time: new Date().toLocaleString(),
+      TimeStamp: timestampInSeconds,
+      LineID: userId,
+      MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
+      MoodKeyWord: keyword.join(", "),
+      MoodFactor: emotionFactor.join(", "),
+      MoodWord: document.getElementById("Text").value,
+    }
+  }
+  else{
+    return {
+      Time: new Date().toLocaleString(),
+      TimeStamp: timestampInSeconds,
+      LineID: userId,
+      MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
+      MoodKeyWord: keyword.join(", "),
+      MoodFactor: emotionFactor.join(", "),
+    }
+  }
+}
+
 function pushMsg() {
   let randomPoints;
   if(document.getElementById("Text").value != ""){
@@ -534,7 +559,7 @@ function pushMsg() {
 					console.error('訊息發送失敗:', error.response ? error.response.data : error.message);
 			});
       const date = new Date(); // 當前時間
-      const timestampInSeconds = Math.floor(date.getTime() / 1000);
+      
       const formData = {
         Time: date.toLocaleString(),
 	      TimeStamp: timestampInSeconds,
