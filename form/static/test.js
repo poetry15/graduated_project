@@ -407,14 +407,17 @@ function flexMessage(randomPoints) {
                 {
                   type: "text",
                   text: `情緒關鍵詞：${keyword.join(", ")}`,
+                  "wrap": true,
                 },
                 {
                   type: "text",
                   text: `情緒因子：${emotionFactor.join(", ")}`,
+                  "wrap": true,
                 },
                 {
                   type: "text",
                   text: `情緒文字：${document.getElementById("Text").value}。`,
+                  "wrap": true,
                 },
                 {
                   type: 'text',
@@ -471,10 +474,12 @@ function flexMessage(randomPoints) {
                 {
                   type: "text",
                   text: `情緒關鍵詞：${keyword.join(", ")}`,
+                  "wrap": true,
                 },
                 {
                   type: "text",
                   text: `情緒因子：${emotionFactor.join(", ")}`,
+                  "wrap": true,
                 },
                 {
                   type: 'text',
