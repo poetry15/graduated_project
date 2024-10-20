@@ -90,6 +90,7 @@ let keyword_count = 0; // 確認有選擇的關鍵字數量，用來判斷是否
 let emotionFactor = [];
 let emotionFactor_count = 0; // 確認有選擇的情緒因子數量，用來判斷是否可以送出表單
 let moodscore = 0; // 情緒分數
+let moodPlace = 0; // 情緒分數的位置
 let userId = "no";
 let alert_message = "";
 
@@ -115,21 +116,21 @@ function changebgcolor() {
   // 根據 colorplace 計算當前滑動條在哪一個區間
   for (let i = 0; i < colorplace.length - 1; i++) {
     if (value >= colorplace[i] && value < colorplace[i + 1]) {
-      moodscore = i;
+      moodPlace = i;
       break;
     }
   }
 
   // 計算當前值在 colorplace 區間中的百分比
   const percentageBetween = 
-    (value - colorplace[moodscore]) / 
-    (colorplace[moodscore + 1] - colorplace[moodscore]);
+    (value - colorplace[moodPlace]) / 
+    (colorplace[moodPlace + 1] - colorplace[moodPlace]);
 
   
-  // document.getElementById("test123").innerHTML = String(value) + " " + String(percentageBetween);
+  // document.getElementById("test123").innerHTML = String(value) + " " + String(percentageBetween) +" " + String(moodscore);
   const currentColor = interpolateColor(
-    colors[moodscore],
-    colors[moodscore + 1] || colors[moodscore],
+    colors[moodPlace],
+    colors[moodPlace + 1] || colors[moodPlace],
     percentageBetween
   );
 
@@ -161,10 +162,13 @@ function updateKeywords() {
 
   if (value >= 60) {
     newMood = value >= 80 ? "非常愉快" : "愉快";
+    moodscore = newMood === "非常愉快" ? 5 : 4;
   } else if (value <= 40) {
     newMood = value <= 20 ? "非常不愉快" : "不愉快";
+    moodscore = newMood === "非常不愉快" ? 1 : 2;
   } else {
     newMood = "情緒中性";
+    moodscore = 3;
   }
 
   // 更新情緒文字

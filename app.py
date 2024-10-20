@@ -67,14 +67,14 @@ def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
 	if scanresult == password['password']:
 		return "ok"
 	else: # Qrcode 錯誤，訊息告知
-		with ApiClient(configuration) as api_client:
-			line_bot_api = MessagingApi(api_client)
-			line_bot_api.push_message(
-				PushMessageRequest(
-					to=userid,
-					messages=[TextMessage(text="Qrcode錯誤")]
-				)
-			)
+		# with ApiClient(configuration) as api_client:
+		# 	line_bot_api = MessagingApi(api_client)
+		# 	line_bot_api.push_message(
+		# 		PushMessageRequest(
+		# 			to=userid,
+		# 			messages=[TextMessage(text="Qrcode錯誤")]
+		# 		)
+		# 	)
 		return "reject"
 
 @app.route('/check_userlast', methods=['POST'])
