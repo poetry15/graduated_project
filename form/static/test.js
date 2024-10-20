@@ -379,7 +379,7 @@ function scancode() {
               console.log("Qrcode wrong!");
               if(liff.isInClient()){
                 liff.closeWindow(); // 關閉LIFF
-                
+
               }
               else{
                 window.close(); // 關閉瀏覽器
@@ -397,6 +397,7 @@ function scancode() {
 }
 
 function checkfivemin(){
+  let status;
   fetch(url+"/check_userlast", {
     method: 'POST',
     headers: {
@@ -413,13 +414,19 @@ function checkfivemin(){
       alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
       liff.closeWindow();
       window.close();
-      return Promise.reject('User is rejected due to time limit.');
+      status = 'reject';
     }
     else {
       console.log("checkfivemin no problem");
-      return Promise.resolve(); // 正常情況下繼續
+      status = 'ok';
     }
   })
+  if(status == 'reject'){
+    return Promise.reject('User is rejected due to time limit.');
+  }
+  else{
+    return Promise.resolve();
+  }
 }
 
 // 創建好要送出的表單
