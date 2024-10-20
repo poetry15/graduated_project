@@ -325,28 +325,16 @@ function scancode() {
         })
       })
       .then(res => res.text())
-        // .then(restext => {
-            // console.log("scanres:  " + scanresult + "\npassword: " + restext)
-            // if(restext != scanresult){
-            //   console.log("Qrcode wrong!");
-            //   liff
-            //     .sendMessages([
-            //       {
-            //         type: "text",
-            //         text: "Qrcode錯誤，請再試一次!",
-            //       },
-            //     ])
-            //     .then(() =>  {
-            //       alert("send complete");
-            //       liff.closeWindow();
-            //     })
-            //     .catch((error) => alert("send failed" + error))
-              
-            // }
-            // else{
-            //   console.log("正確! " + scanresult);
-            // }
-        // })
+        .then(restext => {
+            console.log("scanres:  " + scanresult + "\npassword: " + restext)
+            if(restext != scanresult){
+              console.log("Qrcode wrong!");
+              window.close();
+            }
+            else{
+              console.log("正確! " + scanresult);
+            }
+        })
     })
     .catch(error => {
       console.error('Scan failed', error);
