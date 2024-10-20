@@ -1,2 +1,4 @@
 /ngrok.exe
 /ngrok.yml
+/testenv
+.gitignore

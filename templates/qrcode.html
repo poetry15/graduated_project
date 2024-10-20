@@ -12,6 +12,7 @@
     <p id="refresh_time">刷新時間</p>
     <img id="qrcode" width="200px">
     <script>
+        console.log(url);
         const ngrok_url = url;
         let refresh_sec = 0;
 
@@ -45,8 +46,8 @@
                 fetch(ngrok_url + "qrcode/genpassword", {
                     method:'POST',
                     headers : {
+                        'content-type': 'application/json',
                         "ngrok-skip-browser-warning": true,
-                        'content-type': 'application/json'
                     },
                     body: JSON.stringify({
                         "password" : pw

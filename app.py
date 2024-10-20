@@ -17,7 +17,7 @@ import time
 
 app = Flask(__name__)
 CORS(app)
-load_dotenv()
+load_dotenv(dotenv_path='.env')
 
 # 連接到 MongoDB
 client = MongoClient(os.getenv("ALTAS_URL"))
@@ -30,6 +30,8 @@ channel_access_token = os.getenv("channel_access_token")
 configuration = Configuration(access_token=channel_access_token)
 handler = WebhookHandler(os.getenv("channel_secret"))
 url= os.getenv("url")
+print("url: " + url)
+
 user_id=[]
 
 # QRcode
@@ -76,20 +78,26 @@ def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
 
 @app.route('/check_userlast', methods=['POST'])
 def check_time(): # 檢查是否距離上次 5 分鐘以上
+	reqdata = request.json
+	userid = reqdata["LINEID"]
 	ans = ''
 	findtime = formdata.find({
-		"userid" : 'no',
-		"timestamp" : { "$gte" : int(time.time())-300 } # 距離不超過300秒
+		"LineID" : userid,
+		"TimeStamp" : { "$gte" : int(time.time())-300 } # 距離不超過300秒
 	})
 	
 	for f in findtime:
 		ans += str(f) + '<br>'
-
-	if ans == '': # 沒有任何一個在300秒內
+	print(int(time.time()))
+	print(userid, ans=='')
+	# 如果findtime為空，代表5分鐘內沒有紀錄
+	if ans == '': 
 		return "accept"
 	else:
 		return "reject"
-	
+
+
+
 # WordCloud
 @app.route("/data", methods=["GET"])
 def get_data():
@@ -103,7 +111,7 @@ def get_data():
 		return str(e), 400
 
 
-# DataRecord
+# DataRecord, 接收表單資料
 @app.route("/api", methods=["POST"])
 def save_data():
 	try:
@@ -114,6 +122,7 @@ def save_data():
 	except Exception as error:
 		print("Error saving data:", error)
 		return jsonify({"error": "Error saving data"}), 500
+
 
 
 # 回傳圖片(需要url)
@@ -128,6 +137,7 @@ def show_picture():
 @app.route("/send-message", methods=["POST"])
 def send_message():
 	data = request.json	
+	print(data)
 	headers = {
 		"Content-Type": "application/json",
 		"Authorization": f"Bearer {channel_access_token}",
@@ -162,13 +172,17 @@ def NowStep():
 			)
 
 			# 使用更新後的 Steps 值來更新 user_id_ub
+			'''
+			如果 total 等於 1，則將 user_id 設置為空陣列。
+			否則，將 Step['LineID'] 添加到現有的 user_id 陣列中。
+			'''
 			total = result1["Steps"]
 			result2 = db["MoodMap"].find_one_and_update(
 				{},
 				[
-						{"$set": {
-								"user_id": {"$cond": {"if": {"$eq": [total, 1]}, "then": [], "else": {"$concatArrays": ["$user_id", [Step['LineID']]]}}},
-						}},
+					{"$set": {
+							"user_id": {"$cond": {"if": {"$eq": [total, 1]}, "then": [], "else": {"$concatArrays": ["$user_id", [Step['LineID']]]}}},
+					}},
 				],
 				return_document=ReturnDocument.BEFORE,
 			)
