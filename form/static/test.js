@@ -494,6 +494,11 @@ function flexMessage(randomPoints) {
         "wrap": true,
       },
       {
+        type: "text",
+        text: `情緒因子：${emotionFactor.join(", ")}`,
+        "wrap": true,
+      },
+      {
         type: 'text',
         text: `你所擲出的點數為${randomPoints}`,
         size: 'xl',
