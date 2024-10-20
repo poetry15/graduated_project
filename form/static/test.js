@@ -227,7 +227,10 @@ function showKeywords(keywords) {
       }
       if (keyword_count > 0) {
         // 顯示id為nextstep的按鈕
-        document.getElementById("nextstep").style.display = "disabled";
+        document.getElementById("nextstep").style.display = "block";
+      }
+      else {
+        document.getElementById("nextstep").style.display = "none";
       }
       // document.getElementById("MoodTextArea").style.display = "block";
     });
