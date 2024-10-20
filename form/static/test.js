@@ -396,8 +396,8 @@ function scancode() {
         
 }
 
+let status = "123123";
 function checkfivemin(){
-  let status;
   fetch(url+"/check_userlast", {
     method: 'POST',
     headers: {
