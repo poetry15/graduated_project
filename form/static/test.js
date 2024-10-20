@@ -109,17 +109,20 @@ slider.addEventListener("input", function () {
 // 更換背景顏色
 function changebgcolor() {
   const value = slider.value;
-  // 根據分界點計算當前滑動條在哪一個區間
-  for (let i = 0; i < breakpoints.length - 1; i++) {
-    if (value >= breakpoints[i] && value < breakpoints[i + 1]) {
+  // 根據 colorplace 計算當前滑動條在哪一個區間
+  for (let i = 0; i < colorplace.length - 1; i++) {
+    if (value >= colorplace[i] && value < colorplace[i + 1]) {
       moodscore = i;
       break;
     }
   }
+
+  // 計算當前值在 colorplace 區間中的百分比
   const percentageBetween = 
     (value - colorplace[moodscore]) / 
     (colorplace[moodscore + 1] - colorplace[moodscore]);
 
+  
   // document.getElementById("test123").innerHTML = String(value) + " " + String(percentageBetween);
   const currentColor = interpolateColor(
     colors[moodscore],
