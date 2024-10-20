@@ -12,10 +12,10 @@ input[type="range" i]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
 input[type="range" i]{
-    width: 97%;
+    width: 98%;
 }
 input[type="range" i]::-webkit-slider-runnable-track{
-    background: rgb(167, 167, 167);
+    background: rgba(170, 169, 169, 0.344);
     height: 8px;
     border-radius: 4px;
 }
@@ -29,7 +29,7 @@ input[type="range" i]::-webkit-slider-thumb{
 }
 
 /* 按鈕容器 */
-#EmotionFactorsContainer, #moodButtonsContainer{ /* 每行顯示4個項目，但如果只有少於三項，不應把格子變寬，且格子的寬度應該取決於內部文字的長度 */
+#EmotionFactorsContainer, #moodButtonsContainer1, #moodButtonsContainer2{ /* 每行顯示4個項目，但如果只有少於三項，不應把格子變寬，且格子的寬度應該取決於內部文字的長度 */
     display: grid;
     grid-template-columns: repeat(4, 94px); /* 自適應每行的按鈕 */
     gap: 6px; /* 按鈕之間的間距 */
@@ -38,7 +38,7 @@ input[type="range" i]::-webkit-slider-thumb{
 }
 
 /* 選項按鈕 */
-#EmotionFactorsContainer .emotion-factor, #moodButtonsContainer .keyword {
+#EmotionFactorsContainer .emotion-factor, #moodButtonsContainer .keyword{
     white-space: nowrap; /* 禁止文字自動換行 */
     padding: 3px 0px 3px 0px; /* 按鈕內部間距 上下相同 */
     text-align: center;

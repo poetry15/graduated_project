@@ -1,9 +1,10 @@
-// const url = "";
+// const url = "https://608a-125-231-22-218.ngrok-free.app";
 const container = document.getElementById("moodButtonsContainer");
 const slider = document.getElementById("customRange");
 const body = document.body;
 const emotionText = document.getElementById("MoodText");
-const keywordContainer = document.getElementById("moodButtonsContainer");
+const keywordContainer1 = document.getElementById("moodButtonsContainer1");
+const keywordContainer2 = document.getElementById("moodButtonsContainer2");
 const EmotionFactorsContainer = document.getElementById(
   "EmotionFactorsContainer"
 );
@@ -53,9 +54,10 @@ const happyKeywords = [
 
 const neutralKeywords = ["開心", "平靜", "平和", "漠然", "疲憊"];
 
-const sadaddi = [...neutralKeywords, ...happyKeywords];
-const happyaddi = [...sadKeywords, ...neutralKeywords];
-const neutraladdi = [...sadKeywords, ...happyKeywords];
+const sadaddi = [...new Set([...neutralKeywords, ...happyKeywords].filter(item => item !== "疲憊"))];
+const happyaddi = [...new Set([...sadKeywords, ...neutralKeywords].filter(item => item !== "開心"))];
+const neutraladdi = [...new Set([...sadKeywords, ...happyKeywords].filter(item => (item !== "疲憊" && item !== "開心")))];
+
 
 const emotionalFactors = [
   // 第一區：個人健康與心理
@@ -182,7 +184,7 @@ function updateKeywords() {
   previousMood = newMood;
 
   // 清空關鍵字容器
-  keywordContainer.innerHTML = "";
+  keywordContainer1.innerHTML = keywordContainer2.innerHTML = "";
   toggleButton.style.display = "block"; // 顯示按鈕
   toggleButton.textContent = "▼ 顯示較多"; // 重置按鈕文本
   keyword_count = 0; // 重置關鍵字數量
@@ -205,8 +207,8 @@ function updateKeywords() {
   toggleButton.onclick = toggleMore;
 }
 // 顯示關鍵字
-function showKeywords(keywords) {
-  keywords.forEach((keyword) => {
+function showKeywords() {
+  currentKeywords.forEach((keyword) => {
     const div = document.createElement("div");
     div.classList.add("keyword");
     div.textContent = keyword;
@@ -229,23 +231,52 @@ function showKeywords(keywords) {
         // 顯示id為nextstep的按鈕
         document.getElementById("nextstep").style.display = "block";
       }
-      else {
-        document.getElementById("nextstep").style.display = "none";
+      // document.getElementById("MoodTextArea").style.display = "block";
+    });
+    keywordContainer1.appendChild(div);
+  });
+
+  additionalKeywords.forEach((keyword) => {
+    const div = document.createElement("div");
+    div.classList.add("keyword");
+    div.textContent = keyword;
+    // div.classList.add('button');
+    div.addEventListener("click", () => {
+      if (div) {
+        div.classList.toggle("active");
+        console.log(`Element after toggle:`, div);
+      } else {
+        console.error(`Element with ID '${div.id}' not found.`);
+      }
+
+      // 如果關鍵字class多active，則keyword_count+1
+      if (div.classList.contains("active")) {
+        keyword_count++;
+      } else {
+        keyword_count--;
+      }
+      if (keyword_count > 0) {
+        // 顯示id為nextstep的按鈕
+        document.getElementById("nextstep").style.display = "block";
       }
       // document.getElementById("MoodTextArea").style.display = "block";
     });
-    keywordContainer.appendChild(div);
+    keywordContainer2.appendChild(div);
   });
 }
+
 // 點擊顯示更多按鈕後顯示其他關鍵字
 function toggleMore() {
-  if (showingMore) {
+  if (!showingMore) {
     // 如果當前是顯示較多狀態，則收起
-    keywordContainer.innerHTML = ""; // 清空容器
-    showKeywords(currentKeywords); // 重新顯示當前關鍵字集
-  } else {
-    showKeywords(additionalKeywords); // 只顯示額外的關鍵字
-    toggleButton.style.display = "none"; // 隱藏按鈕
+    document.getElementById("moodButtonsContainer2").style.display = "grid";
+    document.getElementById("toggle-button").innerHTML = "▲ 顯示較少";
+
+  }
+  else {
+    // 如果當前是收起狀態，則顯示較多
+    document.getElementById("moodButtonsContainer2").style.display = "none";
+    document.getElementById("toggle-button").innerHTML = "▼ 顯示較多";
   }
   showingMore = !showingMore; // 切換顯示狀態
 }
@@ -385,8 +416,97 @@ function checkfivemin(){
 // 創建好要送出的表單
 function flexMessage(randomPoints) {
   let msg;
-  if(document.getElementById("Text").value != ""){
-    msg = {
+  let boxcontext = [{
+    type: "text",
+    text: "目前圖片結果",
+    size: "xl",
+  },
+  {
+    type: "image",
+    url: url + "picture",
+    size: "full",
+    aspectRatio: "1792:1024",
+  },
+  {
+    type: "text",
+    text: "紀錄時間：" + new Date().toLocaleString(),
+  },
+  {
+    type: "text",
+    text: `情緒分數：${Math.floor((slider.value - 1) / 20) + 1}`,
+  },
+  {
+    type: "text",
+    text: `情緒關鍵詞：${keyword.join(", ")}`,
+    "wrap": true,
+  },];
+
+  if(emotionFactor_count == 0){ // 只輸入情緒文字
+    boxcontext.push(
+      {
+        type: "text",
+        text: `情緒文字：${document.getElementById("Text").value}。`,
+        "wrap": true,
+      },
+      {
+        type: 'text',
+        text: `你所擲出的點數為${randomPoints}`,
+        size: 'xl',
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "前往心情地圖察看結果",
+          "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+        },
+      }
+    );
+  }
+  else if(document.getElementById("Text").value == ""){ // 只輸入情緒因子
+    boxcontext.push(
+      {
+        type: "text",
+        text: `情緒因子：${emotionFactor.join(", ")}`,
+        "wrap": true,
+      },
+      {
+        type: 'text',
+        text: `你所擲出的點數為${randomPoints}`,
+        size: 'xl',
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "前往心情地圖察看結果",
+          "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+        },
+      }
+    );
+  }
+  else { // 全部都有
+    boxcontext.push(
+      {
+        type: "text",
+        text: `情緒文字：${document.getElementById("Text").value}。`,
+        "wrap": true,
+      },
+      {
+        type: 'text',
+        text: `你所擲出的點數為${randomPoints}`,
+        size: 'xl',
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "前往心情地圖察看結果",
+          "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+        },
+      });
+  }
+  msg = {
       //Line Flex Message
       to: userId,
       messages: [
@@ -398,148 +518,44 @@ function flexMessage(randomPoints) {
             body: {
               type: "box",
               layout: "vertical",
-              contents: [
-                {
-                  type: "text",
-                  text: "目前圖片結果",
-                  size: "xl",
-                },
-                {
-                  type: "image",
-                  url: url + "picture",
-                  size: "full",
-                  aspectRatio: "1792:1024",
-                },
-                {
-                  type: "text",
-                  text: "紀錄時間：" + new Date().toLocaleString(),
-                },
-                {
-                  type: "text",
-                  text: `情緒分數：${Math.floor((slider.value - 1) / 20) + 1}`,
-                },
-                {
-                  type: "text",
-                  text: `情緒關鍵詞：${keyword.join(", ")}`,
-                  "wrap": true,
-                },
-                {
-                  type: "text",
-                  text: `情緒因子：${emotionFactor.join(", ")}`,
-                  "wrap": true,
-                },
-                {
-                  type: "text",
-                  text: `情緒文字：${document.getElementById("Text").value}。`,
-                  "wrap": true,
-                },
-                {
-                  type: 'text',
-                  text: `你所擲出的點數為${randomPoints}`,
-                  size: 'xl',
-                },
-                {
-                  "type": "button",
-                  "action": {
-                    "type": "uri",
-                    "label": "前往心情地圖察看結果",
-                    "uri": "https://liff.line.me/2004371526-QNE54xpZ"
-                  },
-                }
-              ]
+              contents: boxcontext
             }
           }
         }]
       };
-  }
-  else{
-    msg = {
-      //Line Flex Message
-      to: userId,
-      messages: [
-        {
-          type: "flex",
-          altText: "情緒分析結果",
-          contents: {
-            type: "bubble",
-            body: {
-              type: "box",
-              layout: "vertical",
-              contents: [
-                {
-                  type: "text",
-                  text: "目前圖片結果",
-                  size: "xl",
-                },
-                {
-                  type: "image",
-                  url: url + "picture",
-                  size: "full",
-                  aspectRatio: "1792:1024",
-                },
-                {
-                  type: "text",
-                  text: "紀錄時間：" + new Date().toLocaleString(),
-                },
-                {
-                  type: "text",
-                  text: `情緒分數：${Math.floor((slider.value - 1) / 20) + 1}`,
-                },
-                {
-                  type: "text",
-                  text: `情緒關鍵詞：${keyword.join(", ")}`,
-                  "wrap": true,
-                },
-                {
-                  type: "text",
-                  text: `情緒因子：${emotionFactor.join(", ")}`,
-                  "wrap": true,
-                },
-                {
-                  type: 'text',
-                  text: `你所擲出的點數為${randomPoints}`,
-                  size: 'xl',
-                },
-                {
-                  "type": "button",
-                  "action": {
-                    "type": "uri",
-                    "label": "前往心情地圖察看結果",
-                    "uri": "https://liff.line.me/2004371526-QNE54xpZ"
-                  },
-                }
-              ]
-            }
-          }
-        }]
-      };
-  }
   return msg;
 }
 
-function formData() {
-  const timestampInSeconds = Math.floor(date.getTime() / 1000);
-  if(document.getElementById("Text").value != ""){
-    return {
-      Time: new Date().toLocaleString(),
-      TimeStamp: timestampInSeconds,
-      LineID: userId,
-      MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
-      MoodKeyWord: keyword.join(", "),
+function getformData() {
+  const date = new Date(); // 當前時間
+  let data = {
+    Time: date.toLocaleString(),
+    TimeStamp: Math.floor(date.getTime() / 1000),
+    LineID: userId,
+    MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
+    MoodKeyWord: keyword.join(", "),
+  };
+
+  if(document.getElementById("Text").value == ""){ // 只輸入情緒因子
+    data =  {
+      ...data,
+      MoodFactor: emotionFactor.join(", "),
+    }
+  }
+  else if(emotionFactor_count == 0){ // 只輸入情緒文字
+    data =  {
+      ...data,
+      MoodWord: document.getElementById("Text").value,
+    }
+  }
+  else{ // 全部都有
+    data =  {
+      ...data,
       MoodFactor: emotionFactor.join(", "),
       MoodWord: document.getElementById("Text").value,
     }
   }
-  else{
-    return {
-      Time: new Date().toLocaleString(),
-      TimeStamp: timestampInSeconds,
-      LineID: userId,
-      MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
-      MoodKeyWord: keyword.join(", "),
-      MoodFactor: emotionFactor.join(", "),
-    }
-  }
+  return data;
 }
 
 function pushMsg() {
@@ -562,6 +578,7 @@ function pushMsg() {
   console.log("情緒文字：" + document.getElementById("Text").value);
       
       const message = flexMessage(randomPoints);
+      console.log(message);
 
 				fetch(url+'/send-message', {
 					method: 'POST',
@@ -576,18 +593,9 @@ function pushMsg() {
 			.catch(error => {
 					console.error('訊息發送失敗:', error.response ? error.response.data : error.message);
 			});
-      const date = new Date(); // 當前時間
       
-      const formData = {
-        Time: date.toLocaleString(),
-	      TimeStamp: timestampInSeconds,
-        LineID: userId,
-        MoodVaule: Math.floor((slider.value - 1) / 20) + 1,
-        MoodKeyWord: keyword.join(", "),
-        MoodFactor: emotionFactor.join(", "),
-        MoodWord: document.getElementById("Text").value
-        // 顏色後端自己抓
-      };
+      
+      const formData = getformData();
 
       fetch(url + '/api', {
         method: 'POST',
@@ -605,7 +613,7 @@ function pushMsg() {
       .then(data => {
         alert("已成功送出表單");
         console.log(data);
-        liff.closeWindow();
+        // liff.closeWindow();
       })
       .catch(error => {
         console.error('There has been a problem with your fetch operation:', error);
