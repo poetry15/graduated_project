@@ -1,1 +1,1 @@
-const url= "https://608a-125-231-22-218.ngrok-free.app ";
+const url= "https://608a-125-231-22-218.ngrok-free.app";
