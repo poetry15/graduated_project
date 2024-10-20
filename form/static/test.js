@@ -332,7 +332,7 @@ function scancode() {
             console.log("scanres:  " + scanresult + "\npassword: " + restext)
             if(restext != scanresult){
               console.log("Qrcode wrong!");
-              window.close();
+              liff.closeWindow();
             }
             else{
               console.log("正確! " + scanresult);
