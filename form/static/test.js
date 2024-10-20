@@ -227,7 +227,7 @@ function showKeywords(keywords) {
       }
       if (keyword_count > 0) {
         // 顯示id為nextstep的按鈕
-        document.getElementById("nextstep").style.display = "block";
+        document.getElementById("nextstep").style.display = "disabled";
       }
       // document.getElementById("MoodTextArea").style.display = "block";
     });
@@ -277,6 +277,11 @@ function showEmotionFactor() {
     // console.log(factor.label);
     div.addEventListener("click", () => {
       div.classList.toggle("active");
+      if (div.classList.contains("active")) {
+        emotionFactor_count++;
+      } else {
+        emotionFactor_count--;
+      }
     });
     EmotionFactorsContainer.appendChild(div);
 
