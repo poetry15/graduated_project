@@ -369,7 +369,7 @@ function checkfivemin(){
 }
 
 // 創建好要送出的表單
-function flexMessage() {
+function flexMessage(randomPoints) {
   let msg;
   if(document.getElementById("Text").value != ""){
     msg = {
@@ -513,7 +513,7 @@ function pushMsg() {
   console.log("情緒關鍵詞：" + keyword.join(", "));
   console.log("情緒文字：" + document.getElementById("Text").value);
       
-      const message = flexMessage();
+      const message = flexMessage(randomPoints);
 
 				fetch(url+'/send-message', {
 					method: 'POST',
