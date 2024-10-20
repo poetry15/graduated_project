@@ -329,8 +329,9 @@ function scancode() {
       })
       .then(res => res.text())
         .then(restext => {
-            console.log("scanres:  " + scanresult + "\npassword: " + restext)
-            if(restext != scanresult){
+          alert("restext" + restext);
+            // console.log("scanres:  " + scanresult + "\npassword: " + restext)
+            if(restext != "ok"){
               console.log("Qrcode wrong!");
               if(liff.isInClient()){
                 liff.closeWindow(); // 關閉LIFF
