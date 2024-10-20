@@ -396,7 +396,7 @@ function scancode() {
         
 }
 
-let status = "123123";
+var status1 = "123123";
 function checkfivemin(){
   fetch(url+"/check_userlast", {
     method: 'POST',
@@ -414,12 +414,12 @@ function checkfivemin(){
       alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
       liff.closeWindow();
       window.close();
-      status = "reject";
+      status1 = "reject";
       return Promise.reject('User is rejected due to time limit.');
     }
     else {
       console.log("checkfivemin no problem");
-      status = "ok";
+      status1 = "ok";
       return Promise.resolve(); // 正常情況下繼續
     }
   })
