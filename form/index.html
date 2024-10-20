@@ -102,8 +102,8 @@
 				return checkfivemin();
 			})
 			.then((ans) => {
-				console.log("checkfivemin: " + ans);
-				if(ans == "ok"){
+				console.log("checkfivemin: " + status);
+				if(status == "ok"){
 					return scancode();
 				}
 				else{
