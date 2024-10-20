@@ -372,16 +372,16 @@ function scancode() {
           // alert("restext" + restext);
             // console.log("scanres:  " + scanresult + "\npassword: " + restext)
             if(restext != "ok"){
-              alert("Qrcode wrong!");
-              // if(liff.isInClient()){
-              //   liff.closeWindow(); // 關閉LIFF
-              // }
-              // else{
-              //   window.close(); // 關閉瀏覽器
-              // }
+              console.log("Qrcode wrong!");
+              if(liff.isInClient()){
+                liff.closeWindow(); // 關閉LIFF
+              }
+              else{
+                window.close(); // 關閉瀏覽器
+              }
             }
             else{
-              alert("正確! " + scanresult);
+              console.log("正確! " + scanresult);
             }
         })
     })
@@ -622,7 +622,7 @@ function pushMsg() {
       .then(data => {
         alert("已成功送出表單");
         console.log(data);
-        // liff.closeWindow();
+        liff.closeWindow();
       })
       .catch(error => {
         console.error('There has been a problem with your fetch operation:', error);
