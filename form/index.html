@@ -99,14 +99,15 @@
 				// document.getElementById('userId').textContent = userId;
 			})
 			.then(() => {
-				checkfivemin();
+				return checkfivemin();
 			})
 			.then(() => {
 				console.log("checkfiveminok");
-				scancode();
+				return scancode();
 			})
 			.catch(function(error) {
 				alert(error);
+				return;
 			});
 		}
 		
