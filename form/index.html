@@ -100,10 +100,16 @@
 			})
 			.then(() => {
 				return checkfivemin();
+				
 			})
-			.then(() => {
-				console.log("checkfiveminok");
-				return scancode();
+			.then((ans) => {
+				if(ans == "ok"){
+					return scancode();
+				}
+				else{
+					liff.closeWindow();
+					return;
+				}
 			})
 			.catch(function(error) {
 				alert(error);

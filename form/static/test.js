@@ -379,6 +379,7 @@ function scancode() {
               console.log("Qrcode wrong!");
               if(liff.isInClient()){
                 liff.closeWindow(); // 關閉LIFF
+                
               }
               else{
                 window.close(); // 關閉瀏覽器
