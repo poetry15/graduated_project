@@ -1,3 +1,4 @@
+const url = "";
 const container = document.getElementById("moodButtonsContainer");
 const slider = document.getElementById("customRange");
 const body = document.body;
@@ -100,6 +101,7 @@ const colors = ["#6a4c93", "#1982c4", "#8ac926", "#ffca3a", "#ff595e"];
 
 // 分界點設置為20, 40, 60, 80
 const breakpoints = [0, 20, 40, 60, 80, 100];
+const colorplace = [0, 30, 50, 70, 100];
 slider.addEventListener("input", function () {
   changebgcolor();
   updateKeywords();
