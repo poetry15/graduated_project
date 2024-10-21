@@ -619,8 +619,6 @@ function pushMsg() {
       // });
 }
 
-
-
 document.addEventListener('DOMContentLoaded', function () {
   $('#submit').click(function () {  //按下確定鈕
     var keywordButtons = document.querySelectorAll(".keyword.active");
