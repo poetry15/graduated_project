@@ -396,35 +396,6 @@ function scancode() {
         
 }
 
-var status1 = "123123";
-function checkfivemin(){
-  fetch(url+"/check_userlast", {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": true,
-    }, 
-    body: JSON.stringify({
-      "LINEID": userId
-    })
-  })
-  .then(res => res.text())
-  .then(req => {
-    if( req == 'reject' ){ // 有找到 300 秒內輸入過
-      alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
-      liff.closeWindow();
-      window.close();
-      status1 = "reject";
-      return Promise.reject('User is rejected due to time limit.');
-    }
-    else {
-      console.log("checkfivemin no problem");
-      status1 = "ok";
-      return Promise.resolve(); // 正常情況下繼續
-    }
-  })
-}
-
 // 創建好要送出的表單
 function flexMessage(randomPoints) {
   let msg;
