@@ -6,6 +6,8 @@
     <title>Document</title>
 </head>
 <body>
+    <p>User ID:<span id="userId"></span></p>
+    <button id="close">關閉畫面</button>
     <script>
 		// 維修 liff init 方法來自：https://narongdej.dev/blog/th/2024/04/04/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%81%E0%B8%81%E0%B9%89-type-error-failed-to-fetch-%E0%B9%83%E0%B8%99-line-liff-android
 		// 保存原始的 fetch 函數
@@ -26,8 +28,6 @@
 		// 替換 window.fetch 為自定義的 fetch 函數
 		window.fetch = customFetch;
 
-		
-
 		function triggerLIFF() {
 			let liffID = "2004371526-02aJVKO3";
 			// LIFF init
@@ -44,21 +44,18 @@
 			})
 			.then(profile => { // 確認可以抓取userid
 				userId = profile.userId;
-				// document.getElementById('userId').textContent = userId;
+				document.getElementById('userId').textContent = userId;
 			})
-			.then(() => {
-				return fetch(url+"/check_userlast", {
-					method: 'POST',
-					headers: {
-					"Content-Type": "application/json",
-					"ngrok-skip-browser-warning": true,
-					}, 
-					body: JSON.stringify({
-					"LINEID": userId
-					})
-			})
-		})
-    }
+			
+        }
+        
+        document.getElementById('close').addEventListener('click', function(){
+            liff.closeWindow();
+        });
+
+        indow.onload = function(){
+			triggerLIFF();
+		}
     </script>
 </body>
 </html>
