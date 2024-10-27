@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+		// 維修 liff init 方法來自：https://narongdej.dev/blog/th/2024/04/04/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%81%E0%B8%81%E0%B9%89-type-error-failed-to-fetch-%E0%B9%83%E0%B8%99-line-liff-android
+		// 保存原始的 fetch 函數
+		const originalFetch = window.fetch;
+
+		// 自定義的 fetch 函數
+		function customFetch(URL, options) {
+			// 確保 URL 是字符串
+			if (typeof URL === 'object' && URL !== null)
+				URL = URL.toString();
+			// 檢查 URL 是否符合條件
+			if (URL.startsWith('https://liffsdk.line-scdn.net/xlt/') && URL.endsWith('.json'))
+				URL = URL + '?ts=' + Math.random();
+
+			// 調用原始的 fetch 函數
+			return originalFetch(URL, options);
+		}
+		// 替換 window.fetch 為自定義的 fetch 函數
+		window.fetch = customFetch;
+
+		
+
+		function triggerLIFF() {
+			let liffID = "2004371526-02aJVKO3";
+			// LIFF init
+			liff.init({
+				liffId: liffID
+			})
+			.then(() => {
+				if (!liff.isLoggedIn()) { // 登入
+					liff.login();
+					return;
+				}
+				console.log("login: " + liff.isLoggedIn());
+				return liff.getProfile();
+			})
+			.then(profile => { // 確認可以抓取userid
+				userId = profile.userId;
+				// document.getElementById('userId').textContent = userId;
+			})
+			.then(() => {
+				return fetch(url+"/check_userlast", {
+					method: 'POST',
+					headers: {
+					"Content-Type": "application/json",
+					"ngrok-skip-browser-warning": true,
+					}, 
+					body: JSON.stringify({
+					"LINEID": userId
+					})
+			})
+		})
+    }
+    </script>
+</body>
+</html>
