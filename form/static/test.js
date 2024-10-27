@@ -601,7 +601,7 @@ function pushMsg() {
       .then(data => {
         alert("已成功送出表單");
         console.log(data);
-        window.location.href = "https://liff.line.me/2004371526-QNE54xpZ";
+        window.location.href = "https://liff.line.me/2004371526-02aJVKO3";
       })
       .catch(error => {
         console.error('There has been a problem with your fetch operation:', error);
