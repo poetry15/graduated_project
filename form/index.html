@@ -112,28 +112,28 @@
 					})
 			})
 		})
-		.then(res => res.text())
-		.then(req => {
-			if (req === 'reject') {  // 服务器返回 'reject'
-				alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
-				liff.closeWindow(); // 关闭 LIFF 窗口
-				window.location.href = "google.com"; // 重定向到谷歌 
-				return Promise.reject('User is rejected due to time limit.'); // 返回 rejected Promise，停止后续执行
-			} else {
-				console.log("checkfivemin no problem");
-				return 'ok'; // 成功时返回 'ok'，后续的 then() 处理这个值
-			}
-		})
-		.then((ans) => {
-			console.log("checkfivemin: " + ans);
-			if(ans == "ok"){
-				return scancode();
-			}
-			else{
-				liff.closeWindow();
-				return;
-			}
-		})
+		// .then(res => res.text())
+		// .then(req => {
+		// 	if (req === 'reject') {  // 服务器返回 'reject'
+		// 		alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
+		// 		liff.closeWindow(); // 关闭 LIFF 窗口
+		// 		window.location.href = "google.com"; // 重定向到谷歌 
+		// 		return Promise.reject('User is rejected due to time limit.'); // 返回 rejected Promise，停止后续执行
+		// 	} else {
+		// 		console.log("checkfivemin no problem");
+		// 		return 'ok'; // 成功时返回 'ok'，后续的 then() 处理这个值
+		// 	}
+		// })
+		// .then((ans) => {
+		// 	console.log("checkfivemin: " + ans);
+		// 	if(ans == "ok"){
+		// 		return scancode();
+		// 	}
+		// 	else{
+		// 		liff.closeWindow();
+		// 		return;
+		// 	}
+		// })
 		.catch(function(error) {
 			alert("error: " + error);
 			return;
