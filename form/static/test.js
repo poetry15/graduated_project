@@ -77,7 +77,7 @@ const emotionalFactors = [
   // 第三區：日常事務與環境因素
   { label: "家務 🧺", value: "housework" },
   { label: "工作 💼", value: "work" },
-  { label: "教育 📚", value: "education" },
+  { label: "學習 📚", value: "learn" },
   { label: "旅遊 🌍", value: "travel" },
   { label: "天氣 ☀️", value: "weather" },
   { label: "時事 📰", value: "news" },

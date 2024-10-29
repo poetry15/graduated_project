@@ -34,6 +34,10 @@ print("url: " + url)
 
 user_id=[]
 
+# 系統檢查設定開關
+scancode_flag = False
+check5min_flag = False
+
 # QRcode
 @app.route('/', methods=['GET'])
 def show_qrcode():
@@ -54,8 +58,9 @@ def gen_password(): # 接收生成的 pw 並存起來
 	return "get new pw."
 
 @app.route('/check_scanres', methods=['POST'])
-def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
-	# print(request.json)
+def get_now_password(): # 提供表單驗證是否正確，用於驗證位於螢幕前
+	if scancode_flag == False: # 不進行檢查
+		return "ok"
 	
 	reqdata = request.json
 	userid =  reqdata["UserID"]
@@ -68,7 +73,6 @@ def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
 		print("scan：ok")
 		return "ok"
 	else: # Qrcode 錯誤，訊息告知
-		print("scan：ok")
 		with ApiClient(configuration) as api_client:
 			line_bot_api = MessagingApi(api_client)
 			line_bot_api.push_message(
@@ -81,6 +85,9 @@ def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
 
 @app.route('/check_userlast', methods=['POST'])
 def check_time(): # 檢查是否距離上次 5 分鐘以上
+	if check5min_flag == False: # 不進行檢查
+		return "accept"
+
 	reqdata = request.json
 	userid = reqdata["LINEID"]
 	ans = ''
