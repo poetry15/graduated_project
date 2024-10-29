@@ -69,7 +69,6 @@ const emotionalFactors = [
   { label: "心靈 🌿", value: "mindfulness" },
 
   // 第二區：人際關係與社交生活
-  { label: "社區 🏘️", value: "community" },
   { label: "家庭 👪", value: "family" },
   { label: "朋友 👫", value: "friends" },
   { label: "伴侶 💑", value: "partner" },
@@ -338,10 +337,6 @@ function showEmotionFactor() {
       EmotionFactorsContainer.appendChild(spacer);
 
     } else if (factor.label === "約會 🌹") {
-      for (let i=0;i<3;i++){
-        const emptyDiv = document.createElement("div");
-        EmotionFactorsContainer.appendChild(emptyDiv);
-      }
       const spacer = document.createElement("div");
       spacer.style.gridColumn = "span 4"; // 占據兩個網格單元
       spacer.style.height = "0.5rem";
