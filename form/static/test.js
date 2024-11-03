@@ -392,7 +392,7 @@ function scancode() {
 }
 
 // 創建好要送出的表單
-function flexMessage(randomPoints) {
+function flexMessage(randomPoints, emotionFactor_without_emoji) {
   let msg;
   let boxcontext = [{
     type: "text",
@@ -445,7 +445,7 @@ function flexMessage(randomPoints) {
     boxcontext.push(
       {
         type: "text",
-        text: `情緒因子：${emotionFactor.join(", ")}`,
+        text: `情緒因子：${emotionFactor_without_emoji.join(", ")}`,
         "wrap": true,
       },
       {
@@ -472,7 +472,7 @@ function flexMessage(randomPoints) {
       },
       {
         type: "text",
-        text: `情緒因子：${emotionFactor.join(", ")}`,
+        text: `情緒因子：${emotionFactor_without_emoji.join(", ")}`,
         "wrap": true,
       },
       {
@@ -509,7 +509,7 @@ function flexMessage(randomPoints) {
   return msg;
 }
 
-function getformData() {
+function getformData(emotionFactor_without_emoji) {
   const date = new Date(); // 當前時間
   let data = {
     Time: date.toLocaleString(),
@@ -522,7 +522,7 @@ function getformData() {
   if(document.getElementById("Text").value == ""){ // 只輸入情緒因子
     data =  {
       ...data,
-      MoodFactor: emotionFactor.join(", "),
+      MoodFactor: emotionFactor_without_emoji.join(", "),
     }
   }
   else if(emotionFactor_count == 0){ // 只輸入情緒文字
@@ -534,7 +534,7 @@ function getformData() {
   else{ // 全部都有
     data =  {
       ...data,
-      MoodFactor: emotionFactor.join(", "),
+      MoodFactor: emotionFactor_without_emoji.join(", "),
       MoodWord: document.getElementById("Text").value,
     }
   }
@@ -554,13 +554,19 @@ function pushMsg() {
   else {
     randomPoints = Math.floor(Math.random() * 4) + 2; // 2~5
   }
+
+  let emotionFactor_without_emoji = [];
+  emotionFactor.forEach((factor) => {
+    emotionFactor_without_emoji.push(factor.split(" ")[0]);
+  });
+
   console.log("點數：" + randomPoints);
   console.log("情緒分數：" + moodscore);
-  console.log("情緒因子：" + emotionFactor.join(", "));
+  console.log("情緒因子：" + emotionFactor_without_emoji.join(", "));
   console.log("情緒關鍵詞：" + keyword.join(", "));
   console.log("情緒文字：" + document.getElementById("Text").value);
       
-      const message = flexMessage(randomPoints);
+      const message = flexMessage(randomPoints, emotionFactor_without_emoji);
       console.log(message);
 
 				fetch(url+'/send-message', {
@@ -578,7 +584,7 @@ function pushMsg() {
 			});
       
       
-      const formData = getformData();
+      const formData = getformData(emotionFactor_without_emoji);
 
       fetch(url + '/api', {
         method: 'POST',
