@@ -8,50 +8,58 @@
 	<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 	<script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+	
 	<!-- <script>
 	// VConsole will be exported to `window.VConsole` by default.
 	var vConsole = new window.VConsole();
 	</script> -->
-	<link rel="stylesheet" href="static/style.css">
-	<script src="static/test.js"></script>
+
+	<link rel="stylesheet" href="static/style.css">	
 	<script src="../config.js"></script>
 	<!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
 </head>
-<body style="background-color: rgb(233, 206, 253);">
-	<p>User ID:<span id="userId"></span></p>
-	<p id="result">這裡是掃到的結果</p>
+<body>
+    <!-- <p>User ID:<span id="userId"></span></p>
+    <p id="result">這裡是掃到的結果</p> -->
+	<!-- <p style="height: 10px;" id="test"></p> -->
+    <p style="height: 10px;"></p>
+    <div class="container mt-3"st>
+        <p>你現在的感受如何呢?</p>
+        <span id="MoodText">情緒中性</span>
 
-	<p style="height: 20px;"></p>
-	<div class="container mt-3">
-		<p>你現在的感受如何呢?</p>
-		<span id="MoodText">普通</span>
-		<div class="form">
-			<input type="range" class="form-range" min="1" max="5" value="3" id="customRange" step="1" name="points" onchange="change()">
-			<p id="test"></p>
-			<label for="customRange" class="form-label">請選擇你覺得與你狀態相符的關鍵詞</label>
-			<p> </p>
-			<div id="keywords">
-				<!--參考資料：https://growingbar.co/list-of-emotions/ -->
-				<div class="button" id="Mood1" onclick="clickButton('Mood1')">空虛</div >
-				<div class="button" id="Mood2" onclick="clickButton('Mood2')">心痛</div >
-				<div class="button" id="Mood3" onclick="clickButton('Mood3')">沮喪</div >
-				<div class="button" id="Mood4" onclick="clickButton('Mood4')">快樂</div >
-				<div class="button" id="Mood5" onclick="clickButton('Mood5')">激動</div >
-				<div class="button" id="Mood6" onclick="clickButton('Mood6')">慌張</div >
-				<div class="button" id="Mood7" onclick="clickButton('Mood7')">驚恐</div >
-				<div class="button" id="Mood8" onclick="clickButton('Mood8')">生氣</div >
-				<div class="button" id="Mood9" onclick="clickButton('Mood9')">焦躁</div >
-				<div class="button" id="Mood10" onclick="clickButton('Mood10')">幸福</div >
-				<div class="button" id="Mood11" onclick="clickButton('Mood11')">煩悶</div >
-				<div class="button" id="Mood12" onclick="clickButton('Mood12')">興奮</div >
+        <div id="form1" style="display: block;"> <!-- 表單第一頁 -->
+            <input type="range" min="0" max="100" value="50" id="customRange" step="1" name="points">
+            <p id="test"></p>
+            <label for="customRange" class="form-label">請先選擇你覺得與你狀態符合的關鍵詞</label>
+            <div id="moodButtonsContainer">
+				<div id="moodButtonsContainer1"></div>
+				<p style="height: 6px; margin: 0 0;"> </p>
+				<div id="moodButtonsContainer2" style="display: none;"></div>
 			</div>
-			<p> </p>
-			<p>請試著寫下你現在的情緒與想法：</p>
-			<textarea style="width: 100%; height: 100px;" id="Text"></textarea>
-		</div>
-		<p> </p>
-		<button style="float:right" id="submit">完成</button>
-	</div>
+            <p> </p>
+            <button id="toggle-button" class="btn btn-secondary"></button>
+            <p> </p>
+            
+            <button id="nextstep" class="btn btn-secondary btn-sm" style="float:right; margin-right: 5px; margin-top: -50px; display: none;" onclick="nextstep()">下一步 ></button> <!-- 按鈕置右 -->
+        </div>
+
+        <div id="form2" style="display: none;"> <!-- 表單第二頁 -->
+            <div id ="MoodTextArea">
+                <p></p>
+                <label class="form-label">說說你的感受吧！選擇影響你最大的原因</label>
+                <div id="EmotionFactorsContainer"></div>
+                <p> </p>
+                <p>能多跟我分享分享嗎? 關鍵字或是完整事件都可以</p>
+                <!-- 提示文字半透明，輸入文字則正常 -->
+                <textarea id="Text" placeholder="請說說你的感受..." style="opacity: 0.7;" onfocus="this.style.opacity='1';" onblur="this.style.opacity='0.5';"></textarea>
+                <p> </p>
+                <button id="prevstep" class="btn btn-secondary btn-sm" style="margin-left: 2%; " onclick="previousstep()"> < 上一步</button> <!-- 按鈕置左 -->
+                <button class="btn btn-secondary btn-sm" style="float:right; width: 60px;" id="submit"> 完成 </button>
+            </div>
+            
+        </div>
+    </div>
+	<script src="static/test.js"></script>
 	<script>
 		// 維修 liff init 方法來自：https://narongdej.dev/blog/th/2024/04/04/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%81%E0%B8%81%E0%B9%89-type-error-failed-to-fetch-%E0%B9%83%E0%B8%99-line-liff-android
 		// 保存原始的 fetch 函數
@@ -72,6 +80,7 @@
 		// 替換 window.fetch 為自定義的 fetch 函數
 		window.fetch = customFetch;
 
+		
 
 		function triggerLIFF() {
 			let liffID = "2004371526-pRAP9QZY";
@@ -89,16 +98,47 @@
 			})
 			.then(profile => { // 確認可以抓取userid
 				userId = profile.userId;
-				document.getElementById('userId').textContent = userId;
+				// document.getElementById('userId').textContent = userId;
 			})
 			.then(() => {
-				checkfivemin();
-				scancode();
-					
+				return fetch(url+"/check_userlast", {
+					method: 'POST',
+					headers: {
+					"Content-Type": "application/json",
+					"ngrok-skip-browser-warning": true,
+					}, 
+					body: JSON.stringify({
+					"LINEID": userId
+					})
 			})
-			.catch(function(error) {
-				alert(error);
-			});
+		})
+		.then(res => res.text())
+		.then(req => {
+			if (req === 'reject') {  // 服务器返回 'reject'
+				alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
+				liff.closeWindow(); // 关闭 LIFF 窗口
+				window.location.href = "google.com"; // 重定向到谷歌 
+				return Promise.reject('User is rejected due to time limit.'); // 返回 rejected Promise，停止后续执行
+			} else {
+				console.log("checkfivemin no problem");
+				return 'ok'; // 成功时返回 'ok'，后续的 then() 处理这个值
+			}
+		})
+		.then((ans) => {
+			ans = 'ok';
+			console.log("checkfivemin: " + ans);
+			if(ans == "ok"){
+				return scancode();
+			}
+			else{
+				liff.closeWindow();
+				return;
+			}
+		})
+		.catch(function(error) {
+			alert("error: " + error);
+			return;
+		});
 		}
 		
 		window.onload = function(){

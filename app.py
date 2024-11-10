@@ -40,6 +40,11 @@ handler = WebhookHandler(os.getenv("channel_secret"))
 url= os.getenv("url")
 userid_list=[]
 session_ID = {}
+print("url: " + url)
+
+# 系統檢查設定開關
+scancode_flag = False
+check5min_flag = False
 
 # QRcode
 @app.route('/', methods=['GET'])
@@ -61,16 +66,19 @@ def gen_password(): # 接收生成的 pw 並存起來
 	return "get new pw."
 
 @app.route('/check_scanres', methods=['POST'])
-def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
-	print(request.json)
+def get_now_password(): # 提供表單驗證是否正確，用於驗證位於螢幕前
+	if scancode_flag == False: # 不進行檢查
+		return "ok"
 	
 	reqdata = request.json
 	userid =  reqdata["UserID"]
 	scanresult = reqdata["ScanResult"]
 	password = parameter.find_one({}, {'_id' : 0, 'password' : 1}) # 搜尋全部、去除id、要留password
-	print("get：\t" + password['password'])
+	# print("scan：\t" + scanresult)
+	# print("get：\t" + password['password'])
 	
 	if scanresult == password['password']:
+		print("scan：ok")
 		return "ok"
 	else: # Qrcode 錯誤，訊息告知
 		with ApiClient(configuration) as api_client:
@@ -78,23 +86,30 @@ def get_now_password(): # 提供表單目前密碼，用於驗證位於螢幕前
 			line_bot_api.push_message(
 				PushMessageRequest(
 					to=userid,
-					messages=[TextMessage(text="Qrcode錯誤")]
+					messages=[TextMessage(text="Qrcode錯誤，請重新掃描")],
 				)
 			)
 		return "reject"
 
 @app.route('/check_userlast', methods=['POST'])
 def check_time(): # 檢查是否距離上次 5 分鐘以上
+	if check5min_flag == False: # 不進行檢查
+		return "accept"
+
+	reqdata = request.json
+	userid = reqdata["LINEID"]
 	ans = ''
 	findtime = formdata.find({
-		"userid" : 'no',
-		"timestamp" : { "$gte" : int(time.time())-300 } # 距離不超過300秒
+		"LineID" : userid,
+		"TimeStamp" : { "$gte" : int(time.time())-300 } # 距離不超過300秒
 	})
 	
 	for f in findtime:
 		ans += str(f) + '<br>'
-
-	if ans == '': # 沒有任何一個在300秒內
+	print(int(time.time()))
+	print(userid, ans=='')
+	# 如果findtime為空，代表5分鐘內沒有紀錄
+	if ans == '': 
 		return "accept"
 	else:
 		return "reject"
@@ -162,7 +177,7 @@ def get_data():
 		return str(e), 400
 
 
-# DataRecord
+# DataRecord, 接收表單資料
 @app.route("/api", methods=["POST"])
 def save_data():
 	try:
@@ -177,7 +192,7 @@ def save_data():
 	except Exception as error:
 		print("錯誤:", error)
 		return jsonify({"error": "Error saving data"}), 500
-
+	
 # 回傳圖片(需要url)
 @app.route("/picture", methods=["GET"])
 def show_picture(	):
@@ -190,6 +205,7 @@ def show_picture(	):
 @app.route("/send-message", methods=["POST"])
 def send_message():
 	data = request.json	
+	print(data)
 	headers = {
 		"Content-Type": "application/json",
 		"Authorization": f"Bearer {channel_access_token}",
