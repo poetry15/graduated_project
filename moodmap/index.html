@@ -373,7 +373,7 @@
       point += Object.keys(put_color).length;
       Object.entries(put_color).forEach(([id, color]) => {
         const gridItem = document.getElementById(id);
-        gridItem.style.backgroundColor = 'white';
+        gridItem.style.backgroundColor = color[map[item.id-1]-1];
       });
       put_color = {};
     }
