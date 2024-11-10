@@ -358,7 +358,7 @@
               updatePointDisplay(point);
             }
             else if(point > 0){
-              if (item.style.backgroundColor == 'white') {
+              if (!color.includes(item.style.backgroundColor)) {
                 item.style.backgroundColor = color[MoodColor];
                 put_color[item.id] = data["MoodValue"];
                 point--;
@@ -372,24 +372,13 @@
 
     function clearMapData() {
       point += Object.keys(put_color).length;
+      updatePointDisplay(point);
       Object.entries(put_color).forEach(([id, color]) => {
         const gridItem = document.getElementById(id);
         gridItem.style.backgroundColor = 'white';
       });
+      console.log(put_color);
       put_color = {};
-    }
-
-    function randomChooseGrid() {
-      while(point != 0) {
-        const randomIndex = Math.floor(Math.random() * 36) + 1;
-        const gridItem = document.getElementById(String(randomIndex));
-        if (gridItem.style.backgroundColor == 'white') {
-          gridItem.style.backgroundColor = color[MoodColor];
-          put_color[randomIndex] = MoodColor+1;
-          point--;
-          updatePointDisplay(point);
-        }
-      }
     }
 
     async function sendMapData() {
