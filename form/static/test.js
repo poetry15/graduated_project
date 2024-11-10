@@ -638,6 +638,7 @@ function pushMsg() {
       icon: 'success',
       title: '轉換完成'
     });
+    liff.closeWindow();
   })
   .catch(error => {
     Swal.fire({
@@ -647,9 +648,6 @@ function pushMsg() {
     });
     console.error('There has been a problem with your fetch operation:', error);
   })
-  .finally(() => {
-    liff.closeWindow();
-  });
   
 }
 
