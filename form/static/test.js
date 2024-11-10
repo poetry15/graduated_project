@@ -137,7 +137,7 @@ function changebgcolor() {
   // 更新背景顏色
   body.style.backgroundColor = currentColor;
   
-  document.getElementById("test").innerHTML = currentColor + ", " +  RGBTohex(currentColor);
+  // document.getElementById("test").innerHTML = currentColor + ", " +  RGBTohex(currentColor);
 }
 
 function interpolateColor(color1, color2, fraction) {
@@ -529,6 +529,7 @@ function getformData(emotionFactor_without_emoji) {
     TimeStamp: Math.floor(date.getTime() / 1000),
     LineID: userId,
     MoodVaule: moodscore,
+    MoodColor: RGBTohex(currentColor),
     MoodKeyWord: keyword.join(", "),
   };
 
