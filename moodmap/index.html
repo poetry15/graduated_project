@@ -203,7 +203,7 @@
     </div>
     <button id="clear" class="my-2 btn btn-primary d-none" onclick="clearMapData()">清除</button>
     <button id="submit" class="my-2 btn btn-primary d-none" onclick="sendMapData()">提交</button>
-    <!-- <button onclick="captureImage()">Capture Image</button> -->
+    <button onclick="randomChooseGrid()">隨機點數</button>
     <canvas id="canvas" style="display:none;"></canvas>
   </div>
   
@@ -455,6 +455,19 @@
       }
     }
     
+    function randomChooseGrid() {
+      while(point != 0) {
+        const randomIndex = Math.floor(Math.random() * 36) + 1;
+        const gridItem = document.getElementById(String(randomIndex));
+        if (!color.includes(gridItem.style.backgroundColor)) {
+          gridItem.style.backgroundColor = color[MoodColor];
+          put_color[randomIndex] = MoodColor+1;
+          point--;
+          updatePointDisplay(point);
+        }
+      }
+    }
+
     const originalFetch = window.fetch;
 
 		// 自定義的 fetch 函數

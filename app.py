@@ -47,7 +47,8 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
-exit_flag = False
+exit_flag = True
+quick_flag = True
 
 # QRcode
 @app.route('/', methods=['GET'])
@@ -193,8 +194,10 @@ def save_data():
 		form_data = request.json
 		formdata.insert_one(form_data)
 		dealSingleData(form_data)
-		imageUrl = imageGenerate(form_data["MoodColor"])
-		# imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
+		if (quick_flag):
+			imageUrl = imageGenerate(form_data["MoodColor"])
+		else:
+			imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
 		image.insert_one({'image':imageUrl})
 		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl })
 		return jsonify({"message": "Data saved", "data": dumps(form_data),"image": imageUrl}), 201
