@@ -461,7 +461,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', async() => {
-      initializeLiff(); // 初始化 LIFF
+      await initializeLiff(); // 初始化 LIFF
       await InitializePage();
       initializeWebSocket();
 
