@@ -448,7 +448,7 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
         "type": "button",
         "action": {
           "type": "uri",
-          "label": "前往心情地圖察看結果",
+          "label": "前往心情地圖開始創作吧!",
           "uri": "https://liff.line.me/2004371526-QNE54xpZ"
         },
       }
@@ -470,7 +470,7 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
         "type": "button",
         "action": {
           "type": "uri",
-          "label": "前往心情地圖察看結果",
+          "label": "前往心情地圖開始創作吧!",
           "uri": "https://liff.line.me/2004371526-QNE54xpZ"
         },
       }
@@ -497,7 +497,7 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
         "type": "button",
         "action": {
           "type": "uri",
-          "label": "前往心情地圖察看結果",
+          "label": "前往心情地圖開始創作吧!",
           "uri": "https://liff.line.me/2004371526-QNE54xpZ"
         },
       });
