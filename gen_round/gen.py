@@ -57,8 +57,11 @@ def download_output(output_list, save_dir="./output"):
         print(f"處理輸出時發生錯誤: {str(e)}")
 
 def read_image_from_url(url):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+    }
     # 獲取圖片數據
-    response = requests.get(url)
+    response = requests.get(url,headers=headers)
     # 將圖片數據轉換成 numpy array
     image_array = np.asarray(bytearray(response.content), dtype=np.uint8)
     # 使用 cv2 解碼圖片

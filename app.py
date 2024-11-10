@@ -1,8 +1,7 @@
 from flask import Flask, request, abort, jsonify, send_file,render_template
 from flask_socketio import SocketIO,emit
 from moodmap.Exterior import imageGenerate, upload_image_to_imgur
-from gen_round.gen import round_photo_generator
-import cv2
+from gen_round.gen import round_photo_generator, read_image_from_url
 from WordCloud.WordCloud import dealAllData, dealSingleData
 from pymongo import MongoClient
 import requests,os
@@ -128,7 +127,6 @@ def handle_connect():
 def handle_message(data):
 	global update_count,userid_list
 	action = data['action']
-	print(data)
 	if action == 'initMap':
 		image_data_list = list(image.find())
 		map_data = db["Map"].find_one()
@@ -163,15 +161,14 @@ def handle_message(data):
 	elif action == 'socketID':
 		session_ID[request.sid] = data['data']
 	elif action == 'finish':
-		print(data['image'])
-		image_url = upload_image_to_imgur(data['image'])
+		image_data_split = data['img'].split(",")[1]
+		image_url = upload_image_to_imgur(image_data_split)
 		print(image_url)
-		pixeled_image = cv2.read_image_from_url(image_url)
+		pixeled_image = read_image_from_url(image_url)
 		print("我有在生圖")
 		url = round_photo_generator(pixeled_image, 0)
 		print(url)
 		send_images_to_users(userid_list,url)
-
 @socketio.on('disconnect')
 def handle_disconnect():
 	if (exit_flag):

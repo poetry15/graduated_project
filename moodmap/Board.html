@@ -240,7 +240,7 @@
         if(data.action == 'finish') {
           let img_data = await captureImage();
           socket.emit('message',{action:'finish','img': img_data});
-          // window.location.reload();
+          window.location.reload();
         }
         if (data.action == 'initMap') {
           let index = 0;
