@@ -622,16 +622,17 @@ function pushMsg() {
       console.error('There has been a problem with your fetch operation:', error);
     });
 
-  // fetch(url+'/moodmap',{
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     randomPoints: randomPoints,
-  //     LineID: userId,
-  //   }),
-  // });
+  fetch(url+'/moodmap',{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      randomPoints: randomPoints,
+      LineID: userId,
+      MoodVaule: moodscore,
+    }),
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
