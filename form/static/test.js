@@ -636,9 +636,14 @@ function pushMsg() {
   .then(() => {
     Swal.fire({
       icon: 'success',
-      title: '轉換完成'
+      title: '轉換完成',
+      confirmButtonText: "確認"
+    })
+    .then(result => {
+      if(result.isConfirmed){
+        liff.closeWindow();
+      }
     });
-    liff.closeWindow();
   })
   .catch(error => {
     Swal.fire({
