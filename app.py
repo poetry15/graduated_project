@@ -43,6 +43,7 @@ handler = WebhookHandler(os.getenv("channel_secret"))
 url= os.getenv("url")
 userid_list=[]
 session_ID = {}
+update_count = 0
 print("url: " + url)
 
 # 系統檢查設定開關
@@ -125,6 +126,7 @@ def handle_connect():
 
 @socketio.on('message')
 def handle_message(data):
+	global update_count,userid_list
 	action = data['action']
 	print(data)
 	if action == 'initMap':
@@ -145,6 +147,19 @@ def handle_message(data):
 			color = item['color']
 			db["Map"].find_one_and_update({}, {"$set": {f"map.{id}": color}}, upsert=True)
 		emit('message', {'action': 'updateMap', 'map': map_updates},broadcast=True)
+		update_count += 1
+		print(update_count)
+		if update_count == 12:
+			socketio.emit('message', {'action': 'finish'})
+			update_count = 0
+			print("12筆資料已經收集完畢")
+			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
+			lastest_image = image.find().sort("_id", 1).limit(12)
+			userid_list =[entry["LineID"].split('-')[0] for entry in lastest_data]
+			delete_image = [record["_id"] for record in lastest_image]
+			image.delete_many({"_id": {"$in": delete_image}})
+			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})
+			db.drop_collection("Map")
 	elif action == 'socketID':
 		session_ID[request.sid] = data['data']
 	elif action == 'finish':
@@ -155,7 +170,7 @@ def handle_message(data):
 		print("我有在生圖")
 		url = round_photo_generator(pixeled_image, 0)
 		print(url)
-		send_images_to_users(url)
+		send_images_to_users(userid_list,url)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -237,7 +252,7 @@ def send_message():
 #moodmap
 @app.route("/moodmap",methods=["POST"])
 def NowStep():
-	global userid_list
+	global userid_list,update_count
 	try:
 		Info = request.json
 		print(Info)
@@ -248,18 +263,6 @@ def NowStep():
 			)
 		else:
 			moodmap.insert_one(Info)
-		print(moodmap.count_documents({"randomPoints": 0}))
-		if moodmap.count_documents({"randomPoints": 0}) >= 12:
-			print("12筆資料已經收集完畢")
-			time.sleep(2)
-			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
-			lastest_image = image.find().sort("_id", 1).limit(12)
-			userid_list =[entry["LineID"].split('-')[0] for entry in lastest_data]
-			delete_image = [record["_id"] for record in lastest_image]
-			image.delete_many({"_id": {"$in": delete_image}})
-			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})
-			db.drop_collection("Map")
-			socketio.emit('message', {'action': 'finish'})
 		return jsonify({"message": "Data received and processed"}), 200
 	except Exception as error:
 		print(error)

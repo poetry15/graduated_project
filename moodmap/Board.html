@@ -180,12 +180,13 @@
   <script>
     function captureImage() {
       const middleDiv = document.querySelector('.middle');
-      let imgData;
-      html2canvas(middleDiv, { scale:10 }).then(canvas => {
-        imgData = canvas.toDataURL('image/png');
-      });
-      console.log(imgData);
-      return imgData;
+      if (middleDiv) {
+        return html2canvas(middleDiv, { scale: 10 }).then(canvas => {
+          return canvas.toDataURL('image/png'); // 在 Promise resolve 中返回 imgData
+        });
+      } else {
+        return Promise.reject("Element not found"); // 如果元素不存在，返回拒絕的 Promise
+      }
     }
   </script>
   <script>
@@ -227,7 +228,7 @@
           MoodValue: MoodColor+1
         }),});
       });
-      socket.on ('message', (event) => {
+      socket.on ('message', async(event) => {
         const data = event;
         console.log(data);
         if (data.action == 'updateMap') {
@@ -237,8 +238,7 @@
           });
         }
         if(data.action == 'finish') {
-          let img_data = captureImage();
-          console.log(img_data);
+          let img_data = await captureImage();
           socket.emit('message',{action:'finish','img': img_data});
           // window.location.reload();
         }
