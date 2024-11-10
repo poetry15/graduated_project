@@ -248,7 +248,7 @@
     }
 
     function initializeWebSocket() {
-      socket = io('http://127.0.0.1:5000');
+      socket = io(url);
       socket.on('connect', () => {
         socket.emit('message',{action: 'initMap'});
         socket.emit('message',{action: 'socketID',data:JSON.stringify({
@@ -448,7 +448,7 @@
     }
     async function initializeLiff() {
       try {
-        await liff.init({ liffId: "2006550418-0v2pJrAN" });
+        await liff.init({ liffId: "2004371526-QNE54xpZ" });
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
@@ -461,7 +461,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', async() => {
-      initializeLiff(); // 初始化 LIFF
+      await initializeLiff(); // 初始化 LIFF
       await InitializePage();
       initializeWebSocket();
 
