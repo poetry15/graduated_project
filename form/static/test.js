@@ -137,7 +137,7 @@ function changebgcolor() {
   // 更新背景顏色
   body.style.backgroundColor = currentColor;
   
-  document.getElementById("test").innerHTML = RGBTohex(currentColor);
+  document.getElementById("test").innerHTML = currentColor + RGBTohex(currentColor);
 }
 
 function interpolateColor(color1, color2, fraction) {
@@ -159,6 +159,7 @@ function hexToRGB(hex) {
 
 function RGBTohex(rgb) {
   const [r, g, b] = rgb;
+  
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b
     .toString(16)
     .padStart(2, "0")}`;
