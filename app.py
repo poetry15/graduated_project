@@ -188,18 +188,10 @@ def save_data():
 		imageUrl = imageGenerate(form_data["MoodColor"])
 		image.insert_one({'image':imageUrl})
 		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl })
-		return jsonify({"message": "Data saved", "data": dumps(form_data)}), 201
+		return jsonify({"message": "Data saved", "data": dumps(form_data),"image": imageUrl}), 201
 	except Exception as error:
 		print("錯誤:", error)
 		return jsonify({"error": "Error saving data"}), 500
-	
-# 回傳圖片(需要url)
-@app.route("/picture", methods=["GET"])
-def show_picture(	):
-	# 指定圖片的路徑
-	image_path = "assets/positive_food.png"
-	return send_file(image_path, mimetype="image/png")
-
 
 # LineBot回傳情緒紀錄給使用者
 @app.route("/send-message", methods=["POST"])
@@ -244,7 +236,7 @@ def NowStep():
 			lastest_image = image.find().sort("_id", 1).limit(12)
 			user_ids=[entry["LineID"].split('-')[0] for entry in lastest_data]
 			print(user_ids)
-			# send_images_to_users(user_ids)
+			send_images_to_users(user_ids)
 			delete_image = [record["_id"] for record in lastest_image]
 			image.delete_many({"_id": {"$in": delete_image}})
 			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})

@@ -412,12 +412,12 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
     text: "目前圖片結果",
     size: "xl",
   },
-  {
-    type: "image",
-    url: url + "picture",
-    size: "full",
-    aspectRatio: "1792:1024",
-  },
+  // {
+  //   type: "image",
+  //   url: url + "picture",
+  //   size: "full",
+  //   aspectRatio: "1792:1024",
+  // },
   {
     type: "text",
     text: "紀錄時間：" + new Date().toLocaleString(),
@@ -608,15 +608,17 @@ function pushMsg() {
         body: JSON.stringify(formData),
       })
       .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
+        message.messages[0].contents.body.contents.push({
+          type: "image",
+          url: response.data.image,
+          size: "full",
+          aspectRatio: "1792:1024",
+        });
       })
       .then(data => {
         alert("已成功送出表單");
         console.log(data);
-        window.location.href = "https://liff.line.me/2004371526-02aJVKO3";
+        window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
       })
       .catch(error => {
         console.error('There has been a problem with your fetch operation:', error);
