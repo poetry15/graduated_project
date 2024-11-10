@@ -317,9 +317,9 @@ def round_photo_generator(pixeled_image, avg_mood_score):
     url = upload_imgBB(image)
 
     background_img = run_color_model(url)
-    cv2.imshow("background", background_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow("background", background_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     cat_rmbg = run_cat_model(avg_mood_score) # 0 ~ 4
     combine_img = combine_cat_and_background(cat_rmbg, background_img)
