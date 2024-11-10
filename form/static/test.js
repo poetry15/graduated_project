@@ -122,11 +122,11 @@ function changebgcolor() {
   }
 
   // 計算當前值在 colorplace 區間中的百分比
-  const percentageBetween = 
-    (value - colorplace[moodPlace]) / 
+  const percentageBetween =
+    (value - colorplace[moodPlace]) /
     (colorplace[moodPlace + 1] - colorplace[moodPlace]);
 
-  
+
   // document.getElementById("test123").innerHTML = String(value) + " " + String(percentageBetween) +" " + String(moodscore);
   currentColor = interpolateColor(
     colors[moodPlace],
@@ -136,7 +136,7 @@ function changebgcolor() {
 
   // 更新背景顏色
   body.style.backgroundColor = currentColor;
-  
+
   // document.getElementById("test").innerHTML = currentColor + ", " +  RGBTohex(currentColor);
 }
 
@@ -337,9 +337,9 @@ function showEmotionFactor() {
     EmotionFactorsContainer.appendChild(div);
 
     // 在每區的間隔處換行，但因排版是用grid，所以需要確認需跳過幾格
-    
+
     if (factor.label === "心靈 🌿") {
-      for (let i=0;i<2;i++){
+      for (let i = 0; i < 2; i++) {
         const emptyDiv = document.createElement("div");
         EmotionFactorsContainer.appendChild(emptyDiv);
       }
@@ -354,7 +354,7 @@ function showEmotionFactor() {
       spacer.style.gridColumn = "span 4"; // 占據兩個網格單元
       spacer.style.height = "0.5rem";
       EmotionFactorsContainer.appendChild(spacer);
-      
+
     }
   });
 }
@@ -368,7 +368,7 @@ function scancode() {
       return result.value;
     })
     .then(scanresult => {
-      fetch(url+"/check_scanres", {
+      fetch(url + "/check_scanres", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -379,29 +379,29 @@ function scancode() {
           "ScanResult": scanresult
         })
       })
-      .then(res => res.text())
+        .then(res => res.text())
         .then(restext => {
           // alert("restext" + restext);
-            // console.log("scanres:  " + scanresult + "\npassword: " + restext)
-            if(restext != "ok"){
-              console.log("Qrcode wrong!");
-              if(liff.isInClient()){
-                liff.closeWindow(); // 關閉LIFF
+          // console.log("scanres:  " + scanresult + "\npassword: " + restext)
+          if (restext != "ok") {
+            console.log("Qrcode wrong!");
+            if (liff.isInClient()) {
+              liff.closeWindow(); // 關閉LIFF
 
-              }
-              else{
-                window.close(); // 關閉瀏覽器
-              }
             }
-            else{
-              console.log("正確! " + scanresult);
+            else {
+              window.close(); // 關閉瀏覽器
             }
+          }
+          else {
+            console.log("正確! " + scanresult);
+          }
         })
     })
     .catch(error => {
       console.error('Scan failed', error);
     });
-        
+
 }
 
 // 創建好要送出的表單
@@ -432,7 +432,7 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
     "wrap": true,
   },];
 
-  if(emotionFactor_count == 0){ // 只輸入情緒文字
+  if (emotionFactor_count == 0) { // 只輸入情緒文字
     boxcontext.push(
       {
         type: "text",
@@ -454,7 +454,7 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
       }
     );
   }
-  else if(document.getElementById("Text").value == ""){ // 只輸入情緒因子
+  else if (document.getElementById("Text").value == "") { // 只輸入情緒因子
     boxcontext.push(
       {
         type: "text",
@@ -503,22 +503,22 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
       });
   }
   msg = {
-      //Line Flex Message
-      to: userId,
-      messages: [
-        {
-          type: "flex",
-          altText: "情緒分析結果",
-          contents: {
-            type: "bubble",
-            body: {
-              type: "box",
-              layout: "vertical",
-              contents: boxcontext
-            }
+    //Line Flex Message
+    to: userId,
+    messages: [
+      {
+        type: "flex",
+        altText: "情緒分析結果",
+        contents: {
+          type: "bubble",
+          body: {
+            type: "box",
+            layout: "vertical",
+            contents: boxcontext
           }
-        }]
-      };
+        }
+      }]
+  };
   return msg;
 }
 
@@ -533,20 +533,20 @@ function getformData(emotionFactor_without_emoji) {
     MoodKeyWord: keyword.join(", "),
   };
 
-  if(document.getElementById("Text").value == ""){ // 只輸入情緒因子
-    data =  {
+  if (document.getElementById("Text").value == "") { // 只輸入情緒因子
+    data = {
       ...data,
       MoodFactor: emotionFactor_without_emoji.join(", "),
     }
   }
-  else if(emotionFactor_count == 0){ // 只輸入情緒文字
-    data =  {
+  else if (emotionFactor_count == 0) { // 只輸入情緒文字
+    data = {
       ...data,
       MoodWord: document.getElementById("Text").value,
     }
   }
-  else{ // 全部都有
-    data =  {
+  else { // 全部都有
+    data = {
       ...data,
       MoodFactor: emotionFactor_without_emoji.join(", "),
       MoodWord: document.getElementById("Text").value,
@@ -557,11 +557,11 @@ function getformData(emotionFactor_without_emoji) {
 
 function pushMsg() {
   let randomPoints;
-  if(document.getElementById("Text").value == "" && emotionFactor_count == 0){
+  if (document.getElementById("Text").value == "" && emotionFactor_count == 0) {
     alert("請至少選擇一個情緒因子或輸入情緒文字!");
     return;
   }
-  else if(document.getElementById("Text").value == "" || emotionFactor_count == 0){
+  else if (document.getElementById("Text").value == "" || emotionFactor_count == 0) {
     console.log("其中一個為空");
     randomPoints = Math.floor(Math.random() * 3) + 1; // 1~3
   }
@@ -579,61 +579,59 @@ function pushMsg() {
   console.log("情緒因子：" + emotionFactor_without_emoji.join(", "));
   console.log("情緒關鍵詞：" + keyword.join(", "));
   console.log("情緒文字：" + document.getElementById("Text").value);
-      
-      const message = flexMessage(randomPoints, emotionFactor_without_emoji);
-      console.log(message);
 
-				fetch(url+'/send-message', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(message),
-			})
-			.then(response => {
-					console.log('訊息發送成功:', response.data);
-			})
-			.catch(error => {
-					console.error('訊息發送失敗:', error.response ? error.response.data : error.message);
-			});
-      
-      
-      const formData = getformData(emotionFactor_without_emoji);
+  const message = flexMessage(randomPoints, emotionFactor_without_emoji);
+  console.log(message);
 
-      fetch(url + '/api', {
+  const formData = getformData(emotionFactor_without_emoji);
+
+  fetch(url + '/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  })
+    .then(response => {
+      message['messages'][0]['contents']['body']['contents'].insert(1, {
+        type: "image",
+        url: response.data.image,
+        size: "full",
+        aspectRatio: "1792:1024",
+      });
+      fetch(url + '/send-message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(message),
       })
-      .then(response => {
-        message.messages[0].contents.body.contents.push({
-          type: "image",
-          url: response.data.image,
-          size: "full",
-          aspectRatio: "1792:1024",
+        .then(response => {
+          console.log('訊息發送成功:', response.data);
+        })
+        .catch(error => {
+          console.error('訊息發送失敗:', error.response ? error.response.data : error.message);
         });
-      })
-      .then(data => {
-        alert("已成功送出表單");
-        console.log(data);
-        window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
-      })
-      .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error);
-      });
+    })
+    .then(data => {
+      alert("已成功送出表單");
+      console.log(data);
+      window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
+    })
+    .catch(error => {
+      console.error('There has been a problem with your fetch operation:', error);
+    });
 
-      // fetch(url+'/moodmap',{
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     randomPoints: randomPoints,
-      //     LineID: userId,
-      //   }),
-      // });
+  // fetch(url+'/moodmap',{
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({
+  //     randomPoints: randomPoints,
+  //     LineID: userId,
+  //   }),
+  // });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
