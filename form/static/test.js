@@ -594,7 +594,7 @@ function pushMsg() {
   })
     .then(response => response.json())
     .then(data => {
-      message['messages'][0]['contents']['body']['contents'].insert(1, {
+      message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
         type: "image",
         url: data.image,
         size: "full",
