@@ -63,9 +63,9 @@ const emotionalFactors = [
   // 第一區：個人健康與心理
   { label: "健康 ❤️", value: "health" },
   { label: "運動 🏃‍♂️", value: "fitness" },
-  { label: "自我照顧🛌", value: "selfCare" },
+  { label: "自我照顧 🛌", value: "selfCare" },
   { label: "嗜好 🎨", value: "hobby" },
-  { label: "身分認同👤", value: "identity" },
+  { label: "身分認同 👤", value: "identity" },
   { label: "心靈 🌿", value: "mindfulness" },
 
   // 第二區：人際關係與社交生活
