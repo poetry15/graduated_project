@@ -23,7 +23,7 @@ import time
 
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*",async_mode='eventlet')
 load_dotenv()
 
 # 連接到 MongoDB
@@ -33,6 +33,7 @@ formdata = db["formdatas"]
 parameter = db["parameters"]
 moodmap = db["MoodMap"]
 image = db["ImageMap"]
+map_array = db["Map"]
 dealAllData()
 
 # LineBot
@@ -47,7 +48,7 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
-exit_flag = True
+exit_flag = False
 quick_flag = True
 
 # QRcode
@@ -125,6 +126,7 @@ def handle_connect():
 @socketio.on('message')
 def handle_message(data):
 	action = data['action']
+	print(data)
 	if action == 'initMap':
 		image_data_list = list(image.find())
 		map_data = db["Map"].find_one()
@@ -145,10 +147,14 @@ def handle_message(data):
 		emit('message', {'action': 'updateMap', 'map': map_updates},broadcast=True)
 	elif action == 'socketID':
 		session_ID[request.sid] = data['data']
-	elif action == 'fininsh':
+	elif action == 'finish':
+		print(data['image'])
 		image_url = upload_image_to_imgur(data['image'])
+		print(image_url)
 		pixeled_image = cv2.read_image_from_url(image_url)
+		print("我有在生圖")
 		url = round_photo_generator(pixeled_image, 0)
+		print(url)
 		send_images_to_users(url)
 
 @socketio.on('disconnect')
@@ -194,7 +200,7 @@ def save_data():
 		form_data = request.json
 		formdata.insert_one(form_data)
 		dealSingleData(form_data)
-		if (quick_flag):
+		if (quick_flag == False):
 			imageUrl = imageGenerate(form_data["MoodColor"])
 		else:
 			imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
@@ -243,15 +249,17 @@ def NowStep():
 		else:
 			moodmap.insert_one(Info)
 		print(moodmap.count_documents({"randomPoints": 0}))
-		if moodmap.count_documents({"randomPoints": 0}) > 12:
+		if moodmap.count_documents({"randomPoints": 0}) >= 12:
 			print("12筆資料已經收集完畢")
+			time.sleep(2)
 			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
 			lastest_image = image.find().sort("_id", 1).limit(12)
 			userid_list =[entry["LineID"].split('-')[0] for entry in lastest_data]
-			socketio.emit('message', {'action': 'finish'})
 			delete_image = [record["_id"] for record in lastest_image]
 			image.delete_many({"_id": {"$in": delete_image}})
 			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})
+			db.drop_collection("Map")
+			socketio.emit('message', {'action': 'finish'})
 		return jsonify({"message": "Data received and processed"}), 200
 	except Exception as error:
 		print(error)

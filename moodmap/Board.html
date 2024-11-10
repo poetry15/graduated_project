@@ -180,9 +180,11 @@
   <script>
     function captureImage() {
       const middleDiv = document.querySelector('.middle');
+      let imgData;
       html2canvas(middleDiv, { scale:10 }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
+        imgData = canvas.toDataURL('image/png');
       });
+      console.log(imgData);
       return imgData;
     }
   </script>
@@ -193,7 +195,7 @@
     let point = 0;
     let MoodColor = 0;
     let imgindex = 0;
-    let userID = 'U2d202d4aa5fcc4d1d0fa9eb9285180b7';
+    let userID = '2312312';
 
     async function FetchData() {
       try {
@@ -235,7 +237,10 @@
           });
         }
         if(data.action == 'finish') {
-          socket.emit('message',{action:'finish','img': captureImage()});
+          let img_data = captureImage();
+          console.log(img_data);
+          socket.emit('message',{action:'finish','img': img_data});
+          // window.location.reload();
         }
         if (data.action == 'initMap') {
           let index = 0;
@@ -455,33 +460,6 @@
       // await initializeLiff(); // 初始化 LIFF
       await InitializePage();
       initializeWebSocket();
-
-      // 監聽 Carousel 的滑動事件
-      const carousel = document.getElementById('carouselExampleIndicators');
-      carousel.addEventListener('slid.bs.carousel', (event) => {
-        const activeIndex = event.to;
-        const nextButton = document.getElementById('nextButton');
-        const prevButton = document.getElementById('prevButton');
-        if (activeIndex === 0) {
-          prevButton.style.display = 'none';
-        }
-        else if (activeIndex === 2) { // 第三頁索引為 2
-          document.getElementById('confirmButton').style.display = 'block';
-          nextButton.style.display = 'none';
-          
-        } else {
-          document.getElementById('confirmButton').style.display = 'none';
-          nextButton.style.display = 'block';
-          prevButton.style.display = 'block';
-        }
-      });
-
-      // 確定按鈕點擊事件
-      document.getElementById('confirmButton').addEventListener('click', () => {
-        document.querySelector('.container').classList.remove('d-none');
-        document.getElementById('carouselExampleIndicators').classList.add('d-none');
-        document.getElementById('confirmButton').classList.add('d-none');
-      });
     });
   </script>
 </body>
