@@ -15,42 +15,23 @@ import io
 load_dotenv()
 # 這個優
 openai.api_key = os.getenv("openai.api_key")
-
-# def calculate_frequency(keywords):
-# 	response = openai.chat.completions.create(
-# 			model="gpt-3.5-turbo",
-# 			messages=[
-# 					{
-# 							"role": "system",
-# 							"content": "Calculate the frequency of the extracted keywords and merge similar words and returns a dictionary containing the extracted keywords and their frequencies."
-# 					},
-# 					{
-# 							"role": "user",
-# 							"content": f"Calculate the frequency of the following keywords and merge similar words:\n\n{keywords}\n\n"
-# 					},
-# 			],
-# 			temperature=0.3,
-# 	)
-# 	message_dict = response.choices[0].to_dict()
-# 	print(message_dict)
-# 	# keywords = message_dict["message"]["content"].strip()
-# 	return "hello"
+# 連接到 MongoDB Atlas
+client = MongoClient(os.getenv("ALTAS_URL"))
+db = client["test"]
+formdata = db["formdatas"]
+All_Keywords = db["All_Keywords"]
+wordcloud_image = db["wordcloud_images"]
+keyword = db['keywords']
+AllDocument = formdata.find()
+MoodKeyword = {}
+MoodFactors = {}
+text = []
+length = 0
+HotKeywordCount = 3
 
 def extract_keywords(text):
 	while True:
 		response = openai.chat.completions.create(
-		# 	model="gpt-3.5-turbo",  # 使用支持函数调用的模型
-		#   messages=[
-		#       {
-		#           "role": "system",
-		#           "content": "You will be provided with a block of text, and your task is to extract a list of keywords from it."
-		#       },
-		#       {
-		#           "role": "user",
-		#           "content": f"Extract keywords from the following text:\n\n{text}\n\n"
-		#       },
-		#   ],
-		#   temperature=0.3,
 			model="gpt-3.5-turbo",
 			messages=[
 				{
@@ -62,13 +43,11 @@ def extract_keywords(text):
 					"content": f"Extract keywords from the following text and 擷取完關鍵字後，幫我計算出現頻率 有相似詞或同種類的詞幫我合併並加在一起，不要有重複的詞出現，以python字典的形式回傳:\n\n{text}\n\n",
 				},
 			],
-
 			temperature=0.3,
 		)
+		
 		message_dict = response.choices[0].to_dict()
 		keywords = message_dict["message"]["content"].strip()
-		# result = calculate_frequency(keywords)
-		print(keywords)
 		try:
 			keywords = ast.literal_eval(keywords)
 			if isinstance(keywords, dict):
@@ -118,100 +97,108 @@ def wordcloud(items):
 	img_binary = img_buffer.getvalue()
 	return img_binary
 
+def dealAllData():
+  global MoodKeyword, MoodFactors, text, length
+  today = datetime.date.today()
+  for document in AllDocument:
+    time_str =  document.get("Time", "")
+    time_str = time_str.replace("上午", "AM").replace("下午", "PM")
+    time_obj = datetime.datetime.strptime(time_str, "%Y/%m/%d %p%I:%M:%S")
+    if (document and today < time_obj.date()):  # 如果日期比今天晚，今天變成文件的日期，資料清空
+      MoodKeyword = {}
+      MoodFactors = {}
+      text = []
+      today = document.get("Time", "").date()
+      length = 0
+    elif (document and today == time_obj.date()): # 如果日期等於今天，繼續加入資料
+      length += 1
+    mood_word = document.get("MoodWord", "") # 情緒文字
+    mood_factor = document.get("MoodFactor", "") # 情緒因子
+    Mood = document.get("MoodKeyWord", "") # 情緒關鍵字
+    if (mood_word):
+      text.append(mood_word)
+    if(mood_factor):
+      for i in mood_factor.split(","):
+        if i in MoodFactors:
+          MoodFactors[i] += 1
+        else:
+          MoodFactors[i] = 1
+    if(Mood):
+      for i in Mood:
+        if i in MoodKeyword:
+          MoodKeyword[i] += 1
+        else:
+          MoodKeyword[i] = 1
+					
+  if length != 0: # 如果有資料，才計算關鍵字和丟給openai
+    arr = sorted(MoodKeyword.items(),key= lambda x: x[1], reverse=True)
+    items = {}
+    if (text):
+      items = extract_keywords('\n'.join(text))
+    items.update(MoodFactors)
+    All_Keywords.update_one({},{"$set":{"AllKeyWords": items}},upsert=True)
+    print(items)
+    img_binary=wordcloud(items)
+    wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)
+    if length < HotKeywordCount:
+      KeywordData = {
+        "HotKeywords": arr[:length],
+      }
+    else:
+      KeywordData = {
+        "HotKeywords": arr[:HotKeywordCount],
+      }
+    keyword.update_one({},{"$set":KeywordData},upsert=True)
 
-today = datetime.date.today()
-# 連接到 MongoDB Atlas
-client = MongoClient(os.getenv("ALTAS_URL"))
+def dealSingleData(document):
+  global MoodKeyword, MoodFactors, text, length
+  today = datetime.date.today()
+  time_str =  document.get("Time", "")
+  time_str = time_str.replace("上午", "AM").replace("下午", "PM")
+  time_obj = datetime.datetime.strptime(time_str, "%Y/%m/%d %p%I:%M:%S")
+  if (document and today < time_obj.date()): # 如果日期比今天晚，今天變成文件的日期，資料清空
+    MoodKeyword = {}
+    MoodFactors = {}
+    text = []
+    today = document.get("Time", "").date()
+    length = 0
+  elif (document and today > time_obj.date()): # 如果日期比今天早，跳過
+    return
+  length += 1
+  mood_word = document.get("MoodWord", "")
+  mood_factor = document.get("MoodFactor", "")
+  if(mood_word):
+    text.append(mood_word)
 
-db = client["test"]
-formdata = db["formdatas"]
-All_Keywords = db["All_Keywords"]
-wordcloud_image = db["wordcloud_images"]
-keyword = db['keywords']
-AllDocument = formdata.find()
-MoodKeyword = {}
-text = []
-length = 0
-HotKeywordCount = 3
-
-for document in AllDocument:
-	time_str =  document.get("Time", "")
-	time_str = time_str.replace("上午", "AM").replace("下午", "PM")
-	time_obj = datetime.datetime.strptime(time_str, "%Y/%m/%d %p%I:%M:%S")
-	if (document and today < time_obj.date()):  # 如果日期比今天晚，今天變成文件的日期，資料清空
-		MoodKeyword = {}
-		text = []
-		today = document.get("Time", "").date()
-		length = 0
-  
-	elif (document and today == time_obj.date()): # 如果日期等於今天，繼續加入資料
-		length += 1
-	mood_word = document.get("MoodWord", "")
-	Mood = document.get("MoodKeyWord", "")
-	text.append(mood_word)
-	for i in Mood:
-		if i in MoodKeyword:
-			MoodKeyword[i] += 1
-		else:
-			MoodKeyword[i] = 1
-    
-if length != 0: # 如果有資料，才計算關鍵字和丟給openai
-	arr = sorted(MoodKeyword.items(),key= lambda x: x[1], reverse=True)
-	items = extract_keywords('\n'.join(text))
-	All_Keywords.update_one({},{"$set":{"AllKeyWords": items}},upsert=True)
-	print(items)
-	img_binary=wordcloud(items)
-	wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)
-	if length < HotKeywordCount:
-		KeywordData = {
-			"HotKeywords": arr[:length],
-		}
-	else:
-		KeywordData = {
-			"HotKeywords": arr[:HotKeywordCount],
-		}
-	keyword.update_one({},{"$set":KeywordData},upsert=True)
-
-
-with formdata.watch() as stream:
-	for change in stream:
-		if change["operationType"] == "insert": # 如果有新增資料
-    
-			document = change["fullDocument"]
-			time_str =  document.get("Time", "")
-			time_str = time_str.replace("上午", "AM").replace("下午", "PM")
-			time_obj = datetime.datetime.strptime(time_str, "%Y/%m/%d %p%I:%M:%S")
-			if (document and today < time_obj.date()): # 如果日期比今天晚，今天變成文件的日期，資料清空
-				MoodKeyword = {}
-				text = []
-				today = document.get("Time", "").date()
-				length = 0
-			elif (document and today > time_obj.date()): # 如果日期比今天早，跳過
-				continue
-			length += 1
-			mood_word = document.get("MoodWord", "")
-			text.append(mood_word)
-			items = extract_keywords(', '.join(text))
-			All_Keywords.update_one({},{"$set":{"AllKeyWords": items}},upsert=True)
-			print(items)
-			img_binary=wordcloud(items)
-			wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)   
-			Mood = document.get("MoodKeyWord", "")
-			for i in Mood:
-				if i in MoodKeyword:
-					MoodKeyword[i] += 1
-				else:
-					MoodKeyword[i] = 1
-			arr = sorted(MoodKeyword.items(),key= lambda x: x[1], reverse=True)
-			if length < HotKeywordCount:
-				KeywordData = {
-					"HotKeywords": arr[:length],
-				}
-			else:
-				KeywordData = {
-					"HotKeywords": arr[:HotKeywordCount],
-				}
-			keyword.update_one({},{"$set":KeywordData},upsert=True)
+  if(mood_factor):
+      for i in mood_factor.split(","):
+        if i in MoodFactors:
+          MoodFactors[i] += 1
+        else:
+          MoodFactors[i] = 1
+  if (text):
+    items = extract_keywords(', '.join(text))
+  items.update(MoodFactors)
+  All_Keywords.update_one({},{"$set":{"AllKeyWords": items}},upsert=True)
+  img_binary=wordcloud(items)
+  wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)   
+  Mood = document.get("MoodKeyWord", "")
+  for i in Mood:
+    if i in MoodKeyword:
+      MoodKeyword[i] += 1
+    else:
+      MoodKeyword[i] = 1
+  arr = sorted(MoodKeyword.items(),key= lambda x: x[1], reverse=True)
+  if length < HotKeywordCount:
+    KeywordData = {
+      "HotKeywords": arr[:length],
+    }
+  else:
+    KeywordData = {
+      "HotKeywords": arr[:HotKeywordCount],
+    }
+  keyword.update_one({},{"$set":KeywordData},upsert=True)
+  return mood_word+mood_factor
    
    
 # Keywords: 期中考, 准备, 焦虑, 下雨, 鸟屎, 衰, 派对, 朋友, 聊天, 尴尬, 孤独
