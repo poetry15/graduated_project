@@ -592,13 +592,15 @@ function pushMsg() {
     },
     body: JSON.stringify(formData),
   })
-    .then(response => {
+    .then(response => response.json())
+    .then(data => {
       message['messages'][0]['contents']['body']['contents'].insert(1, {
         type: "image",
-        url: response.data.image,
+        url: data.image,
         size: "full",
         aspectRatio: "1792:1024",
       });
+
       fetch(url + '/send-message', {
         method: 'POST',
         headers: {
@@ -616,6 +618,7 @@ function pushMsg() {
     .then(data => {
       alert("已成功送出表單");
       console.log(data);
+      liff.closeWindow();
       // window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
     })
     .catch(error => {
