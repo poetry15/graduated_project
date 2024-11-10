@@ -194,6 +194,7 @@ def save_data():
 		formdata.insert_one(form_data)
 		dealSingleData(form_data)
 		imageUrl = imageGenerate(form_data["MoodColor"])
+		# imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
 		image.insert_one({'image':imageUrl})
 		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl })
 		return jsonify({"message": "Data saved", "data": dumps(form_data),"image": imageUrl}), 201
