@@ -90,6 +90,7 @@ let emotionFactor = [];
 let emotionFactor_count = 0; // 確認有選擇的情緒因子數量，用來判斷是否可以送出表單
 let moodscore = 0; // 情緒分數
 let moodPlace = 0; // 情緒分數的位置
+let currentColor = "#8ac926"; // 當前背景顏色
 let userId = "no";
 let alert_message = "";
 
@@ -127,7 +128,7 @@ function changebgcolor() {
 
   
   // document.getElementById("test123").innerHTML = String(value) + " " + String(percentageBetween) +" " + String(moodscore);
-  const currentColor = interpolateColor(
+  currentColor = interpolateColor(
     colors[moodPlace],
     colors[moodPlace + 1] || colors[moodPlace],
     percentageBetween
@@ -135,6 +136,7 @@ function changebgcolor() {
 
   // 更新背景顏色
   body.style.backgroundColor = currentColor;
+  document.getElementById("test").innerHTML = currentColor;
 }
 
 function interpolateColor(color1, color2, fraction) {
