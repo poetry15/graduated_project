@@ -248,7 +248,7 @@
     }
 
     function initializeWebSocket() {
-      socket = io(url);
+      socket = io(url, { transports: ['websocket'] });
       socket.on('connect', () => {
         socket.emit('message',{action: 'initMap'});
         socket.emit('message',{action: 'socketID',data:JSON.stringify({
