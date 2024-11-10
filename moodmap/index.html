@@ -481,7 +481,7 @@
 		window.fetch = customFetch;
     
     document.addEventListener('DOMContentLoaded', async() => {
-      //await initializeLiff(); // 初始化 LIFF
+      await initializeLiff(); // 初始化 LIFF
       await InitializePage();
       initializeWebSocket();
 
