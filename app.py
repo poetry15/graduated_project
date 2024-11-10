@@ -47,6 +47,7 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
+exit_flag = False
 
 # QRcode
 @app.route('/', methods=['GET'])
@@ -151,21 +152,22 @@ def handle_message(data):
 
 @socketio.on('disconnect')
 def handle_disconnect():
-	sid = request.sid
-	if sid in session_ID:
-		session_data = json.loads(session_ID[sid])
-		if moodmap.count_documents({"LineID": session_data["LineID"]}) > 0:
-			try:
-				response = requests.post(
-					os.getenv("url") + "/moodmap",
-					json=session_data
-				)
-				if response.status_code == 200:
-					print("成功發送資料到 /moodmap")
-				else:
-					print("發送資料到 /moodmap 失敗", response.status_code, response.text)
-			except requests.exceptions.RequestException as e:
-				print("請求 /moodmap 時出錯:", e)
+	if (exit_flag):
+		sid = request.sid
+		if sid in session_ID:
+			session_data = json.loads(session_ID[sid])
+			if moodmap.count_documents({"LineID": session_data["LineID"]}) > 0:
+				try:
+					response = requests.post(
+						os.getenv("url") + "/moodmap",
+						json=session_data
+					)
+					if response.status_code == 200:
+						print("成功發送資料到 /moodmap")
+					else:
+						print("發送資料到 /moodmap 失敗", response.status_code, response.text)
+				except requests.exceptions.RequestException as e:
+					print("請求 /moodmap 時出錯:", e)
 
 	# 清理 session_ID 中的 sid 紀錄
 	del session_ID[sid]
