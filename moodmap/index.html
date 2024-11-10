@@ -448,7 +448,7 @@
     }
     async function initializeLiff() {
       try {
-        await liff.init({ liffId: "2004371526-QNE54xpZ" });
+        await liff.init({ liffId: "2004371526-QNE54xpZ",withLoginOnExternalBrowser: true  });
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
