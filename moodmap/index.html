@@ -451,7 +451,7 @@
     }
     async function initializeLiff() {
       try {
-        await liff.init({ liffId: "2004371526-QNE54xpZ" });
+        await liff.init({ liffId: "2004371526-QNE54xpZ",withLoginOnExternalBrowser: true  });
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
@@ -462,7 +462,24 @@
         console.error("LIFF initialization failed", error);
       }
     }
+    
+    const originalFetch = window.fetch;
 
+		// 自定義的 fetch 函數
+		function customFetch(URL, options) {
+			// 確保 URL 是字符串
+			if (typeof URL === 'object' && URL !== null)
+				URL = URL.toString();
+			// 檢查 URL 是否符合條件
+			if (URL.startsWith('https://liffsdk.line-scdn.net/xlt/') && URL.endsWith('.json'))
+				URL = URL + '?ts=' + Math.random();
+
+			// 調用原始的 fetch 函數
+			return originalFetch(URL, options);
+		}
+		// 替換 window.fetch 為自定義的 fetch 函數
+		window.fetch = customFetch;
+    
     document.addEventListener('DOMContentLoaded', async() => {
       //await initializeLiff(); // 初始化 LIFF
       await InitializePage();

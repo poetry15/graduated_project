@@ -592,13 +592,15 @@ function pushMsg() {
     },
     body: JSON.stringify(formData),
   })
-    .then(response => {
-      message['messages'][0]['contents']['body']['contents'].insert(1, {
+    .then(response => response.json())
+    .then(data => {
+      message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
         type: "image",
-        url: response.data.image,
+        url: data.image,
         size: "full",
         aspectRatio: "1792:1024",
       });
+
       fetch(url + '/send-message', {
         method: 'POST',
         headers: {
@@ -616,7 +618,8 @@ function pushMsg() {
     .then(data => {
       alert("已成功送出表單");
       console.log(data);
-      window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
+      liff.closeWindow();
+      // window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
     })
     .catch(error => {
       console.error('There has been a problem with your fetch operation:', error);
