@@ -351,13 +351,13 @@
         document.querySelectorAll('.middle-item').forEach(item => {
           item.addEventListener('click', () => {
             if( item.id in put_color){
-              item.style.backgroundColor = (map[item.id - 1] - 1) >= 0 ? color[map[item.id - 1] - 1] : 'white';
+              item.style.backgroundColor = 'white';
               delete put_color[item.id];
               point++;
               updatePointDisplay(point);
             }
             else if(point > 0){
-              if (item.style.backgroundColor != color[MoodColor]) {
+              if (item.style.backgroundColor == 'white') {
                 item.style.backgroundColor = color[MoodColor];
                 put_color[item.id] = data["MoodValue"];
                 point--;
@@ -373,7 +373,7 @@
       point += Object.keys(put_color).length;
       Object.entries(put_color).forEach(([id, color]) => {
         const gridItem = document.getElementById(id);
-        gridItem.style.backgroundColor = (map[id - 1] - 1) >= 0 ? color[map[id - 1] - 1] : 'white';
+        gridItem.style.backgroundColor = 'white';
       });
       put_color = {};
     }
@@ -382,7 +382,7 @@
       while(point != 0) {
         const randomIndex = Math.floor(Math.random() * 36) + 1;
         const gridItem = document.getElementById(String(randomIndex));
-        if (gridItem.style.backgroundColor != color[MoodColor]) {
+        if (gridItem.style.backgroundColor == 'white') {
           gridItem.style.backgroundColor = color[MoodColor];
           put_color[randomIndex] = MoodColor+1;
           point--;
