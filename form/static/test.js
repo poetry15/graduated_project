@@ -584,6 +584,14 @@ function pushMsg() {
   console.log(message);
 
   const formData = getformData(emotionFactor_without_emoji);
+  Swal.fire({
+    title: '處理中...',
+    text: '請稍候',
+    allowOutsideClick: false, // 防止用戶點擊外部關閉
+    didOpen: () => {
+      Swal.showLoading(); // 顯示內建的 loading 動畫
+    }
+  });
 
   fetch(url + '/api', {
     method: 'POST',
@@ -616,9 +624,7 @@ function pushMsg() {
         });
     })
     .then(data => {
-      alert("已成功送出表單");
       console.log(data);
-      liff.closeWindow();
       // window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
     })
     .catch(error => {
@@ -635,6 +641,12 @@ function pushMsg() {
       LineID: userId,
       MoodValue: moodscore,
     }),
+  });
+
+  Swal.fire({
+    icon: 'success',
+    title: '操作完成',
+    text: '您的請求已成功處理！'
   });
 }
 
