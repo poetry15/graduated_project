@@ -332,9 +332,9 @@ def round_photo_generator(pixeled_image, avg_mood_score):
 
     return combine_url
 
-# if __name__ == "__main__":
-    # img_url = "https://i.imgur.com/QuwUUPR.png"
-    # pixeled_image = read_image_from_url(img_url)
+if __name__ == "__main__":
+    img_url = "https://i.imgur.com/QuwUUPR.png"
+    pixeled_image = read_image_from_url(img_url)
     # url = "https://i.ibb.co/YDY1b0g/img6-resize.png"
     # pixeled_image = cv2.imread('./img41.png')
-    # round_photo_generator(pixeled_image, 0)
+    round_photo_generator(pixeled_image, 0)
