@@ -593,64 +593,62 @@ function pushMsg() {
     }
   });
 
-  fetch(url + '/api', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData),
-  })
-    .then(response => response.json())
-    .then(data => {
-      message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
-        type: "image",
-        url: data.image,
-        size: "full",
-        aspectRatio: "1792:1024",
-      });
-
-      fetch(url + '/send-message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(message),
-      })
-        .then(response => {
-          console.log('訊息發送成功:', response.data);
-        })
-        .catch(error => {
-          console.error('訊息發送失敗:', error.response ? error.response.data : error.message);
+  Promise.all([
+    fetch(url + '/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
+          type: "image",
+          url: data.image,
+          size: "full",
+          aspectRatio: "1792:1024",
         });
+  
+        return fetch(url + '/send-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(message),
+        });
+      })
+      .then(response => {
+        console.log('訊息發送成功:', response);
+      })
+      .catch(error => {
+        console.error('訊息發送失敗:', error);
+      }),
+  
+    fetch(url + '/moodmap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        randomPoints: randomPoints,
+        LineID: userId,
+        MoodValue: moodscore,
+      }),
+    }).catch(error => {
+      console.error('Moodmap 傳送失敗:', error);
     })
-    .then(data => {
-      console.log(data);
-      // window.location.href = "https://liff.line.me/2006550418-0v2pJrAN";
-    })
-    .catch(error => {
-      console.error('There has been a problem with your fetch operation:', error);
-    });
-
-  fetch(url+'/moodmap',{
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      randomPoints: randomPoints,
-      LineID: userId,
-      MoodValue: moodscore,
-    }),
-  })
+  ])
   .then(() => {
     Swal.fire({
       icon: 'success',
-      title: '情緒轉換完成',
-      text: '請前往心情地圖進行創作吧!'
-    })
-    .then(() => {
-      liff.closeWindow();
+      title: '轉換完成'
     });
+  })
+  .catch(error => {
+    Swal.fire({
+      icon: 'error',
+      title: '錯誤',
+      text: '請求處理過程中發生錯誤，請稍後再試！'
+    });
+    console.error('There has been a problem with your fetch operation:', error);
+  })
+  .finally(() => {
+    liff.closeWindow();
   });
   
 }
