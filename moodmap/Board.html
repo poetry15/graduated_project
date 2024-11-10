@@ -173,7 +173,7 @@
     </div>
     <button id="clear" class="my-2 btn btn-primary d-none" onclick="clearMapData()">清除</button>
     <button id="submit" class="my-2 btn btn-primary d-none" onclick="sendMapData()">提交</button>
-    <!-- <button onclick="captureImage()">Capture Image</button> -->
+    <button onclick="captureImage()">Capture Image</button>
     <canvas id="canvas" style="display:none;"></canvas>
   </div>
   
@@ -182,11 +182,8 @@
       const middleDiv = document.querySelector('.middle');
       html2canvas(middleDiv, { scale:10 }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = 'grid.png';
-        link.click();
       });
+      return imgData;
     }
   </script>
   <script>
@@ -238,8 +235,7 @@
           });
         }
         if(data.action == 'finish') {
-          captureImage();
-          socket.emit('message',{action:'finish'})
+          socket.emit('message',{action:'finish','img': captureImage()});
         }
         if (data.action == 'initMap') {
           let index = 0;
