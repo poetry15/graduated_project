@@ -137,7 +137,7 @@ function changebgcolor() {
   // 更新背景顏色
   body.style.backgroundColor = currentColor;
   
-  document.getElementById("test").innerHTML = currentColor + RGBTohex(currentColor);
+  document.getElementById("test").innerHTML = currentColor + ", " +  RGBTohex(currentColor);
 }
 
 function interpolateColor(color1, color2, fraction) {
@@ -158,11 +158,13 @@ function hexToRGB(hex) {
 }
 
 function RGBTohex(rgb) {
-  const [_, r, g, b] = rgb;
-  
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b
-    .toString(16)
-    .padStart(2, "0")}`;
+  // 使用正則表達式解析 rgba 字串，忽略透明度
+  const result = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (!result) return null;
+
+  const [_, r, g, b] = result;
+
+  return `#${parseInt(r).toString(16).padStart(2, "0")}${parseInt(g).toString(16).padStart(2, "0")}${parseInt(b).toString(16).padStart(2, "0")}`;
 }
 
 // 更新第一頁的情緒關鍵字
