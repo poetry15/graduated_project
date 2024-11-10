@@ -585,7 +585,7 @@ function pushMsg() {
 
   const formData = getformData(emotionFactor_without_emoji);
   Swal.fire({
-    title: '處理中...',
+    title: '情緒轉換中...',
     text: '請稍候',
     allowOutsideClick: false, // 防止用戶點擊外部關閉
     didOpen: () => {
@@ -645,11 +645,13 @@ function pushMsg() {
   .then(() => {
     Swal.fire({
       icon: 'success',
-      title: '操作完成',
-      text: '您的請求已成功處理！'
+      title: '情緒轉換完成',
+      text: '請前往心情地圖進行創作吧!'
+    })
+    .then(() => {
+      liff.closeWindow();
     });
   });
-
   
 }
 
