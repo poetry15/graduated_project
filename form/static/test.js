@@ -158,7 +158,7 @@ function hexToRGB(hex) {
 }
 
 function RGBTohex(rgb) {
-  const [r, g, b] = rgb;
+  const [r, g, b] = rgb.slice(0, 3);
   
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b
     .toString(16)
