@@ -148,7 +148,7 @@ function interpolateColor(color1, color2, fraction) {
   const g = Math.round(g1 + (g2 - g1) * fraction);
   const b = Math.round(b1 + (b2 - b1) * fraction);
 
-  return `rgb(${r}, ${g}, ${b}, 0.38)`;
+  return `rgba(${r}, ${g}, ${b}, 0.38)`;
 }
 function hexToRGB(hex) {
   let r = parseInt(hex.slice(1, 3), 16);
@@ -158,7 +158,7 @@ function hexToRGB(hex) {
 }
 
 function RGBTohex(rgb) {
-  const [r, g, b] = rgb.slice(0, 3);
+  const [_, r, g, b] = rgb;
   
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b
     .toString(16)
