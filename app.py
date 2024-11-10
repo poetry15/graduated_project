@@ -1,6 +1,8 @@
 from flask import Flask, request, abort, jsonify, send_file,render_template
 from flask_socketio import SocketIO,emit
-from moodmap.Exterior import imageGenerate
+from moodmap.Exterior import imageGenerate, upload_image_to_imgur
+from gen_round.gen import round_photo_generator
+import cv2
 from WordCloud.WordCloud import dealAllData, dealSingleData
 from pymongo import MongoClient
 import requests,os
@@ -141,6 +143,11 @@ def handle_message(data):
 		emit('message', {'action': 'updateMap', 'map': map_updates},broadcast=True)
 	elif action == 'socketID':
 		session_ID[request.sid] = data['data']
+	elif action == 'fininsh':
+		image_url = upload_image_to_imgur(data['image'])
+		pixeled_image = cv2.read_image_from_url(image_url)
+		url = round_photo_generator(pixeled_image, 0)
+		send_images_to_users(url)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -219,6 +226,7 @@ def send_message():
 #moodmap
 @app.route("/moodmap",methods=["POST"])
 def NowStep():
+	global userid_list
 	try:
 		Info = request.json
 		print(Info)
@@ -234,10 +242,8 @@ def NowStep():
 			print("12筆資料已經收集完畢")
 			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
 			lastest_image = image.find().sort("_id", 1).limit(12)
-			user_ids=[entry["LineID"].split('-')[0] for entry in lastest_data]
+			userid_list =[entry["LineID"].split('-')[0] for entry in lastest_data]
 			socketio.emit('message', {'action': 'finish'})
-			
-			send_images_to_users(user_ids)
 			delete_image = [record["_id"] for record in lastest_image]
 			image.delete_many({"_id": {"$in": delete_image}})
 			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})
@@ -246,14 +252,14 @@ def NowStep():
 		print(error)
 		return jsonify({"error": str(error)}), 500
 
-def send_images_to_users(user_id):
+def send_images_to_users(user_id,url):
 	for user in user_id:
 		data = {
 			"to": user,
 			"messages": [{
 				"type": "image",
-				"originalContentUrl": url+"/picture",
-				"previewImageUrl": url+"/picture",
+				"originalContentUrl": url,
+				"previewImageUrl": url,
 				"size": "full",
 				"aspectRatio": "1792:1024",
 			}]
