@@ -63,9 +63,9 @@ const emotionalFactors = [
   // 第一區：個人健康與心理
   { label: "健康 ❤️", value: "health" },
   { label: "運動 🏃‍♂️", value: "fitness" },
-  { label: "自我照顧🛌", value: "selfCare" },
+  { label: "自我照顧 🛌", value: "selfCare" },
   { label: "嗜好 🎨", value: "hobby" },
-  { label: "身分認同👤", value: "identity" },
+  { label: "身分認同 👤", value: "identity" },
   { label: "心靈 🌿", value: "mindfulness" },
 
   // 第二區：人際關係與社交生活
@@ -585,7 +585,7 @@ function pushMsg() {
 
   const formData = getformData(emotionFactor_without_emoji);
   Swal.fire({
-    title: '處理中...',
+    title: '情緒轉換中...',
     text: '請稍候',
     allowOutsideClick: false, // 防止用戶點擊外部關閉
     didOpen: () => {
@@ -645,11 +645,13 @@ function pushMsg() {
   .then(() => {
     Swal.fire({
       icon: 'success',
-      title: '操作完成',
-      text: '您的請求已成功處理！'
+      title: '情緒轉換完成',
+      text: '請前往心情地圖進行創作吧!'
+    })
+    .then(() => {
+      liff.closeWindow();
     });
   });
-
   
 }
 
