@@ -4,3 +4,4 @@
 /generate_pic
 startup.py
 .gitignore
+.env
