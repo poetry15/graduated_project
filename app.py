@@ -168,9 +168,8 @@ def handle_disconnect():
 						print("發送資料到 /moodmap 失敗", response.status_code, response.text)
 				except requests.exceptions.RequestException as e:
 					print("請求 /moodmap 時出錯:", e)
-
-	# 清理 session_ID 中的 sid 紀錄
-	del session_ID[sid]
+		# 清理 session_ID 中的 sid 紀錄
+		del session_ID[sid]
 
 
 # WordCloud
