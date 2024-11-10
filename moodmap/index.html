@@ -248,7 +248,7 @@
     }
 
     function initializeWebSocket() {
-      socket = io('http://127.0.0.1:5000');
+      socket = io(url);
       socket.on('connect', () => {
         socket.emit('message',{action: 'initMap'});
         socket.emit('message',{action: 'socketID',data:JSON.stringify({
