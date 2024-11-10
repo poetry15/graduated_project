@@ -226,7 +226,7 @@
     let point = 0;
     let MoodColor = 0;
     let imgindex = 0;
-    let userID = 'U2d202d4aa5fcc4d1d0fa9eb9285180b7';
+    let userID = 'U4056b009decf9433dc93b6779b1987ba';
 
     async function FetchData() {
       try {
@@ -373,7 +373,7 @@
       point += Object.keys(put_color).length;
       Object.entries(put_color).forEach(([id, color]) => {
         const gridItem = document.getElementById(id);
-        gridItem.style.backgroundColor = 'white';
+        gridItem.style.backgroundColor = color[map[id-1]-1];
       });
       put_color = {};
     }
