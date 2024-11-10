@@ -225,7 +225,7 @@
     let point = 0;
     let MoodColor = 0;
     let imgindex = 0;
-    let userID = 'Ub7fe68bf38f28778c64804d00fe58518/8';
+    let userID = 'U2d202d4aa5fcc4d1d0fa9eb9285180b7';
 
     async function FetchData() {
       try {
@@ -248,7 +248,7 @@
     }
 
     function initializeWebSocket() {
-      socket = io(url);
+      socket = io(url, { transports: ['websocket'] });
       socket.on('connect', () => {
         socket.emit('message',{action: 'initMap'});
         socket.emit('message',{action: 'socketID',data:JSON.stringify({
@@ -337,6 +337,9 @@
           document.getElementById('submit').classList.remove('d-none');
           document.getElementById('hint').classList.remove('d-none');
           const middle = document.querySelector('.middle');
+          const grid_container = document.querySelector('.grid-container');
+          grid_container.style.width = '200px';
+          grid_container.style.height = '200px';
           middle.style.gridColumn = '1 / span 4';
           middle.style.gridRow = '1 / span 4';
         }
@@ -461,7 +464,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', async() => {
-      await initializeLiff(); // 初始化 LIFF
+      //await initializeLiff(); // 初始化 LIFF
       await InitializePage();
       initializeWebSocket();
 

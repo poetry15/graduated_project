@@ -630,7 +630,7 @@ function pushMsg() {
     body: JSON.stringify({
       randomPoints: randomPoints,
       LineID: userId,
-      MoodVaule: moodscore,
+      MoodValue: moodscore,
     }),
   });
 }
