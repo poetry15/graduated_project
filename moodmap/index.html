@@ -351,7 +351,7 @@
         document.querySelectorAll('.middle-item').forEach(item => {
           item.addEventListener('click', () => {
             if( item.id in put_color){
-              item.style.backgroundColor = color[map[item.id-1]-1];
+              item.style.backgroundColor = (map[item.id - 1] - 1) >= 0 ? color[map[item.id - 1] - 1] : 'white';
               delete put_color[item.id];
               point++;
               updatePointDisplay(point);
@@ -373,7 +373,7 @@
       point += Object.keys(put_color).length;
       Object.entries(put_color).forEach(([id, color]) => {
         const gridItem = document.getElementById(id);
-        gridItem.style.backgroundColor = color[map[id-1]-1];
+        gridItem.style.backgroundColor = (map[id - 1] - 1) >= 0 ? color[map[id - 1] - 1] : 'white';
       });
       put_color = {};
     }
