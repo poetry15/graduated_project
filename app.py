@@ -235,7 +235,8 @@ def NowStep():
 			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
 			lastest_image = image.find().sort("_id", 1).limit(12)
 			user_ids=[entry["LineID"].split('-')[0] for entry in lastest_data]
-			print(user_ids)
+			socketio.emit('message', {'action': 'finish'})
+			
 			send_images_to_users(user_ids)
 			delete_image = [record["_id"] for record in lastest_image]
 			image.delete_many({"_id": {"$in": delete_image}})

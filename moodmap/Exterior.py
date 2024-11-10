@@ -29,7 +29,7 @@ def imagePromptGenerate(keywords):
 def imageGenerate(keywords):
   response = openai.images.generate(
     model="dall-e-3",
-    prompt= f"Generate a landscape image with a predominant {keywords} color scheme. The scene should showcase natural beauty, with {keywords} as the central theme throughout the environment. Use soft gradients, detailed textures, and a harmonious composition that evokes a peaceful and immersive atmosphere. The {keywords} should enhance the visual appeal, creating depth and tranquility in the landscape.",
+    prompt= f"Generate a landscape image with a predominant {keywords} color scheme and no palette. The scene should showcase natural beauty, with {keywords} as the central theme throughout the environment. Use soft gradients, detailed textures, and a harmonious composition that evokes a peaceful and immersive atmosphere. The {keywords} should enhance the visual appeal, creating depth and tranquility in the landscape.",
     size="1024x1024",
     quality="standard",
     n=1,

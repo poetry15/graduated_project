@@ -641,13 +641,16 @@ function pushMsg() {
       LineID: userId,
       MoodValue: moodscore,
     }),
+  })
+  .then(() => {
+    Swal.fire({
+      icon: 'success',
+      title: '操作完成',
+      text: '您的請求已成功處理！'
+    });
   });
 
-  Swal.fire({
-    icon: 'success',
-    title: '操作完成',
-    text: '您的請求已成功處理！'
-  });
+  
 }
 
 document.addEventListener('DOMContentLoaded', function () {

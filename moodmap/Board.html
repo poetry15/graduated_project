@@ -117,35 +117,6 @@
   </style>
 </head>
 <body>
-  <div id="carouselExampleIndicators" class="carousel slide d-none" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="./grid.png" class="d-block w-25" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="./grid.png" class="d-block  w-25" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="./grid.png" class="d-block  w-25" alt="...">
-      </div>
-    </div>
-    <button id="prevButton" class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev" style="display: none;">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button id="nextButton" class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  </div>
-
-  <button id="confirmButton" class="btn btn-primary" style="display: none;" onclick="">確定</button>
-
   <div class="container mt-4">
     <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
     <div class="grid-container">
@@ -219,7 +190,6 @@
     }
   </script>
   <script>
-    const map = [];
     const color = ["rgb(106, 76, 147)", "rgb(25, 130, 196)", "rgb(138, 201, 38)", "rgb(255, 202, 58)", "rgb(255, 89, 94)"];
     let put_color = {};
     let socket;
@@ -267,9 +237,12 @@
             gridItem.style.backgroundColor = color[item.color-1];
           });
         }
+        if(data.action == 'finish') {
+          captureImage();
+          socket.emit('message',{action:'finish'})
+        }
         if (data.action == 'initMap') {
           let index = 0;
-          map = data.map;
           data.map.forEach((item) => {
             const gridItem = document.getElementById(String(++index));
             gridItem.style.backgroundColor = color[item-1];
@@ -351,7 +324,7 @@
         document.querySelectorAll('.middle-item').forEach(item => {
           item.addEventListener('click', () => {
             if( item.id in put_color){
-              item.style.backgroundColor = color[map[item.id-1]-1];
+              item.style.backgroundColor = "white";
               delete put_color[item.id];
               point++;
               updatePointDisplay(point);
@@ -483,7 +456,7 @@
 		window.fetch = customFetch;
     
     document.addEventListener('DOMContentLoaded', async() => {
-      await initializeLiff(); // 初始化 LIFF
+      // await initializeLiff(); // 初始化 LIFF
       await InitializePage();
       initializeWebSocket();
 
