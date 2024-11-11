@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <title>心情地圖</title>
-  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="../config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vconsole@3.2.0/dist/vconsole.min.js"></script>
-  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  <script>
+  <head>
+    <title>心情地圖</title>
+    <meta charset="utf-8" name="viewport"
+      content="width=device-width, initial-scale=1">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+      rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css"
+      rel="stylesheet">
+    <script
+      src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="../config.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/vconsole@3.2.0/dist/vconsole.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
     var vConsole = new VConsole();
   </script>
-  <style>
+    <style>
     .grid-container {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -106,8 +114,8 @@
       grid-row: 1 / span 4;*/
       background-color: white;
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      grid-template-rows: repeat(6, 1fr);
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
     }
     .middle-item {
       height: 100%;
@@ -116,98 +124,138 @@
       background-color: white;
     }
   </style>
-</head>
-<body>
-  <div id="carouselExampleIndicators" class="carousel slide d-none" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </head>
+  <body>
+    <div id="carouselExampleIndicators" class="carousel slide d-none"
+      data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators"
+          data-bs-slide-to="0" class="active" aria-current="true"
+          aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators"
+          data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators"
+          data-bs-slide-to="2" aria-label="Slide 3"></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="./grid.png" class="d-block w-25" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="./grid.png" class="d-block  w-25" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="./grid.png" class="d-block  w-25" alt="...">
+        </div>
+      </div>
+      <button id="prevButton" class="carousel-control-prev" type="button"
+        data-bs-target="#carouselExampleIndicators" data-bs-slide="prev"
+        style="display: none;">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button id="nextButton" class="carousel-control-next" type="button"
+        data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="./grid.png" class="d-block w-25" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="./grid.png" class="d-block  w-25" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="./grid.png" class="d-block  w-25" alt="...">
-      </div>
-    </div>
-    <button id="prevButton" class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev" style="display: none;">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button id="nextButton" class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  </div>
 
-  <button id="confirmButton" class="btn btn-primary" style="display: none;" onclick="">確定</button>
+    <button id="confirmButton" class="btn btn-primary" style="display: none;"
+      onclick>確定</button>
 
-  <div class="container mt-4">
-    <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
-    <div class="grid-container">
-      <div class="grid-item item-1" id="item1"></div>
-      <div class="grid-item item-2" id="item2"></div>
-      <div class="grid-item item-3" id="item3"></div>
-      <div class="grid-item item-4" id="item4"></div>
-      <div class="grid-item item-5" id="item5"></div>
-      <div class="grid-item item-6" id="item6"></div>
-      <div class="grid-item item-7" id="item7"></div>
-      <div class="grid-item item-8" id="item8"></div>
-      <div class="grid-item item-9" id="item9"></div>
-      <div class="grid-item item-10" id="item10"></div>
-      <div class="grid-item item-11" id="item11"></div>
-      <div class="grid-item item-12" id="item12"></div>
-      <div class="grid-item middle">
-        <div class="middle-item" id="1"></div>
-        <div class="middle-item" id="2"></div>
-        <div class="middle-item" id="3"></div>
-        <div class="middle-item" id="4"></div>
-        <div class="middle-item" id="5"></div>
-        <div class="middle-item" id="6"></div>
-        <div class="middle-item" id="7"></div>
-        <div class="middle-item" id="8"></div>
-        <div class="middle-item" id="9"></div>
-        <div class="middle-item" id="10"></div>
-        <div class="middle-item" id="11"></div>
-        <div class="middle-item" id="12"></div>
-        <div class="middle-item" id="13"></div>
-        <div class="middle-item" id="14"></div>
-        <div class="middle-item" id="15"></div>
-        <div class="middle-item" id="16"></div>
-        <div class="middle-item" id="17"></div>
-        <div class="middle-item" id="18"></div>
-        <div class="middle-item" id="19"></div>
-        <div class="middle-item" id="20"></div>
-        <div class="middle-item" id="21"></div>
-        <div class="middle-item" id="22"></div>
-        <div class="middle-item" id="23"></div>
-        <div class="middle-item" id="24"></div>
-        <div class="middle-item" id="25"></div>
-        <div class="middle-item" id="26"></div>
-        <div class="middle-item" id="27"></div>
-        <div class="middle-item" id="28"></div>
-        <div class="middle-item" id="29"></div>
-        <div class="middle-item" id="30"></div>
-        <div class="middle-item" id="31"></div>
-        <div class="middle-item" id="32"></div>
-        <div class="middle-item" id="33"></div>
-        <div class="middle-item" id="34"></div>
-        <div class="middle-item" id="35"></div>
-        <div class="middle-item" id="36"></div>
+    <div class="container mt-4">
+      <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
+      <div class="grid-container">
+        <div class="grid-item item-1" id="item1"></div>
+        <div class="grid-item item-2" id="item2"></div>
+        <div class="grid-item item-3" id="item3"></div>
+        <div class="grid-item item-4" id="item4"></div>
+        <div class="grid-item item-5" id="item5"></div>
+        <div class="grid-item item-6" id="item6"></div>
+        <div class="grid-item item-7" id="item7"></div>
+        <div class="grid-item item-8" id="item8"></div>
+        <div class="grid-item item-9" id="item9"></div>
+        <div class="grid-item item-10" id="item10"></div>
+        <div class="grid-item item-11" id="item11"></div>
+        <div class="grid-item item-12" id="item12"></div>
+        <div class="grid-item middle">
+          <div class="middle-item" id="1"></div>
+          <div class="middle-item" id="2"></div>
+          <div class="middle-item" id="3"></div>
+          <div class="middle-item" id="4"></div>
+          <div class="middle-item" id="5"></div>
+          <div class="middle-item" id="6"></div>
+          <div class="middle-item" id="7"></div>
+          <div class="middle-item" id="8"></div>
+          <div class="middle-item" id="9"></div>
+          <div class="middle-item" id="10"></div>
+          <div class="middle-item" id="11"></div>
+          <div class="middle-item" id="12"></div>
+          <div class="middle-item" id="13"></div>
+          <div class="middle-item" id="14"></div>
+          <div class="middle-item" id="15"></div>
+          <div class="middle-item" id="16"></div>
+          <div class="middle-item" id="17"></div>
+          <div class="middle-item" id="18"></div>
+          <div class="middle-item" id="19"></div>
+          <div class="middle-item" id="20"></div>
+          <div class="middle-item" id="21"></div>
+          <div class="middle-item" id="22"></div>
+          <div class="middle-item" id="23"></div>
+          <div class="middle-item" id="24"></div>
+          <div class="middle-item" id="25"></div>
+          <div class="middle-item" id="26"></div>
+          <div class="middle-item" id="27"></div>
+          <div class="middle-item" id="28"></div>
+          <div class="middle-item" id="29"></div>
+          <div class="middle-item" id="30"></div>
+          <div class="middle-item" id="31"></div>
+          <div class="middle-item" id="32"></div>
+          <div class="middle-item" id="33"></div>
+          <div class="middle-item" id="34"></div>
+          <div class="middle-item" id="35"></div>
+          <div class="middle-item" id="36"></div>
+          <div class="middle-item" id="37"></div>
+          <div class="middle-item" id="38"></div>
+          <div class="middle-item" id="39"></div>
+          <div class="middle-item" id="40"></div>
+          <div class="middle-item" id="41"></div>
+          <div class="middle-item" id="42"></div>
+          <div class="middle-item" id="43"></div>
+          <div class="middle-item" id="44"></div>
+          <div class="middle-item" id="45"></div>
+          <div class="middle-item" id="46"></div>
+          <div class="middle-item" id="47"></div>
+          <div class="middle-item" id="48"></div>
+          <div class="middle-item" id="49"></div>
+          <div class="middle-item" id="50"></div>
+          <div class="middle-item" id="51"></div>
+          <div class="middle-item" id="52"></div>
+          <div class="middle-item" id="53"></div>
+          <div class="middle-item" id="54"></div>
+          <div class="middle-item" id="55"></div>
+          <div class="middle-item" id="56"></div>
+          <div class="middle-item" id="57"></div>
+          <div class="middle-item" id="58"></div>
+          <div class="middle-item" id="59"></div>
+          <div class="middle-item" id="60"></div>
+          <div class="middle-item" id="61"></div>
+          <div class="middle-item" id="62"></div>
+          <div class="middle-item" id="63"></div>
+          <div class="middle-item" id="64"></div>
+        </div>
       </div>
+      <button id="clear" class="my-2 btn btn-primary d-none"
+        onclick="clearMapData()">清除</button>
+      <button id="submit" class="my-2 btn btn-primary d-none"
+        onclick="sendMapData()">提交</button>
+      <button id="random" class="my-2 btn btn-primary d-none"
+        onclick="randomChooseGrid()">隨機點數</button>
+      <canvas id="canvas"></canvas>
     </div>
-    <button id="clear" class="my-2 btn btn-primary d-none" onclick="clearMapData()">清除</button>
-    <button id="submit" class="my-2 btn btn-primary d-none" onclick="sendMapData()">提交</button>
-    <button id="random" class="my-2 btn btn-primary d-none"  onclick="randomChooseGrid()">隨機點數</button>
-    <canvas id="canvas"></canvas>
-  </div>
-  
-  <script>
+
+    <script>
     function captureImage() {
       const middleDiv = document.querySelector('.middle');
       html2canvas(middleDiv, { scale:10 }).then(canvas => {
@@ -219,7 +267,7 @@
       });
     }
   </script>
-  <script>
+    <script>
     let map = [];
     const color = ["rgb(106, 76, 147)", "rgb(25, 130, 196)", "rgb(138, 201, 38)", "rgb(255, 202, 58)", "rgb(255, 89, 94)"];
     let put_color = {};
@@ -487,7 +535,7 @@
 		window.fetch = customFetch;
     
     document.addEventListener('DOMContentLoaded', async() => {
-      await initializeLiff(); // 初始化 LIFF
+      //await initializeLiff(); // 初始化 LIFF
       await InitializePage();
       initializeWebSocket();
 
@@ -519,7 +567,6 @@
       });
     });
   </script>
-</body>
+  </body>
 
 </html>
-
