@@ -506,7 +506,7 @@
     
     function randomChooseGrid() {
       while(point != 0) {
-        const randomIndex = Math.floor(Math.random() * 36) + 1;
+        const randomIndex = Math.floor(Math.random() * 64) + 1;
         const gridItem = document.getElementById(String(randomIndex));
         if (!color.includes(gridItem.style.backgroundColor)) {
           gridItem.style.backgroundColor = color[MoodColor];

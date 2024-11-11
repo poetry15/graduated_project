@@ -181,6 +181,7 @@ def dealSingleData(document):
   items.update(MoodFactors)
   All_Keywords.update_one({},{"$set":{"AllKeyWords": items}},upsert=True)
   img_binary=wordcloud(items)
+  print("img_binary", 123)
   wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)   
   Mood = document.get("MoodKeyWord", "")
   for i in Mood:
