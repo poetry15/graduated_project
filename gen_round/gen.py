@@ -60,17 +60,45 @@ def read_image_from_url(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
     }
+    
     # 獲取圖片數據
-    response = requests.get(url,headers=headers)
+    response = requests.get(url, headers=headers)
+    # 檢查 HTTP 狀態碼
+    if response.status_code != 200:
+        print(f"圖片下載失敗，HTTP 狀態碼: {response.status_code}")
+        return
+    
+    # 檢查內容是否非空
+    if len(response.content) == 0:
+        print("圖片下載失敗，回應內容為空")
+        return
+    
+    # 檢查內容的開頭是否包含圖片格式的標識符
+    if response.content[:4] not in [b'\x89PNG', b'\xff\xd8\xff']:
+        print("回應內容看起來不像圖片數據")
+        return
+
     # 將圖片數據轉換成 numpy array
     image_array = np.asarray(bytearray(response.content), dtype=np.uint8)
+    
     # 使用 cv2 解碼圖片
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    
+    # 檢查是否成功解碼圖片
+    if image is None:
+        print("圖片解碼失敗，無法從 URL 讀取圖片")
+        return
+    # 顯示圖片
+    # cv2.imshow("Image", image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    
     return image
 
 def color_preprocessor(image):
     # 使用 OpenCV resize
-    color_palette = cv2.resize(image, (8, 8))
+    color_palette = cv2.resize(image, (6, 6))
+    color_palette = cv2.resize(color_palette, (8, 8), interpolation=cv2.INTER_LINEAR)
     color_palette = cv2.resize(color_palette, (512, 512), interpolation=cv2.INTER_NEAREST)
 
     return color_palette
@@ -250,12 +278,48 @@ def upload_imgBB(image):
         print(f"發生錯誤: {str(e)}")
     return None
 
+def delete_bloack_line(image):
+    height, width = image.shape[:2]
+    grid_size = 6
+    cell_height = height // grid_size
+    cell_width = width // grid_size
+
+    # 創建輸出圖像
+    output_image = np.zeros_like(image)
+
+    # 處理每個網格
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # 計算當前網格的範圍
+            y1 = i * cell_height
+            y2 = (i + 1) * cell_height
+            x1 = j * cell_width
+            x2 = (j + 1) * cell_width
+
+            # 獲取中心點顏色
+            center_y = (y1 + y2) // 2
+            center_x = (x1 + x2) // 2
+            color = image[center_y, center_x]
+
+            # 填充網格
+            output_image[y1:y2, x1:x2] = color
+
+    output_image = cv2.resize(output_image, (512, 512))
+    return output_image
+
 def round_photo_generator(pixeled_image, avg_mood_score):
-    
+    image = delete_bloack_line(pixeled_image)
     image = color_preprocessor(pixeled_image) # 這裡需要放"正方形" 要用來生圖的像素畫
+    cv2.imshow("pixel", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
     url = upload_imgBB(image)
 
     background_img = run_color_model(url)
+    # cv2.imshow("background", background_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     cat_rmbg = run_cat_model(avg_mood_score) # 0 ~ 4
     combine_img = combine_cat_and_background(cat_rmbg, background_img)
@@ -268,7 +332,9 @@ def round_photo_generator(pixeled_image, avg_mood_score):
 
     return combine_url
 
-# if __name__ == "__main__":
-#     # url = "https://i.ibb.co/YDY1b0g/img6-resize.png"
-#     pixeled_image = cv2.imread('./img41.png')
-#     round_photo_generator(pixeled_image, 0)
+if __name__ == "__main__":
+    img_url = "https://i.imgur.com/QuwUUPR.png"
+    pixeled_image = read_image_from_url(img_url)
+    # url = "https://i.ibb.co/YDY1b0g/img6-resize.png"
+    # pixeled_image = cv2.imread('./img41.png')
+    round_photo_generator(pixeled_image, 0)
