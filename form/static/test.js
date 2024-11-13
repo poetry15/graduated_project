@@ -361,7 +361,22 @@ function showEmotionFactor() {
 
 // 掃Qrcode、去 bot get 目前的密碼，兩邊檢查是否正確
 function scancode() {
-  liff.scanCodeV2()
+  Swal.fire({
+    title: '接下來請掃描QRcode',
+    text: '讓我知道你在現場!',
+    icon: "info",
+    allowOutsideClick: false, // 防止用戶點擊外部關閉
+    showDenyButton: true,
+    denyButtonText: `不同意`,
+    confirmButtonText: "同意",
+  })
+  .then(result => {
+    if(result.isConfirmed)
+      alert("開始掃描");
+    else if(result.isDenied)
+      liff.closeWindow();
+  })
+  .then(() => liff.scanCodeV2())
     .then(result => {
       // const resultElement = document.getElementById('result');
       // resultElement.textContent = `QR Code result: ${result.value}`;

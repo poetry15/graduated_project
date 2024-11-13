@@ -32,7 +32,7 @@
         <div id="form1" style="display: block;"> <!-- 表單第一頁 -->
             <input type="range" min="0" max="100" value="50" id="customRange" step="1" name="points">
             <p id="test"></p>
-            <label for="customRange" class="form-label">請先選擇你覺得與你狀態符合的關鍵詞</label>
+            <label for="customRange" class="form-label">請先思考與你現狀符合的關鍵詞</label>
             <div id="moodButtonsContainer">
 				<div id="moodButtonsContainer1"></div>
 				<p style="height: 6px; margin: 0 0;"> </p>
@@ -48,10 +48,11 @@
         <div id="form2" style="display: none;"> <!-- 表單第二頁 -->
             <div id ="MoodTextArea">
                 <p></p>
-                <label class="form-label">說說你的感受吧！選擇影響你最大的原因</label>
+                <label class="form-label">是什麼事情讓你產生這樣子的情緒呢？</label>
                 <div id="EmotionFactorsContainer"></div>
                 <p> </p>
-                <p>能多跟我分享分享嗎? 關鍵字或是完整事件都可以</p>
+                <p>或許你的情緒與上面的原因無關，又或是有更多想分享的內容</p>
+				<p>歡迎補充在這裡！關鍵字或是完整事件都可以(可獲得額外)</p>
                 <!-- 提示文字半透明，輸入文字則正常 -->
                 <textarea id="Text" placeholder="請說說你的感受..." style="opacity: 0.7;" onfocus="this.style.opacity='1';" onblur="this.style.opacity='0.5';"></textarea>
                 <p> </p>
@@ -127,9 +128,9 @@
 			}
 		})
 		.then((ans) => {
-			ans = 'ok';
 			console.log("checkfivemin: " + ans);
 			if(ans == "ok"){
+				
 				return scancode();
 			}
 			else{

@@ -22,7 +22,7 @@ function updateQRCode() {
         refresh_sec = 20;
         console.log("倒數完成，刷新密碼");
         
-        const pw = "https://line.me/R/ti/p/@@084xgtuv?text=" + gen_password(10);
+        const pw = "https://line.me/R/ti/p/@084xgtuv?text=" + gen_password(10);
         const URL = "https://quickchart.io/qr?text=" + pw + "&size=25";
         qrcodeImg.src = URL;
         
