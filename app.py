@@ -134,7 +134,7 @@ def handle_message(data):
 		if map_data:
 			map_values = map_data['map']
 		else:
-			map_values = [0] * 36
+			map_values = [0] * 64
 			db["Map"].insert_one({'map': map_values})
 		emit('message', {'action': 'initMap', 'map': map_values, 'image': image_data})
 
@@ -153,7 +153,7 @@ def handle_message(data):
 			print("12筆資料已經收集完畢")
 			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
 			lastest_image = image.find().sort("_id", 1).limit(12)
-			userid_list =[entry["LineID"].split('-')[0] for entry in lastest_data]
+			userid_list = list(set([entry["LineID"].split('-')[0] for entry in lastest_data]))
 			delete_image = [record["_id"] for record in lastest_image]
 			image.delete_many({"_id": {"$in": delete_image}})
 			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})
@@ -272,7 +272,6 @@ def send_images_to_users(user_id,url):
 			"messages": [{
 				"type": "image",
 				"originalContentUrl": url,
-				"previewImageUrl": url,
 				"size": "full",
 				"aspectRatio": "1792:1024",
 			}]
