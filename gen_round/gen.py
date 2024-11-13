@@ -1,5 +1,6 @@
 import os
 from rembg import remove
+from PIL import Image
 import cv2
 import numpy as np
 import random
@@ -97,9 +98,11 @@ def read_image_from_url(url):
 
 def color_preprocessor(image):
     # 使用 OpenCV resize
-    color_palette = cv2.resize(image, (6, 6))
-    color_palette = cv2.resize(color_palette, (8, 8), interpolation=cv2.INTER_LINEAR)
-    color_palette = cv2.resize(color_palette, (512, 512), interpolation=cv2.INTER_NEAREST)
+    # color_palette = cv2.resize(image, (6, 6))
+    # color_palette = cv2.resize(color_palette, (8, 8), interpolation=cv2.INTER_LINEAR)
+    # color_palette = cv2.resize(color_palette, (512, 512), interpolation=cv2.INTER_NEAREST)
+    color_palette = image.resize((8, 8))
+    color_palette = color_palette.resize((512, 512), resample=Image.Resampling.NEAREST)
 
     return color_palette
 
@@ -308,8 +311,8 @@ def delete_bloack_line(image):
     return output_image
 
 def round_photo_generator(pixeled_image, avg_mood_score):
-    image = delete_bloack_line(pixeled_image)
-    image = color_preprocessor(pixeled_image) # 這裡需要放"正方形" 要用來生圖的像素畫
+    image = delete_bloack_line(pixeled_image)  # 這裡需要放"正方形" 要用來生圖的像素畫
+    # image = color_preprocessor(pixeled_image) 
     # cv2.imshow("pixel", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
