@@ -3,8 +3,7 @@
 
   <head>
     <title>心情地圖</title>
-    <meta charset="utf-8" name="viewport"
-      content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=3">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
       rel="stylesheet">
@@ -125,7 +124,7 @@
   </style>
   </head>
   <body>
-    <div class="container mt-4">
+    <div class="container mt-4" style="transform: scale(3); transform-origin:top left">
       <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
       <div class="grid-container">
         <div class="grid-item item-1" id="item1"></div>
@@ -211,7 +210,7 @@
         onclick="clearMapData()">清除</button>
       <button id="submit" class="my-2 btn btn-primary d-none"
         onclick="sendMapData()">提交</button>
-      <button onclick="captureImage()">Capture Image</button>
+      <!-- <button onclick="captureImage()">Capture Image</button> -->
       <canvas id="canvas" style="display:none;"></canvas>
     </div>
 

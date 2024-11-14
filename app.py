@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, jsonify, send_file,render_template
+from flask import Flask, request, abort, jsonify,render_template
 from flask_socketio import SocketIO,emit
 from moodmap.Exterior import imageGenerate, upload_image_to_imgur
 from gen_round.gen import round_photo_generator, read_image_from_url
@@ -49,7 +49,7 @@ print("url: " + url)
 scancode_flag = False
 check5min_flag = False
 exit_flag = False
-quick_flag = True
+quick_flag = False
 
 # QRcode
 @app.route('/', methods=['GET'])
@@ -135,7 +135,7 @@ def handle_message(data):
 			map_values = map_data['map']
 		else:
 			map_values = [0] * 64
-			db["Map"].insert_one({'map': map_values})
+			db["Map"].insert_one({'map': map_values, 'update_count': 0})
 		emit('message', {'action': 'initMap', 'map': map_values, 'image': image_data})
 
 	elif action == 'updateMap':
@@ -143,13 +143,14 @@ def handle_message(data):
 		for item in map_updates:
 			id = int(item['id'])-1
 			color = item['color']
-			db["Map"].find_one_and_update({}, {"$set": {f"map.{id}": color}}, upsert=True)
+			db["Map"].find_one_and_update({}, {"$set": {f"map.{id}": color}, "$inc": {"update_count": 1}}, upsert=True)
 		emit('message', {'action': 'updateMap', 'map': map_updates},broadcast=True)
-		update_count += 1
-		print(update_count)
+
+		map_data = map_array.find_one()
+		update_count = map_data['update_count']
+
 		if update_count == 12:
 			socketio.emit('message', {'action': 'finish'})
-			update_count = 0
 			print("12筆資料已經收集完畢")
 			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
 			lastest_image = image.find().sort("_id", 1).limit(12)
@@ -158,8 +159,10 @@ def handle_message(data):
 			image.delete_many({"_id": {"$in": delete_image}})
 			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})
 			db.drop_collection("Map")
+
 	elif action == 'socketID':
 		session_ID[request.sid] = data['data']
+
 	elif action == 'finish':
 		image_data_split = data['img'].split(",")[1]
 		image_url = upload_image_to_imgur(image_data_split)
@@ -169,6 +172,7 @@ def handle_message(data):
 		url = round_photo_generator(pixeled_image, 0)
 		print(url)
 		send_images_to_users(userid_list,url)
+		
 @socketio.on('disconnect')
 def handle_disconnect():
 	if (exit_flag):
@@ -272,6 +276,7 @@ def send_images_to_users(user_id,url):
 			"messages": [{
 				"type": "image",
 				"originalContentUrl": url,
+				"previewImageUrl": url,
 				"size": "full",
 				"aspectRatio": "1792:1024",
 			}]

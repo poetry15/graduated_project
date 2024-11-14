@@ -311,8 +311,8 @@ def round_photo_generator(pixeled_image, avg_mood_score):
     image = delete_bloack_line(pixeled_image)
     image = color_preprocessor(pixeled_image) # 這裡需要放"正方形" 要用來生圖的像素畫
     # cv2.imshow("pixel", image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     url = upload_imgBB(image)
 
