@@ -5,7 +5,9 @@ from gen_round.gen import round_photo_generator, read_image_from_url
 from WordCloud.WordCloud import dealAllData, dealSingleData
 from pymongo import MongoClient
 import requests,os
+import threading
 import json
+from bson import ObjectId
 from bson.json_util import dumps
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -22,6 +24,12 @@ import time
 
 app = Flask(__name__)
 CORS(app)
+class JSONEncoder(json.JSONEncoder):
+	def default(self, o):
+		if isinstance(o, ObjectId):
+			return str(o)
+		return json.JSONEncoder.default(self, o)
+app.json_encoder = JSONEncoder
 socketio = SocketIO(app, cors_allowed_origins="*",async_mode='eventlet')
 load_dotenv()
 
@@ -32,7 +40,7 @@ formdata = db["formdatas"]
 parameter = db["parameters"]
 moodmap = db["MoodMap"]
 image = db["ImageMap"]
-map_array = db["Map"]
+map = db["Map"]
 dealAllData()
 
 # LineBot
@@ -40,9 +48,7 @@ channel_access_token = os.getenv("channel_access_token")
 configuration = Configuration(access_token=channel_access_token)
 handler = WebhookHandler(os.getenv("channel_secret"))
 url= os.getenv("url")
-userid_list=[]
 session_ID = {}
-update_count = 0
 print("url: " + url)
 
 # 系統檢查設定開關
@@ -50,6 +56,7 @@ scancode_flag = False
 check5min_flag = False
 exit_flag = False
 quick_flag = False
+people_limit = 12
 
 # QRcode
 @app.route('/', methods=['GET'])
@@ -125,54 +132,52 @@ def handle_connect():
 
 @socketio.on('message')
 def handle_message(data):
-	global update_count,userid_list
+	userid_list = []
 	action = data['action']
-	if action == 'initMap':
-		image_data_list = list(image.find())
-		map_data = db["Map"].find_one()
-		image_data = [img['image'] for img in image_data_list if 'image' in img]
-		if map_data:
-			map_values = map_data['map']
-		else:
-			map_values = [0] * 64
-			db["Map"].insert_one({'map': map_values, 'update_count': 0})
-		emit('message', {'action': 'initMap', 'map': map_values, 'image': image_data})
-
-	elif action == 'updateMap':
+	if action == 'updateMap': # 要記得round_ID
+		round_ID = data['round_ID']
 		map_updates = data['map']
+		update_fields = {}
 		for item in map_updates:
 			id = int(item['id'])-1
 			color = item['color']
-			db["Map"].find_one_and_update({}, {"$set": {f"map.{id}": color}, "$inc": {"update_count": 1}}, upsert=True)
-		emit('message', {'action': 'updateMap', 'map': map_updates},broadcast=True)
+			update_fields[f"map.{id}"] = color
 
-		map_data = map_array.find_one()
+		map_data = db["Map"].find_one_and_update({"_id": ObjectId(round_ID)}, {"$set": update_fields, "$inc": {"update_count": 1}}, upsert=True, return_document=True)
+		emit('message', {'action': 'updateMap', 'map': map_updates, 'round_ID': round_ID},broadcast=True)
 		update_count = map_data['update_count']
 
-		if update_count == 12:
+		if update_count == people_limit:
 			socketio.emit('message', {'action': 'finish'})
-			print("12筆資料已經收集完畢")
-			lastest_data = list(moodmap.find({"randomPoints":0}).sort("_id",1).limit(12))
-			lastest_image = image.find().sort("_id", 1).limit(12)
-			userid_list = list(set([entry["LineID"].split('-')[0] for entry in lastest_data]))
-			delete_image = [record["_id"] for record in lastest_image]
-			image.delete_many({"_id": {"$in": delete_image}})
-			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in lastest_data]}})
-			db.drop_collection("Map")
-
+			print(f"{people_limit}筆資料已經收集完畢")
+			map.find_one_and_update({"_id": ObjectId(round_ID)}, {"$set": {"state": "completed"}})
 	elif action == 'socketID':
 		session_ID[request.sid] = data['data']
 
 	elif action == 'finish':
 		image_data_split = data['img'].split(",")[1]
-		image_url = upload_image_to_imgur(image_data_split)
-		print(image_url)
-		pixeled_image = read_image_from_url(image_url)
-		print("我有在生圖")
-		url = round_photo_generator(pixeled_image, 0)
-		print(url)
-		send_images_to_users(userid_list,url)
+		threading.Thread(target=generate_image, args=(image_data_split, userid_list, round_ID)).start()
 		
+def generate_image(image_data,userid_list, round_ID):
+	try:
+		image_url = upload_image_to_imgur(image_data)
+		pixeled_image = read_image_from_url(image_url)
+		url = round_photo_generator(pixeled_image, 0)
+		print(f"生成的圖片 URL: {url}")
+		send_images_to_users(userid_list,url)
+
+		# 將結束的輪次資料刪除
+		latest_data = list(moodmap.find({"round_ID": round_ID}).sort("_id",1).limit(people_limit))
+		userid_list = list(set([entry["LineID"].split('-')[0] for entry in latest_data]))
+
+		latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
+		delete_image = [record["_id"] for record in latest_image]
+		image.delete_many({"_id": {"$in": delete_image}})
+		moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
+		map.delete_one({"_id": ObjectId(round_ID)})
+	except Exception as e:
+		print(f"生成圖片時出現錯誤: {e}")
+
 @socketio.on('disconnect')
 def handle_disconnect():
 	if (exit_flag):
@@ -220,12 +225,41 @@ def save_data():
 			imageUrl = imageGenerate(form_data["MoodColor"])
 		else:
 			imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
-		image.insert_one({'image':imageUrl})
-		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl })
-		return jsonify({"message": "Data saved", "data": dumps(form_data),"image": imageUrl}), 201
+
+		round_ID = setRound(form_data)
+		image.insert_one({'image':imageUrl, 'Line_ID': form_data['LineID'], 'round_ID': round_ID})
+		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl,'round_ID': round_ID})
+		return jsonify({"message": "Data saved", "image": imageUrl, "round_ID": round_ID}), 201
 	except Exception as error:
 		print("錯誤:", error)
 		return jsonify({"error": "Error saving data"}), 500
+
+def setRound():
+	latest_map = map.find_one_and_update(
+		filter={"state": "active", "people_count": {"$lt": people_limit}},  # 條件：當前狀態為 active 且 people_count 小於 people_limit
+		update={"$inc": {"people_count": 1}},  # 將 people_count 增加 1
+		sort=[("_id", -1)],  # 按照 _id 降序取最新的一筆資料
+		return_document=True  # 返回更新後的文件
+	)
+	round_ID = ''
+
+	if latest_map is None:
+		new_map_info = {
+			"map": [0] * 64,
+			"people_count": 1,
+			"state": "active",
+			"update_count": 0
+		}
+		result = map.insert_one(new_map_info)
+		round_ID = str(result.inserted_id)
+	
+	else:
+		round_ID = str(latest_map["_id"])
+
+	return round_ID
+
+
+
 
 # LineBot回傳情緒紀錄給使用者
 @app.route("/send-message", methods=["POST"])
@@ -253,7 +287,6 @@ def send_message():
 #moodmap
 @app.route("/moodmap",methods=["POST"])
 def NowStep():
-	global userid_list,update_count
 	try:
 		Info = request.json
 		print(Info)
@@ -306,6 +339,31 @@ def get_moodmap():
 	except Exception as e:
 		return str(e), 400
 
+@app.route("/map",methods=["GET"])
+def get_map():
+	try:
+		map_all_info = list(map.find({}))
+		image_all_info = list(image.find({}))
+		if map_all_info or image_all_info:
+			result = {
+				"map": convert_objectid(map_all_info),
+				"image": convert_objectid(image_all_info)
+			}
+			return jsonify(result), 200
+		else:
+			return jsonify([]),200
+	except Exception as e:
+		return str(e), 400
+
+def convert_objectid(data):
+	if isinstance(data, list):
+		return [convert_objectid(item) for item in data]
+	elif isinstance(data, dict):
+		return {key: convert_objectid(value) for key, value in data.items()}
+	elif isinstance(data, ObjectId):
+		return str(data)
+	else:
+		return data
 
 @app.route("/callback", methods=["POST"])
 def callback():

@@ -593,67 +593,67 @@ function pushMsg() {
     }
   });
 
-  Promise.all([
-    fetch(url + '/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then(response => response.json())
-      .then(data => {
-        message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
-          type: "image",
-          url: data.image,
-          size: "full",
-          aspectRatio: "1792:1024",
-        });
-  
-        return fetch(url + '/send-message', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(message),
-        });
-      })
-      .then(response => {
-        console.log('訊息發送成功:', response);
-      })
-      .catch(error => {
-        console.error('訊息發送失敗:', error);
-      }),
-  
-    fetch(url + '/moodmap', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        randomPoints: randomPoints,
-        LineID: userId,
-        MoodValue: moodscore,
-      }),
-    }).catch(error => {
-      console.error('Moodmap 傳送失敗:', error);
-    })
-  ])
-  .then(() => {
-    Swal.fire({
-      icon: 'success',
-      title: '轉換完成',
-      confirmButtonText: "確認"
-    })
-    .then(result => {
-      if(result.isConfirmed){
-        liff.closeWindow();
-      }
-    });
+  fetch(url + '/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData),
   })
-  .catch(error => {
-    Swal.fire({
-      icon: 'error',
-      title: '錯誤',
-      text: '請求處理過程中發生錯誤，請稍後再試！'
+    .then(response => response.json())
+    .then(data => {
+      // 使用從 /api 返回的資料來更新 message
+      message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
+        type: "image",
+        url: data.image,
+        size: "full",
+        aspectRatio: "1024:1024",
+      });
+
+      // 發送 /send-message 請求
+      return fetch(url + '/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(message),
+      });
+    })
+    .then(response => {
+      console.log('訊息發送成功:', response);
+
+      // 當 /api 和 /send-message 完成後，才開始發送 /moodmap
+      return fetch(url + '/moodmap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          randomPoints: randomPoints,
+          LineID: userId,
+          MoodValue: moodscore,
+          roundID: data.roundID
+        }),
+      });
+    })
+    .then(() => {
+      // 所有操作完成後，顯示成功彈窗
+      Swal.fire({
+        icon: 'success',
+        title: '轉換完成',
+        confirmButtonText: "確認"
+      })
+        .then(result => {
+          if (result.isConfirmed) {
+            liff.closeWindow();
+          }
+        });
+    })
+    .catch(error => {
+      // 任何階段的錯誤處理
+      Swal.fire({
+        icon: 'error',
+        title: '錯誤',
+        text: '請求處理過程中發生錯誤，請稍後再試！'
+      });
+      console.error('There has been a problem with your fetch operation:', error);
     });
-    console.error('There has been a problem with your fetch operation:', error);
-  })
-  
+
+
 }
 
 document.addEventListener('DOMContentLoaded', function () {
