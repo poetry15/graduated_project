@@ -61,27 +61,29 @@ const neutraladdi = [...new Set([...sadKeywords, ...happyKeywords].filter(item =
 
 const emotionalFactors = [
   // 第一區：個人健康與心理
-  { label: "健康 ❤️", value: "health" },
-  { label: "運動 🏃‍♂️", value: "fitness" },
-  { label: "自我照顧 🛌", value: "selfCare" },
-  { label: "嗜好 🎨", value: "hobby" },
-  { label: "身分認同 👤", value: "identity" },
-  { label: "心靈 🌿", value: "mindfulness" },
+  // { label: "健康 ❤️", value: "health" },
+  // { label: "運動 🏃‍♂️", value: "fitness" },
+  // { label: "自我照顧 🛌", value: "selfCare" },
+  // { label: "嗜好 🎨", value: "hobby" },
+  // { label: "身分認同 👤", value: "identity" },
+  // { label: "心靈 🌿", value: "mindfulness" },
 
   // 第二區：人際關係與社交生活
-  { label: "家庭 👪", value: "family" },
+  { label: "家人 👪", value: "family" },
   { label: "朋友 👫", value: "friends" },
   { label: "伴侶 💑", value: "partner" },
-  { label: "約會 🌹", value: "dating" },
+  { label: "寵物 🐾", value: "pet" },
 
   // 第三區：日常事務與環境因素
-  { label: "家務 🧺", value: "housework" },
+  { label: "健康 🩺", value: "health" },
+  { label: "飲食 🥤", value: "food" },
+  { label: "家事 🧺", value: "housework" },
   { label: "工作 💼", value: "work" },
   { label: "學習 📚", value: "learn" },
   { label: "旅遊 🌍", value: "travel" },
   { label: "天氣 ☀️", value: "weather" },
   { label: "時事 📰", value: "news" },
-  { label: "金錢 💵", value: "money" },
+  { label: "花費 💵", value: "money" },
 ];
 
 let keyword = [];
@@ -361,7 +363,20 @@ function showEmotionFactor() {
 
 // 掃Qrcode、去 bot get 目前的密碼，兩邊檢查是否正確
 function scancode() {
-  liff.scanCodeV2()
+  Swal.fire({
+    title: '接下來請掃描QRcode',
+    text: '讓我知道你在現場!',
+    icon: "info",
+    allowOutsideClick: false, // 防止用戶點擊外部關閉
+    showDenyButton: true,
+    denyButtonText: "不同意",
+    confirmButtonText: "同意",
+  })
+  .then(result => {
+    if(result.isDenied)
+      liff.closeWindow();
+  })
+  .then(() => liff.scanCodeV2())
     .then(result => {
       // const resultElement = document.getElementById('result');
       // resultElement.textContent = `QR Code result: ${result.value}`;
@@ -404,111 +419,126 @@ function scancode() {
 
 }
 
+function getNextHour() {
+  let date = new Date();
+  date = date.getHours() + 1;
+  if(date >= 24)  date -= 24;
+  return date;
+}
+
 // 創建好要送出的表單
 function flexMessage(randomPoints, emotionFactor_without_emoji) {
   let msg;
   let boxcontext = [{
-    type: "text",
-    text: "目前圖片結果",
-    size: "xl",
-  },
-  // {
-  //   type: "image",
-  //   url: url + "picture",
-  //   size: "full",
-  //   aspectRatio: "1792:1024",
-  // },
-  {
-    type: "text",
-    text: "紀錄時間：" + new Date().toLocaleString(),
-  },
-  {
-    type: "text",
-    text: `情緒分數：` + moodscore,
-  },
-  {
-    type: "text",
-    text: `情緒關鍵詞：${keyword.join(", ")}`,
-    "wrap": true,
-  },];
+      type: "text",
+      text: "目前圖片結果",
+      size: "xl",
+    },
+    {
+      type: "text",
+      text: "紀錄時間：" + new Date().toLocaleString(),
+    },
+    {
+      type: "text",
+      text: `情緒分數：` + moodscore,
+    },
+    {
+      type: 'text',
+      text: `獲得創作積分：${randomPoints}`,
+      size: 'xl',
+    },
+    {
+      "type": "button",
+      "action": {
+        "type": "uri",
+        "label": `請於${getNextHour()}點前點此前往創作`,
+        "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+      },
+    },
+    // {
+    //   type: "text",
+    //   text: `情緒關鍵詞：${keyword.join(", ")}`,
+    //   "wrap": true,
+    // },
+  ];
 
-  if (emotionFactor_count == 0) { // 只輸入情緒文字
-    boxcontext.push(
-      {
-        type: "text",
-        text: `情緒文字：${document.getElementById("Text").value}。`,
-        "wrap": true,
-      },
-      {
-        type: 'text',
-        text: `你所擲出的點數為${randomPoints}`,
-        size: 'xl',
-      },
-      {
-        "type": "button",
-        "action": {
-          "type": "uri",
-          "label": "前往心情地圖開始創作吧!",
-          "uri": "https://liff.line.me/2004371526-QNE54xpZ"
-        },
-      }
-    );
-  }
-  else if (document.getElementById("Text").value == "") { // 只輸入情緒因子
-    boxcontext.push(
-      {
-        type: "text",
-        text: `情緒因子：${emotionFactor_without_emoji.join(", ")}`,
-        "wrap": true,
-      },
-      {
-        type: 'text',
-        text: `你所擲出的點數為${randomPoints}`,
-        size: 'xl',
-      },
-      {
-        "type": "button",
-        "action": {
-          "type": "uri",
-          "label": "前往心情地圖開始創作吧!",
-          "uri": "https://liff.line.me/2004371526-QNE54xpZ"
-        },
-      }
-    );
-  }
-  else { // 全部都有
-    boxcontext.push(
-      {
-        type: "text",
-        text: `情緒文字：${document.getElementById("Text").value}。`,
-        "wrap": true,
-      },
-      {
-        type: "text",
-        text: `情緒因子：${emotionFactor_without_emoji.join(", ")}`,
-        "wrap": true,
-      },
-      {
-        type: 'text',
-        text: `你所擲出的點數為${randomPoints}`,
-        size: 'xl',
-      },
-      {
-        "type": "button",
-        "action": {
-          "type": "uri",
-          "label": "前往心情地圖開始創作吧!",
-          "uri": "https://liff.line.me/2004371526-QNE54xpZ"
-        },
-      });
-  }
+  // if (emotionFactor_count == 0) { // 只輸入情緒文字
+  //   boxcontext.push(
+  //     {
+  //       type: "text",
+  //       text: `情緒文字：${document.getElementById("Text").value}。`,
+  //       "wrap": true,
+  //     },
+  //     {
+  //       type: 'text',
+  //       text: `你所擲出的點數為${randomPoints}`,
+  //       size: 'xl',
+  //     },
+  //     {
+  //       "type": "button",
+  //       "action": {
+  //         "type": "uri",
+  //         "label": "前往心情地圖開始創作吧!",
+  //         "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+  //       },
+  //     }
+  //   );
+  // }
+  // else if (document.getElementById("Text").value == "") { // 只輸入情緒因子
+  //   boxcontext.push(
+  //     {
+  //       type: "text",
+  //       text: `情緒因子：${emotionFactor_without_emoji.join(", ")}`,
+  //       "wrap": true,
+  //     },
+  //     {
+  //       type: 'text',
+  //       text: `你所擲出的點數為${randomPoints}`,
+  //       size: 'xl',
+  //     },
+  //     {
+  //       "type": "button",
+  //       "action": {
+  //         "type": "uri",
+  //         "label": "前往心情地圖開始創作吧!",
+  //         "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+  //       },
+  //     }
+  //   );
+  // }
+  // else { // 全部都有
+  //   boxcontext.push(
+  //     {
+  //       type: "text",
+  //       text: `情緒文字：${document.getElementById("Text").value}。`,
+  //       "wrap": true,
+  //     },
+  //     {
+  //       type: "text",
+  //       text: `情緒因子：${emotionFactor_without_emoji.join(", ")}`,
+  //       "wrap": true,
+  //     },
+  //     {
+  //       type: 'text',
+  //       text: `你所擲出的點數為${randomPoints}`,
+  //       size: 'xl',
+  //     },
+  //     {
+  //       "type": "button",
+  //       "action": {
+  //         "type": "uri",
+  //         "label": "前往心情地圖開始創作吧!",
+  //         "uri": "https://liff.line.me/2004371526-QNE54xpZ"
+  //       },
+  //     });
+  // }
   msg = {
     //Line Flex Message
     to: userId,
     messages: [
       {
         type: "flex",
-        altText: "情緒分析結果",
+        altText: "心情小記",
         contents: {
           type: "bubble",
           body: {
@@ -600,7 +630,6 @@ function pushMsg() {
   })
     .then(response => response.json())
     .then(data => {
-      // 使用從 /api 返回的資料來更新 message
       message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
         type: "image",
         url: data.image,
@@ -608,7 +637,6 @@ function pushMsg() {
         aspectRatio: "1024:1024",
       });
 
-      // 發送 /send-message 請求
       return fetch(url + '/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
