@@ -259,19 +259,6 @@
         onclick="randomChooseGrid()">隨機點數</button>
       <canvas id="canvas"></canvas>
     </div>
-
-    <script>
-    function captureImage() {
-      const middleDiv = document.querySelector('.middle');
-      html2canvas(middleDiv, { scale:10 }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = 'grid.png';
-        link.click();
-      });
-    }
-  </script>
     <script>
     let roundsData = {};
     const color = ["rgb(106, 76, 147)", "rgb(25, 130, 196)", "rgb(138, 201, 38)", "rgb(255, 202, 58)", "rgb(255, 89, 94)"];
@@ -281,7 +268,7 @@
     let MoodColor = 0;
     let imgindex = 0;
     let user_roundID = '';
-    let lasest_roundID = '';
+    let latest_roundID = '';
     let userID = 'U4056b009decf9433dc93b6779b1987ba/1';
 
     async function FetchData() {
@@ -307,75 +294,26 @@
     function initializeWebSocket() {
       socket = io(url, { transports: ['websocket'] });
       socket.on('connect', () => {
-        socket.emit('message',{action: 'socketID',data:JSON.stringify({
-          roundID: user_roundID,
-          LineID: userID,
-          MoodValue: MoodColor+1
-        }),});
-        socket.emit('message',{action: 'initMap'})
+        console.log('connected');
       });
       socket.on ('message', (event) => {
         const data = event;
         console.log(data);
         if (data.action == 'updateMap') {
           data.map.forEach((item) => {
-            const gridItem = document.getElementById(item.id);
-            gridItem.style.backgroundColor = color[item.color-1];
+            roundsData[data.roundID].map[item.id-1] = item.color;
           });
+          if ( latest_roundID === data.roundID)
+            displayMap(latest_roundID)
         }
-        if (data.action == 'initMap') {
-          let index = 0;
-          map = data.map;
-          data.map.forEach((item) => {
-            const gridItem = document.getElementById(String(++index));
-            gridItem.style.backgroundColor = color[item-1];
-          });
-          data.image.forEach((item) => {
-            const gridItem = document.getElementById("item"+String(((imgindex++)%12+1)));
-            const img = document.createElement('img');
-            if (imgindex > 12) {
-              const existingImg = gridItem.querySelector('img');
-              if (existingImg) {
-                existingImg.src = item;
-              } else {
-                img.src = item;
-                img.id = 'img'
-                img.style.width = "100%";
-                img.style.height = "100%";
-                gridItem.appendChild(img);
-              }
-            } else {
-              img.src = item;
-              img.id = 'img'
-              img.style.width = "100%";
-              img.style.height = "100%";
-              gridItem.appendChild(img);
-            }
-          })
+        if (data.action == 'generateImage') { // 生成周圍圖片
+          roundsData[data.roundID].images.push(data.image);
+          if ( latest_roundID == data.roundID )
+            displayMap(latest_roundID)
         }
-        if (data.action == 'generateImage') {
-          const gridItem = document.getElementById("item"+String((imgindex++)%12+1));
-          const img = document.createElement('img');
-          if (imgindex > 12) {
-            location.reload();
-            const existingImg = gridItem.querySelector('img');
-            if (existingImg) {
-              existingImg.src = data.image;
-            } else {
-              img.src = data.image;
-              img.id = 'img'
-              img.style.width = "100%";
-              img.style.height = "100%";
-              gridItem.appendChild(img);
-            }
-          } else {
-            img.src = data.image;
-            img.id = 'img'
-            img.style.width = "100%";
-            img.style.height = "100%";
-            gridItem.appendChild(img);
-          }
-        }
+
+        if (data.action == 'deleteData')
+          location.reload();
       });
     }
 
@@ -404,7 +342,7 @@
           middle.style.gridRow = '1 / span 4';
         }
         user_roundID = data["roundID"];
-        lasest_roundID = user_roundID;
+        latest_roundID = user_roundID;
         point = data["randomPoints"]
         updatePointDisplay(point);
         MoodColor = data["MoodValue"]-1
@@ -439,54 +377,57 @@
 
       const data = await response.json();
       let index = 0;
-      data.map.forEach((mapInfo) => {
-        const roundID = mapInfo._id;
-        if ( !roundsData[roundID] ) {
-          roundsData[roundID] = {
-            map: mapInfo.map,
-            images: []
-          };
-        }
-        else {
-          roundsData[roundID].map = mapInfo.map;
-        }
-      });
-      console.log(data)
-      data.image.forEach((imageInfo) => {
-        const roundID = imageInfo.roundID;
-        if ( !roundsData[roundID] ) {
-          roundsData[roundID] = {
-            map: [],
-            images: [imageInfo.image]
-          };
-        }
-        else {
-          roundsData[roundID].images.push(imageInfo.image);
-        }
-      });
+      if (data.length != 0) {
+        data.map.forEach((mapInfo) => {
+          const roundID = mapInfo._id;
+          if ( !roundsData[roundID] ) {
+            roundsData[roundID] = {
+              map: mapInfo.map,
+              images: []
+            };
+          }
+          else {
+            roundsData[roundID].map = mapInfo.map;
+          }
+        });
+        console.log(data)
+        data.image.forEach((imageInfo) => {
+          const roundID = imageInfo.roundID;
+          if ( !roundsData[roundID] ) {
+            roundsData[roundID] = {
+              map: [],
+              images: [imageInfo.image]
+            };
+          }
+          else {
+            roundsData[roundID].images.push(imageInfo.image);
+          }
+        });
+      }
     }
 
     async function displayMap(ID) {
       info = roundsData[ID];
-      console.log(info+"123 "+ID);
-      info.map.forEach((value,index) => {
-        const gridItem = document.getElementById(String(index+1));
-        if (gridItem)
-          gridItem.style.backgroundColor = color[value-1];
-      });
-      const Item = document.querySelectorAll('img');
-      Item.forEach((item) => {
-        item.remove();
-      });
-      info.images.forEach((imgurl,imgindex) => {
-        const gridItem = document.getElementById("item"+String(((imgindex)%12+1)));
-          const img = document.createElement('img');
-          img.src = imgurl;
-          img.id = 'img'
-          img.style.width = "100%";
-          img.style.height = "100%";
-          gridItem.appendChild(img);
-      });
+      if (info) {
+        info.map.forEach((value,index) => {
+          const gridItem = document.getElementById(String(index+1));
+          if (gridItem)
+            gridItem.style.backgroundColor = color[value-1];
+        });
+        const Item = document.querySelectorAll('img');
+        Item.forEach((item) => {
+          item.remove();
+        });
+        info.images.forEach((imgurl) => {
+          const gridItem = document.getElementById("item"+String(((imgindex++)%12+1)));
+            const img = document.createElement('img');
+            img.src = imgurl;
+            img.id = 'img'
+            img.style.width = "100%";
+            img.style.height = "100%";
+            gridItem.appendChild(img);
+        });
+      }
     }
 
     function selectRound() {
@@ -621,21 +562,21 @@
 		window.fetch = customFetch;
     
     document.addEventListener('DOMContentLoaded', async() => {
-      //await initializeLiff(); // 初始化 LIFF
+      await initializeLiff(); // 初始化 LIFF
       await initMap();
       await InitializePage();
       roundID_list = Object.keys(roundsData);
-      if (lasest_roundID === '')
-        lasest_roundID = roundID_list.pop();
-      displayMap(lasest_roundID);
+      if (latest_roundID === '')
+        latest_roundID = roundID_list.pop();
+      displayMap(latest_roundID);
       populateDropdown(roundID_list);
       initializeWebSocket();
 
       const defaultOption = document.getElementById('defaultOption');
       
       // 設置默認選項的文本為 user_roundID
-      defaultOption.text = lasest_roundID;
-      defaultOption.value = lasest_roundID;
+      defaultOption.text = latest_roundID;
+      defaultOption.value = latest_roundID;
 
       // 監聽 Carousel 的滑動事件
       const carousel = document.getElementById('carouselExampleIndicators');
@@ -666,5 +607,4 @@
     });
   </script>
   </body>
-
 </html>

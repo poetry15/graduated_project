@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import requests,os
 import threading
 import json
+import datetime
 from bson import ObjectId
 from bson.json_util import dumps
 from dotenv import load_dotenv
@@ -57,6 +58,24 @@ check5min_flag = False
 exit_flag = False
 quick_flag = False
 people_limit = 12
+
+# 定義一個函數，用於每小時檢查並發送消息
+def send_at_every_hour():
+	while True:
+		now = datetime.datetime.now()
+		# 檢查是否是整點（分鐘為 0）
+		if now.minute == 0 and now.second == 0:
+			map_info = list(map.find({"state": "active"}))
+			for info in map_info:
+				if info["people_count"] != 0:
+					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
+					map.find_one_and_update({"_id": info["_id"]}, {"$set": {"state": "completed"}})
+			time.sleep(60)  # 避免在同一分鐘內重複多次發送
+		time.sleep(1)  # 每秒檢查一次
+
+# 啟動線程，保持運行，檢查時間
+threading.Thread(target=send_at_every_hour, daemon=True).start()
+
 
 # QRcode
 @app.route('/', methods=['GET'])
@@ -148,15 +167,15 @@ def handle_message(data):
 		update_count = map_data['update_count']
 
 		if update_count == people_limit:
-			socketio.emit('message', {'action': 'finish'})
+			socketio.emit('message', {'action': 'finish', 'round_ID': round_ID})
 			print(f"{people_limit}筆資料已經收集完畢")
 			map.find_one_and_update({"_id": ObjectId(round_ID)}, {"$set": {"state": "completed"}})
-	elif action == 'socketID':
-		session_ID[request.sid] = data['data']
+	# elif action == 'socketID':
+	# 	session_ID[request.sid] = data['data']
 
 	elif action == 'finish':
 		image_data_split = data['img'].split(",")[1]
-		threading.Thread(target=generate_image, args=(image_data_split, userid_list, round_ID)).start()
+		threading.Thread(target=generate_image, args=(image_data_split, userid_list, data['round_ID'])).start()
 		
 def generate_image(image_data,userid_list, round_ID):
 	try:
@@ -168,36 +187,37 @@ def generate_image(image_data,userid_list, round_ID):
 
 		# 將結束的輪次資料刪除
 		latest_data = list(moodmap.find({"round_ID": round_ID}).sort("_id",1).limit(people_limit))
-		userid_list = list(set([entry["LineID"].split('-')[0] for entry in latest_data]))
+		userid_list = list(set([entry["LineID"] for entry in latest_data]))
 
 		latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
 		delete_image = [record["_id"] for record in latest_image]
 		image.delete_many({"_id": {"$in": delete_image}})
 		moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
 		map.delete_one({"_id": ObjectId(round_ID)})
+		socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
 	except Exception as e:
 		print(f"生成圖片時出現錯誤: {e}")
 
-@socketio.on('disconnect')
-def handle_disconnect():
-	if (exit_flag):
-		sid = request.sid
-		if sid in session_ID:
-			session_data = json.loads(session_ID[sid])
-			if moodmap.count_documents({"LineID": session_data["LineID"]}) > 0:
-				try:
-					response = requests.post(
-						os.getenv("url") + "/moodmap",
-						json=session_data
-					)
-					if response.status_code == 200:
-						print("成功發送資料到 /moodmap")
-					else:
-						print("發送資料到 /moodmap 失敗", response.status_code, response.text)
-				except requests.exceptions.RequestException as e:
-					print("請求 /moodmap 時出錯:", e)
-		# 清理 session_ID 中的 sid 紀錄
-		del session_ID[sid]
+# @socketio.on('disconnect')
+# def handle_disconnect():
+# 	if (exit_flag):
+# 		sid = request.sid
+# 		if sid in session_ID:
+# 			session_data = json.loads(session_ID[sid])
+# 			if moodmap.count_documents({"LineID": session_data["LineID"]}) > 0:
+# 				try:
+# 					response = requests.post(
+# 						os.getenv("url") + "/moodmap",
+# 						json=session_data
+# 					)
+# 					if response.status_code == 200:
+# 						print("成功發送資料到 /moodmap")
+# 					else:
+# 						print("發送資料到 /moodmap 失敗", response.status_code, response.text)
+# 				except requests.exceptions.RequestException as e:
+# 					print("請求 /moodmap 時出錯:", e)
+# 		# 清理 session_ID 中的 sid 紀錄
+# 		del session_ID[sid]
 
 
 # WordCloud
@@ -293,7 +313,7 @@ def NowStep():
 		if (Info["randomPoints"] == 0):
 			moodmap.find_one_and_update(
 				{"LineID": Info["LineID"],"MoodValue": Info["MoodValue"]},
-				{"$set": {"LineID": Info["LineID"]+'-1', "randomPoints": Info["randomPoints"]}},
+				{"$set": {"LineID": Info["LineID"], "randomPoints": Info["randomPoints"]}},
 			)
 		else:
 			moodmap.insert_one(Info)
@@ -330,7 +350,7 @@ def get_moodmap():
 	try:
 		user_id = request.args.get("UserID")
 		if user_id:
-			MoodMap = list(db["MoodMap"].find({"LineID": user_id}))
+			MoodMap = list(db["MoodMap"].find({"LineID": user_id,"randomPoints": {"$ne": 0}}))
 			if MoodMap:
 				return jsonify(dumps(MoodMap[0])), 200
 			else: 
