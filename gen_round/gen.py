@@ -8,7 +8,7 @@ import time
 import replicate
 import requests
 from dotenv import load_dotenv
-from combine_res import combine_images
+from gen_round.combine_res import combine_images
 
 load_dotenv()
 REPLICATE_API_TOKEN = os.getenv('REPLICATE_API_TOKEN')
