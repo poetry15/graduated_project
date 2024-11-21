@@ -8,6 +8,7 @@ import time
 import replicate
 import requests
 from dotenv import load_dotenv
+from combine_res import combine_images
 
 load_dotenv()
 REPLICATE_API_TOKEN = os.getenv('REPLICATE_API_TOKEN')
@@ -283,7 +284,7 @@ def upload_imgBB(image):
 
 def delete_bloack_line(image):
     height, width = image.shape[:2]
-    grid_size = 6
+    grid_size = 8
     cell_height = height // grid_size
     cell_width = width // grid_size
 
@@ -313,6 +314,7 @@ def delete_bloack_line(image):
 def round_photo_generator(pixeled_image, avg_mood_score):
     image = delete_bloack_line(pixeled_image)  # 這裡需要放"正方形" 要用來生圖的像素畫
     # image = color_preprocessor(pixeled_image) 
+    # cv2.imwrite('pixel.png', image)
     # cv2.imshow("pixel", image)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
@@ -320,24 +322,23 @@ def round_photo_generator(pixeled_image, avg_mood_score):
     url = upload_imgBB(image)
 
     background_img = run_color_model(url)
-    # cv2.imshow("background", background_img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
     
     cat_rmbg = run_cat_model(avg_mood_score) # 0 ~ 4
     combine_img = combine_cat_and_background(cat_rmbg, background_img)
-    # cv2.imshow('combine_img.png', combine_img)
+    # cv2.imshow("combine_img", combine_img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    combine_url = upload_imgBB(combine_img)
-
+    combine_img = combine_images(image, combine_img, "bgcolorimg.png")
+    combine_img = cv2.cvtColor(np.array(combine_img), cv2.COLOR_RGB2BGR) # 轉CV2格式
     cv2.imwrite('combine_img.png', combine_img)
+
+    combine_url = upload_imgBB(combine_img)
 
     return combine_url
 
 if __name__ == "__main__":
-    img_url = "https://i.imgur.com/QuwUUPR.png"
-    pixeled_image = read_image_from_url(img_url)
+    # img_url = "https://i.imgur.com/QuwUUPR.png"
+    # pixeled_image = read_image_from_url(img_url)
     # url = "https://i.ibb.co/YDY1b0g/img6-resize.png"
-    # pixeled_image = cv2.imread('./img41.png')
+    pixeled_image = cv2.imread('./img41.png')
     round_photo_generator(pixeled_image, 0)
