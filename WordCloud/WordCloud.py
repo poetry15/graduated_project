@@ -54,8 +54,9 @@ def clean_sensitive_content(text):
 
 
 def extract_keywords(text):
-  clean_data = clean_sensitive_content(text)
-  print("處理過的資料",clean_data)
+  while openai.moderations.create(input=text).results[0].flagged:
+    text = clean_sensitive_content(text)
+    print("處理過的資料",text)
   while True:
     response = openai.chat.completions.create(
       model="gpt-3.5-turbo",
@@ -74,7 +75,7 @@ def extract_keywords(text):
         "role": "user",
         "content": f'''Extract keywords from the following text and 擷取完關鍵字後，幫我計算出現頻率。
         有相似詞或同種類的詞幫我合併並加在一起，不要有重複的詞出現，以python字典的形式回傳:
-        {clean_data}
+        {text}
         ''',
       }],
       temperature=0.3,
@@ -82,6 +83,7 @@ def extract_keywords(text):
     
     message_dict = response.choices[0].to_dict()
     keywords = message_dict["message"]["content"].strip()
+    print(keywords)
     try:
       keywords = ast.literal_eval(keywords)
       if isinstance(keywords, dict):

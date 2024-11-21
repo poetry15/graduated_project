@@ -58,6 +58,7 @@ scancode_flag = False
 check5min_flag = False
 exit_flag = False
 quick_flag = False
+image_flag = False
 people_limit = 12
 min_limit = 5
 
@@ -66,8 +67,8 @@ def send_at_every_hour():
 	while True:
 		now = datetime.datetime.now()
 		# 檢查是否是整點（分鐘為 0）
-		# if (now.minute == 0 and now.second == 0):
-		if (now.minute == 0 and now.second == 0) or input() == "1":
+
+		if ((now.minute == 0 and now.second == 0) or image_flag):
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
 				if info["people_count"] >= min_limit or info["update_count"] >= min_limit:
@@ -407,7 +408,7 @@ def callback():
 	return "OK"
 
 if __name__ == "__main__":
-	socketio.run(app,debug=False)
+	socketio.run(app,debug=True)
 
 # ------------------- 測試用 -------------------------------
 # 有問必答hello world
