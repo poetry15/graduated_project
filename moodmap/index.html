@@ -317,7 +317,7 @@
       });
     }
 
-    async function InitializePage() {
+    async function userClick() {
       const data = await FetchData();
       console.log(data);
       if (data.length != 0) {
@@ -325,22 +325,21 @@
           document.querySelector('.container').classList.add('d-none');
           document.getElementById('carouselExampleIndicators').classList.remove('d-none');
         }*/
-        if(data.randomPoints != 0) {
-          for (let i = 1; i <= 12; i++) {
-            document.getElementById('item' + i).classList.add('d-none');
-          }
-          document.getElementById('roundSelectDiv').classList.add('d-none');
-          document.getElementById('clear').classList.remove('d-none');
-          document.getElementById('submit').classList.remove('d-none');
-          document.getElementById('random').classList.remove('d-none');
-          document.getElementById('hint').classList.remove('d-none');
-          const middle = document.querySelector('.middle');
-          const grid_container = document.querySelector('.grid-container');
-          grid_container.style.width = '200px';
-          grid_container.style.height = '200px';
-          middle.style.gridColumn = '1 / span 4';
-          middle.style.gridRow = '1 / span 4';
+        for (let i = 1; i <= 12; i++) {
+          document.getElementById('item' + i).classList.add('d-none');
         }
+        document.getElementById('roundSelectDiv').classList.add('d-none');
+        document.getElementById('clear').classList.remove('d-none');
+        document.getElementById('submit').classList.remove('d-none');
+        document.getElementById('random').classList.remove('d-none');
+        document.getElementById('hint').classList.remove('d-none');
+        const middle = document.querySelector('.middle');
+        const grid_container = document.querySelector('.grid-container');
+        grid_container.style.width = '200px';
+        grid_container.style.height = '200px';
+        middle.style.gridColumn = '1 / span 4';
+        middle.style.gridRow = '1 / span 4';
+        
         user_roundID = data["roundID"];
         latest_roundID = user_roundID;
         point = data["randomPoints"]
@@ -564,7 +563,7 @@
     document.addEventListener('DOMContentLoaded', async() => {
       await initializeLiff(); // 初始化 LIFF
       await initMap();
-      await InitializePage();
+      await userClick();
       roundID_list = Object.keys(roundsData);
       if (latest_roundID === '')
         latest_roundID = roundID_list.pop();

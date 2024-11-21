@@ -68,8 +68,11 @@ def send_at_every_hour():
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
 				if info["people_count"] != 0:
-					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
 					map.find_one_and_update({"_id": info["_id"]}, {"$set": {"state": "completed"}})
+			map.info = list(map.find({}))
+			for info in map_info:
+				if (info["state"] == "completed"):
+					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
 			time.sleep(60)  # 避免在同一分鐘內重複多次發送
 		time.sleep(1)  # 每秒檢查一次
 
@@ -167,11 +170,8 @@ def handle_message(data):
 		update_count = map_data['update_count']
 
 		if update_count == people_limit:
-			socketio.emit('message', {'action': 'finish', 'round_ID': round_ID})
 			print(f"{people_limit}筆資料已經收集完畢")
 			map.find_one_and_update({"_id": ObjectId(round_ID)}, {"$set": {"state": "completed"}})
-	# elif action == 'socketID':
-	# 	session_ID[request.sid] = data['data']
 
 	elif action == 'finish':
 		image_data_split = data['img'].split(",")[1]
