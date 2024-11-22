@@ -4,26 +4,123 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>好心情日記</title>
+  <title>心情日記</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="../config.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-  <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+  <!-- <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
   <script>
     // VConsole 会自动挂载到 `window.VConsole`
     var vConsole = new window.VConsole();
-  </script>
-  <!-- {% load static %} -->
-  <link rel="stylesheet" href="static/style.css">
-  <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+  </script> -->
+  <style>
+    .text-oneLine{
+        display:block; /*内联对象需加*/
+        word-break:keep-all; /* 不换行 */
+        white-space:nowrap; /* 不换行 */
+        overflow:hidden; /* 内容超出宽度时隐藏超出部分的内容 */
+        text-overflow:ellipsis; /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+    }
+   </style>
 </head>
 
-<body style="background-color: rgb(233, 206, 253);">
-  <p>User ID:<span id="userId"></span></p>
+<body style="background-color: rgb(251, 241, 211);">
+  <div class="container">
+    <p></p>
+    <h1>心情日記</h1>
+    <p></p>
+    <ul id="diaryList" class="list-group">
+      <!-- 日記列表將顯示在這裡 -->
+    </ul>
+    <p style="height: 50px;"></p>
+  </div>
+
+  <script>
+    // const url = "https://localhost:5000";
+    var diaries;
+    var userId;
+    const originalFetch = window.fetch;
+
+    // 自定義的 fetch 函數
+    function customFetch(URL, options) {
+      // 確保 URL 是字符串
+      if (typeof URL === 'object' && URL !== null)
+        URL = URL.toString();
+      // 檢查 URL 是否符合條件
+      if (URL.startsWith('https://liffsdk.line-scdn.net/xlt/') && URL.endsWith('.json'))
+        URL = URL + '?ts=' + Math.random();
+
+      // 調用原始的 fetch 函數
+      return originalFetch(URL, options);
+    }
+    // 替換 window.fetch 為自定義的 fetch 函數
+    window.fetch = customFetch;
 
 
+    function triggerLIFF() {
+      let liffID = "2004371526-DNG69j3d";
+      // LIFF init
+      liff.init({
+        liffId: liffID
+      })
+      .then(() => {
+        if (!liff.isLoggedIn()) { // 登入
+          liff.login();
+          return;
+        }
+        console.log("login: " + liff.isLoggedIn());
+        return liff.getProfile();
+      })
+      .then(profile => { // 確認可以抓取userid
+        userId = profile.userId;
+        // document.getElementById('userId').textContent = userId;
+      })
+      .then(() => {
+        return fetch(url + '/getuserform',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "LineID": userId
+        })
+      })
+    })
+    .then(response => response.json())
+    .then(diaries => {
+      var diaryList = $('#diaryList');
+      diaries.forEach(function(diary) {
+        console.log(diary);
+        
+        var listItem = $('<li class="list-group-item d-flex align-items-center"></li>');
+        var icon = $('<img src="icon1.jpg" alt="icon" style="width: 20px; height: 20px; margin-right: 10px;">');
+        var content = $('<div></div>');
+        var date = $('<div style="color: gray; font-size: smaller;">' + diary.Time + '</div>');
+        var keyword = $('<div>' + diary.MoodKeyWord + '</div>');
+        var detailsButton = $('<button class="btn btn-info btn-sm ml-auto">詳細</button>');
+        
+        detailsButton.click(function() {
+          let uri = "detail.html?l1="+ diary.LineID +"&l2=" + diary.Time;
+          window.location.href = uri;
+        });
 
+        content.append(date).append(keyword);
+        listItem.append(icon).append(content).append(detailsButton);
+        diaryList.append(listItem);
+      });
+    })
+    .catch(function(error) {
+      alert("error: " + error);
+      return;
+    });
+    }
+
+    window.onload = function(){
+      triggerLIFF();
+    }
+  </script>
 </body>
 
 </html>
