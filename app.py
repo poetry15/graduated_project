@@ -151,6 +151,37 @@ def check_time(): # 檢查是否距離上次 5 分鐘以上
 		return "accept"
 	else:
 		return "reject"
+# 心情日記取資料用
+@app.route('/getuserform', methods=['POST'])
+def get_user_form():
+	reqdata = request.json
+	userid = reqdata["LineID"]
+	if userid:
+		user_form = list(formdata.find({"LineID": userid}).sort("Time", -1))
+		# print(user_form)
+		if user_form:
+			for f in user_form:
+				f.pop('_id')
+			return jsonify(user_form), 200
+		else:
+			return jsonify([]), 200
+	return jsonify([]), 404
+
+@app.route('/getoneform', methods=['POST'])
+def get_one_form():
+	reqdata = request.json
+	userid = reqdata["LineID"]
+	time = reqdata["Time"]
+	if userid:
+		user_form = list(formdata.find({"LineID": userid, "Time": time}).limit(1))
+		print(user_form)
+		if user_form:
+			for f in user_form:
+				f.pop('_id')
+			return jsonify(user_form), 200
+		else:
+			return jsonify([]), 200
+	return jsonify([]), 404
 
 @socketio.on('connect')
 def handle_connect():
