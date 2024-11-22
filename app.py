@@ -191,6 +191,7 @@ def handle_connect():
 def handle_message(data):
 	userid_list = []
 	action = data['action']
+	print(data)
 	if action == 'updateMap': # 要記得round_ID
 		round_ID = data['round_ID']
 		map_updates = data['map']

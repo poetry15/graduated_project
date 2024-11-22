@@ -268,7 +268,7 @@
     let imgindex = 0;
     let user_roundID = '';
     let latest_roundID = '';
-    let userID = 'U4056b009decf9433dc93b6779b1987ba/1';
+    let userID = 'U4056b009decf9433dc93b6779b1987ba';
 
     async function FetchData() {
       try {
@@ -476,7 +476,7 @@
             for (const [id, color] of Object.entries(put_color)) {
               map.push({ id, color });
             }
-            socket.send({ action: 'updateMap', map: map, roundID: user_roundID});
+            socket.send({ action: 'updateMap', map: map, round_ID: user_roundID});
             await fetch(url+'/moodmap', {
               method: 'POST',
               headers: {
@@ -514,7 +514,7 @@
             roundID: user_roundID
           }),
         });
-        socket.send({ action: 'updateMap', map: map, roundID: user_roundID});
+        socket.send({ action: 'updateMap', map: map, round_ID: user_roundID});
         window.location.reload();
       }
     }
@@ -566,12 +566,13 @@
 		window.fetch = customFetch;
     
     document.addEventListener('DOMContentLoaded', async() => {
-      await initializeLiff(); // 初始化 LIFF
+      //await initializeLiff(); // 初始化 LIFF
       await initMap();
       await userClick();
       roundID_list = Object.keys(roundsData);
-      if (latest_roundID.length === 0)
+      if (!latest_roundID)
         latest_roundID = roundID_list.pop();
+
       displayMap(latest_roundID);
       populateDropdown(roundID_list);
       initializeWebSocket();
