@@ -163,7 +163,7 @@
 
     <button id="confirmButton" class="btn btn-primary" style="display: none;"
       onclick>確定</button>
-    <div id = "roundSelectDiv">
+    <div class="d-none" id = "roundSelectDiv">
       <label for="roundSelect">選擇一個 Round:</label>
       <select id="roundSelect" onchange="selectRound()">
         <option value id="defaultOption">user_roundID</option>
@@ -375,6 +375,7 @@
       });
 
       const data = await response.json();
+      console.log(data);
       let index = 0;
       if (data.length != 0) {
         data.map.forEach((mapInfo) => {

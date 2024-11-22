@@ -250,7 +250,7 @@ def save_data():
 		else:
 			imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
 
-		round_ID = setRound(form_data)
+		round_ID = setRound()
 		image.insert_one({'image':imageUrl, 'Line_ID': form_data['LineID'], 'round_ID': round_ID})
 		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl,'round_ID': round_ID})
 		return jsonify({"message": "Data saved", "image": imageUrl, "round_ID": round_ID}), 201
