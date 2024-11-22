@@ -442,6 +442,11 @@
         option.text = roundID;
         roundSelect.appendChild(option);
       });
+      if (roundSelect.options.length <= 1) {
+        document.getElementById('roundSelectDiv').classList.add('d-none');
+      } else {
+        document.getElementById('roundSelectDiv').classList.remove('d-none');
+      }
     }
 
     function clearMapData() {
