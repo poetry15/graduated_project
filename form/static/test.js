@@ -623,6 +623,7 @@ function pushMsg() {
     }
   });
 
+  let round_ID = '';
   fetch(url + '/api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -630,6 +631,7 @@ function pushMsg() {
   })
     .then(response => response.json())
     .then(data => {
+      round_ID = data.roundID;
       message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
         type: "image",
         url: data.image,
@@ -643,7 +645,8 @@ function pushMsg() {
         body: JSON.stringify(message),
       });
     })
-    .then(data => {
+    .then(response => {
+      console.log("成功傳送",response);
       return fetch(url + '/moodmap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -651,7 +654,7 @@ function pushMsg() {
           randomPoints: randomPoints,
           LineID: userId,
           MoodValue: moodscore,
-          roundID: data.roundID
+          roundID: round_ID
         }),
       });
     })

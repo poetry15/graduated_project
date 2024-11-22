@@ -345,7 +345,9 @@ def send_message():
 def NowStep():
 	try:
 		Info = request.json
+		print()
 		print(Info)
+		print()
 		if (Info["randomPoints"] == 0):
 			moodmap.find_one_and_update(
 				{"LineID": Info["LineID"],"MoodValue": Info["MoodValue"]},

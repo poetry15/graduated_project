@@ -338,7 +338,8 @@
         grid_container.style.height = '200px';
         middle.style.gridColumn = '1 / span 4';
         middle.style.gridRow = '1 / span 4';
-        
+        console.log("i'm here");
+        console.log(data);
         user_roundID = data["roundID"];
         latest_roundID = user_roundID;
         point = data["randomPoints"]
@@ -502,7 +503,7 @@
           map.push({ id, color });
         }
         console.log(map);
-        await fetch(url+'/moodmap', {
+        await fetch(url+'/moodmap', { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
