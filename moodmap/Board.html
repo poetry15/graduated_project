@@ -125,7 +125,7 @@
   </style>
   </head>
   <body>
-    <div id="games-container" class="container mt-4" style="transform: scale(3); transform-origin: top left"></div>
+    <div id="games-container" class="container mt-4" style="transform: scale(2); transform-origin: left top"></div>
     <canvas id="canvas"></canvas>
     <script>
     function captureImage(ID) {
@@ -223,9 +223,12 @@
       const gridContainer = document.getElementById(ID);
       if (info && gridContainer) {
         info.map.forEach((value,index) => {
-          const gridItem = gridContainer.querySelector(`.middle #\\${index+1}`);
+          const gridItem = gridContainer.querySelector(`.middle #\\3${(index+1).toString().split('').join(' ')} `);
           if (gridItem)
             gridItem.style.backgroundColor = color[value-1];
+            if (value != 0) {
+              console.log(index);
+            }
         });
         console.log(info);
         info.images.forEach((imgurl) => {

@@ -631,7 +631,7 @@ function pushMsg() {
   })
     .then(response => response.json())
     .then(data => {
-      round_ID = data.roundID;
+      round_ID = data.round_ID;
       message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
         type: "image",
         url: data.image,

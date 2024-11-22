@@ -279,7 +279,6 @@
           }
         });
         const result = await response.json();
-        console.log(result)
         if (result.length > 0) 
           return JSON.parse(result);
         else
@@ -375,7 +374,6 @@
       });
 
       const data = await response.json();
-      console.log(data);
       let index = 0;
       if (data.length != 0) {
         data.map.forEach((mapInfo) => {
@@ -390,9 +388,8 @@
             roundsData[roundID].map = mapInfo.map;
           }
         });
-        console.log(data)
         data.image.forEach((imageInfo) => {
-          const roundID = imageInfo.roundID;
+          const roundID = imageInfo.round_ID;
           if ( !roundsData[roundID] ) {
             roundsData[roundID] = {
               map: [],
