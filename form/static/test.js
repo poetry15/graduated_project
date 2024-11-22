@@ -644,7 +644,6 @@ function pushMsg() {
       });
     })
     .then(data => {
-      // 當 /api 和 /send-message 完成後，才開始發送 /moodmap
       return fetch(url + '/moodmap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
