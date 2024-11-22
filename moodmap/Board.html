@@ -148,27 +148,6 @@
     let point = 0;
     let MoodColor = 0;
     let imgindex = 0;
-    let userID = '2312312';
-
-    async function FetchData() {
-      try {
-        const response = await fetch(url+'/moodmap?UserID='+ userID, {
-          method: 'GET',
-          headers: {
-            'ngrok-skip-browser-warning': 'true'
-          }
-        });
-        const result = await response.json();
-        console.log(result)
-        if (result.length > 0) 
-          return JSON.parse(result);
-        else
-          return [];
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        return [];
-      }
-    }
 
     function initializeWebSocket() {
       socket = io(url, { transports: ['websocket'] });
@@ -181,7 +160,7 @@
         if (data.action == 'updateMap') {
           data.map.forEach((item) => {
             const container = document.getElementById(data.roundID);
-            const gridItem = container.getElementById(item.id);
+            const gridItem = container.querySelector(`.middle #${item.id}`);
             gridItem.style.backgroundColor = color[item.color-1];
           });
         }
@@ -226,7 +205,7 @@
         }
       });
       data.image.forEach((imageInfo) => {
-        const roundID = imageInfo.roundID;
+        const roundID = imageInfo.round_ID;
         if ( !roundsData[roundID] ) {
           roundsData[roundID] = {
             map: [],
@@ -242,20 +221,21 @@
     async function displayMap(ID) {
       info = roundsData[ID];
       const gridContainer = document.getElementById(ID);
-      if (info) {
+      if (info && gridContainer) {
         info.map.forEach((value,index) => {
-          const gridItem = gridContainer.getElementById(String(index+1));
+          const gridItem = gridContainer.querySelector(`.middle #\\${index+1}`);
           if (gridItem)
             gridItem.style.backgroundColor = color[value-1];
         });
+        console.log(info);
         info.images.forEach((imgurl) => {
-          const gridItem = gridContainer.getElementById("item"+String(((imgindex++)%12+1)));
-            const img = document.createElement('img');
-            img.src = imgurl;
-            img.id = 'img'
-            img.style.width = "100%";
-            img.style.height = "100%";
-            gridItem.appendChild(img);
+          const gridItem = gridContainer.querySelector(`#item${(imgindex++)%12+1}`);
+          const img = document.createElement('img');
+          img.src = imgurl;
+          img.id = 'img'
+          img.style.width = "100%";
+          img.style.height = "100%";
+          gridItem.appendChild(img);
         });
       }
     }
@@ -291,7 +271,6 @@
 
     document.addEventListener('DOMContentLoaded', async() => {
       await initMap();
-      await InitializePage();
       for (const roundID in roundsData) {
         displayMap(roundID);
       }

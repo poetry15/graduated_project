@@ -166,10 +166,9 @@
     <div class="d-none" id = "roundSelectDiv">
       <label for="roundSelect">選擇一個 Round:</label>
       <select id="roundSelect" onchange="selectRound()">
-        <option value id="defaultOption">user_roundID</option>
       </select>
     </div>
-    <div class="container mt-4">
+    <div class="container mt-4 d-none">
       <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
       <div class="grid-container">
         <div class="grid-item item-1" id="item1"></div>
@@ -477,7 +476,7 @@
             for (const [id, color] of Object.entries(put_color)) {
               map.push({ id, color });
             }
-            socket.send({ action: 'updateMap', map: map});
+            socket.send({ action: 'updateMap', map: map, roundID: user_roundID});
             await fetch(url+'/moodmap', {
               method: 'POST',
               headers: {
@@ -571,18 +570,12 @@
       await initMap();
       await userClick();
       roundID_list = Object.keys(roundsData);
-      if (latest_roundID === '')
+      if (latest_roundID.length === 0)
         latest_roundID = roundID_list.pop();
       displayMap(latest_roundID);
       populateDropdown(roundID_list);
       initializeWebSocket();
-
-      const defaultOption = document.getElementById('defaultOption');
-      
-      // 設置默認選項的文本為 user_roundID
-      defaultOption.text = latest_roundID;
-      defaultOption.value = latest_roundID;
-
+      document.querySelector('.container').classList.remove('d-none');
       // 監聽 Carousel 的滑動事件
       const carousel = document.getElementById('carouselExampleIndicators');
       carousel.addEventListener('slid.bs.carousel', (event) => {
