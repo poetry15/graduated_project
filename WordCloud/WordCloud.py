@@ -166,8 +166,9 @@ def dealAllData():
   items.update(MoodFactors)
   All_Keywords.update_one({},{"$set":{"AllKeyWords": items}},upsert=True)
   print(items)
-  img_binary=wordcloud(items)
-  wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)
+  if (items):
+    img_binary=wordcloud(items)
+    wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)
   length = len(arr)
   if length < HotKeywordCount:
     KeywordData = {
@@ -208,8 +209,9 @@ def dealSingleData(document):
     items = extract_keywords(', '.join(text))
   items.update(MoodFactors)
   All_Keywords.update_one({},{"$set":{"AllKeyWords": items}},upsert=True)
-  img_binary=wordcloud(items)
-  wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)   
+  if (items):
+    img_binary=wordcloud(items)
+    wordcloud_image.update_one({},{"$set":{"image": img_binary}},upsert=True)   
   Mood = document.get("MoodKeyWord", "")
   for i in Mood.split(", "):
     if i in MoodKeyword:
