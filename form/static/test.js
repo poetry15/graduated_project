@@ -643,10 +643,7 @@ function pushMsg() {
         body: JSON.stringify(message),
       });
     })
-    .then(response => {
-      console.log('訊息發送成功:', response);
-
-      // 當 /api 和 /send-message 完成後，才開始發送 /moodmap
+    .then(data => {
       return fetch(url + '/moodmap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
