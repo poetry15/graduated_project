@@ -615,11 +615,12 @@ function pushMsg() {
 
   const formData = getformData(emotionFactor_without_emoji);  
   Swal.fire({
-    title: '骰出你的創作點數吧！',
+    title: '骰出你的創作點數！',
     html: `
       <div class="slideshow-container">
         <img id="slideshowImage" class="slideshow-image" src="/static/dice1.png" />
       </div>
+      <p id="showpoint" style="font-size: large"> </p>
     `,
     showConfirmButton: false,
     didOpen: () => {
@@ -635,14 +636,12 @@ function pushMsg() {
         if (++loopCount >= maxLoops) {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
-        //   imgElement.src = finalImage;
-
-          // 在 5 秒後自動關閉彈窗
-          setTimeout(() => {
+          document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
+          setTimeout(() => { // 結束後3秒自動關閉
             Swal.close();
-          }, 5000); // 5000 毫秒 = 5 秒
+          }, 3000);
         }
-      }, 300); // 每 1 秒切換一次
+      }, 200);
     },
   })
   .then(() => {
