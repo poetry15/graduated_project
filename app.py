@@ -22,6 +22,11 @@ from linebot.v3.messaging import (
 	TextMessage,
 )
 import time
+import threading
+
+for thread in threading.enumerate():
+    print(f"Thread Name: {thread.name}, Thread ID: {thread.ident}, Daemon: {thread.daemon}")
+
 
 app = Flask(__name__)
 CORS(app)
@@ -31,8 +36,9 @@ class JSONEncoder(json.JSONEncoder):
 			return str(o)
 		return json.JSONEncoder.default(self, o)
 app.json_encoder = JSONEncoder
-socketio = SocketIO(app, cors_allowed_origins="*",async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*",async_mode='threading')
 load_dotenv()
+
 
 # 連接到 MongoDB
 client = MongoClient(os.getenv("ALTAS_URL"))
@@ -56,8 +62,7 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
-exit_flag = False
-quick_flag = False
+quick_flag = True
 image_flag = False
 people_limit = 12
 min_limit = 5
@@ -67,21 +72,20 @@ def send_at_every_hour():
 	while True:
 		now = datetime.datetime.now()
 		# 檢查是否是整點（分鐘為 0）
-
-		if ((now.minute == 0 and now.second == 0) or image_flag):
+		# print(now.minute, now.second)
+		if ((now.minute == 42 and now.second == 40) or image_flag):
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
-				if info["people_count"] >= min_limit or info["update_count"] >= min_limit:
+				if info["people_count"] >= min_limit or info["update_count"] >= min_limit:	
 					map.find_one_and_update({"_id": info["_id"]}, {"$set": {"state": "completed"}})
-			map.info = list(map.find({}))
-			for info in map_info:
+			map_info = list(map.find({}))
+			for info in map_info:	
 				if (info["state"] == "completed"):
+					print("i'm here")
 					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
 			time.sleep(60)  # 避免在同一分鐘內重複多次發送
 		time.sleep(1)  # 每秒檢查一次
 
-# 啟動線程，保持運行，檢查時間
-threading.Thread(target=send_at_every_hour, daemon=True).start()
 
 
 # QRcode
@@ -349,10 +353,12 @@ def NowStep():
 		print(Info)
 		print()
 		if (Info["randomPoints"] == 0):
-			moodmap.find_one_and_update(
-				{"LineID": Info["LineID"],"MoodValue": Info["MoodValue"]},
+			print('Hello World')
+			result = moodmap.find_one_and_update(
+				{"LineID": Info["LineID"],"MoodValue": Info["MoodValue"], "randomPoints": {"$ne": 0}},
 				{"$set": {"LineID": Info["LineID"], "randomPoints": Info["randomPoints"]}},
 			)
+			print(result)
 		else:
 			moodmap.insert_one(Info)
 		return jsonify({"message": "Data received and processed"}), 200
@@ -442,6 +448,8 @@ def callback():
 	return "OK"
 
 if __name__ == "__main__":
+	# 啟動線程，保持運行，檢查時間
+	threading.Thread(target=send_at_every_hour, daemon=True).start()
 	socketio.run(app,debug=True)
 
 # ------------------- 測試用 -------------------------------

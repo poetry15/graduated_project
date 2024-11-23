@@ -163,10 +163,9 @@
 
     <button id="confirmButton" class="btn btn-primary" style="display: none;"
       onclick>確定</button>
-    <div class="d-none" id = "roundSelectDiv">
+    <div id = "roundSelectDiv">
       <label for="roundSelect">選擇一個 Round:</label>
-      <select id="roundSelect" onchange="selectRound()">
-      </select>
+      <select id="roundSelect" onchange="selectRound()"></select>
     </div>
     <div class="container mt-4 d-none">
       <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
@@ -260,14 +259,14 @@
     </div>
     <script>
     let roundsData = {};
-    const color = ["rgb(106, 76, 147)", "rgb(25, 130, 196)", "rgb(138, 201, 38)", "rgb(255, 202, 58)", "rgb(255, 89, 94)"];
+    const color = ["white","rgb(106, 76, 147)", "rgb(25, 130, 196)", "rgb(138, 201, 38)", "rgb(255, 202, 58)", "rgb(255, 89, 94)"];
     let put_color = {};
     let socket;
     let point = 0;
     let MoodColor = 0;
     let imgindex = 0;
     let user_roundID = '';
-    let latest_roundID = '';
+    let display_roundID = '';
     let userID = 'U4056b009decf9433dc93b6779b1987ba';
 
     async function FetchData() {
@@ -299,15 +298,23 @@
         console.log(data);
         if (data.action == 'updateMap') {
           data.map.forEach((item) => {
-            roundsData[data.roundID].map[item.id-1] = item.color;
+            roundsData[data.round_ID].map[item.id-1] = item.color;
           });
-          if ( latest_roundID === data.roundID)
-            displayMap(latest_roundID)
+          if ( display_roundID === data.round_ID)
+            displayMap(display_roundID)
         }
         if (data.action == 'generateImage') { // 生成周圍圖片
-          roundsData[data.roundID].images.push(data.image);
-          if ( latest_roundID == data.roundID )
-            displayMap(latest_roundID)
+          if (roundsData[data.round_ID])
+            roundsData[data.round_ID].images.push(data.image);
+            if ( display_roundID === data.round_ID )
+              displayMap(display_roundID)
+          else {
+            roundsData[data.round_ID] = {
+              map: new Array(64).fill(0),
+              images: [data.image]
+            };
+            populateDropdown(data.round_ID);
+          }
         }
 
         if (data.action == 'deleteData')
@@ -340,10 +347,10 @@
         console.log("i'm here");
         console.log(data);
         user_roundID = data["roundID"];
-        latest_roundID = user_roundID;
+        display_roundID = user_roundID;
         point = data["randomPoints"]
         updatePointDisplay(point);
-        MoodColor = data["MoodValue"]-1
+        MoodColor = data["MoodValue"]
         document.querySelectorAll('.middle-item').forEach(item => {
           item.addEventListener('click', () => {
             if( item.id in put_color){
@@ -353,7 +360,7 @@
               updatePointDisplay(point);
             }
             else if(point > 0){
-              if (!color.includes(item.style.backgroundColor)) {
+              if (item.style.backgroundColor === color[0]) {
                 item.style.backgroundColor = color[MoodColor];
                 put_color[item.id] = data["MoodValue"];
                 point--;
@@ -405,18 +412,19 @@
 
     async function displayMap(ID) {
       info = roundsData[ID];
+      console.log(info)
       if (info) {
         info.map.forEach((value,index) => {
           const gridItem = document.getElementById(String(index+1));
           if (gridItem)
-            gridItem.style.backgroundColor = color[value-1];
+            gridItem.style.backgroundColor = color[value];
         });
         const Item = document.querySelectorAll('img');
         Item.forEach((item) => {
           item.remove();
         });
-        info.images.forEach((imgurl) => {
-          const gridItem = document.getElementById("item"+String(((imgindex++)%12+1)));
+        info.images.forEach((imgurl,index) => {
+          const gridItem = document.getElementById("item"+String(((index++)%12+1)));
             const img = document.createElement('img');
             img.src = imgurl;
             img.id = 'img'
@@ -432,14 +440,15 @@
       displayMap(roundID);
     }
 
-    function populateDropdown(rounds) {
+    function populateDropdown(roundID) {
+      console.log(13123)
+      console.log(roundID)
       const roundSelect = document.getElementById('roundSelect');
-      rounds.forEach((roundID) => {
-        const option = document.createElement('option');
-        option.value = roundID;
-        option.text = roundID;
-        roundSelect.appendChild(option);
-      });
+      const option = document.createElement('option');
+      option.value = roundID;
+      option.text = roundID;
+      roundSelect.appendChild(option);
+      roundSelect.value = display_roundID
       if (roundSelect.options.length <= 1) {
         document.getElementById('roundSelectDiv').classList.add('d-none');
       } else {
@@ -483,7 +492,7 @@
               body: JSON.stringify({
                 randomPoints: 0,
                 LineID: userID,
-                MoodValue: MoodColor+1,
+                MoodValue: MoodColor,
                 roundID: user_roundID
               }),
             });
@@ -508,7 +517,7 @@
           body: JSON.stringify({
             randomPoints: 0,
             LineID: userID,
-            MoodValue: MoodColor+1,
+            MoodValue: MoodColor,
             roundID: user_roundID
           }),
         });
@@ -538,9 +547,9 @@
       while(point != 0) {
         const randomIndex = Math.floor(Math.random() * 64) + 1;
         const gridItem = document.getElementById(String(randomIndex));
-        if (!color.includes(gridItem.style.backgroundColor)) {
+        if (gridItem.style.backgroundColor === color[0]) {
           gridItem.style.backgroundColor = color[MoodColor];
-          put_color[randomIndex] = MoodColor+1;
+          put_color[randomIndex] = MoodColor;
           point--;
           updatePointDisplay(point);
         }
@@ -566,13 +575,16 @@
     document.addEventListener('DOMContentLoaded', async() => {
       //await initializeLiff(); // 初始化 LIFF
       await initMap();
-      await userClick();
       roundID_list = Object.keys(roundsData);
-      if (!latest_roundID)
-        latest_roundID = roundID_list.pop();
-
-      displayMap(latest_roundID);
-      populateDropdown(roundID_list);
+      if (!display_roundID)
+        display_roundID = roundID_list.pop();
+      roundID_list.push(display_roundID);
+      displayMap(display_roundID);
+      for (let roundID of roundID_list) {
+        populateDropdown(roundID);
+      }
+      await userClick();
+      
       initializeWebSocket();
       document.querySelector('.container').classList.remove('d-none');
       // 監聽 Carousel 的滑動事件

@@ -147,7 +147,6 @@
     let socket;
     let point = 0;
     let MoodColor = 0;
-    let imgindex = 0;
 
     function initializeWebSocket() {
       socket = io(url, { transports: ['websocket'] });
@@ -159,23 +158,32 @@
         console.log(data);
         if (data.action == 'updateMap') {
           data.map.forEach((item) => {
-            const container = document.getElementById(data.roundID);
-            const gridItem = container.querySelector(`.middle #${item.id}`);
+            const container = document.getElementById(data.round_ID);
+            const gridItem = container.querySelector(`.middle #\\3${(item.id).toString().split('').join(' ')}`);
             gridItem.style.backgroundColor = color[item.color-1];
           });
         }
         if(data.action == 'finish') {
-          let img_data = await captureImage(data.roundID);
-          socket.emit('message',{action:'finish','img': img_data});
+          let img_data = await captureImage(data.round_ID);
+          socket.emit('message',{action:'finish','img': img_data,'round_ID':data.round_ID});
         }
         if (data.action == 'deleteData') {
-          const container = document.getElementById(data.roundID);
+          const container = document.getElementById(data.round_ID);
           container.remove();
-          delete roundsData[data.roundID];
+          delete roundsData[data.round_ID];
         }
         if (data.action == 'generateImage') {
-          roundsData[data.roundID].images.push(data.image);
-          displayMap(data.roundID);
+          if (roundsData[data.round_ID]) {
+            roundsData[data.round_ID].images.push(data.image);
+          }
+          else {
+            roundsData[data.round_ID] = {
+              map: new Array(64).fill(0),
+              images: [data.image]
+            };
+            createGridContainer(data.round_ID);
+          }
+          displayMap(data.round_ID);
         }
       });
     }
@@ -208,7 +216,7 @@
         const roundID = imageInfo.round_ID;
         if ( !roundsData[roundID] ) {
           roundsData[roundID] = {
-            map: [],
+            map: new Array(64).fill(0),
             images: [imageInfo.image]
           };
         }
@@ -231,8 +239,8 @@
             }
         });
         console.log(info);
-        info.images.forEach((imgurl) => {
-          const gridItem = gridContainer.querySelector(`#item${(imgindex++)%12+1}`);
+        info.images.forEach((imgurl,index) => {
+          const gridItem = gridContainer.querySelector(`#item${(index++)%12+1}`);
           const img = document.createElement('img');
           img.src = imgurl;
           img.id = 'img'
@@ -247,6 +255,7 @@
       // 創建包含 grid-items 的主容器
       const gameContainer = document.createElement('div');
       gameContainer.className = 'grid-container';
+      gameContainer.classList.add('mb-5');
       gameContainer.id = roundID;  // 使用 roundID 來唯一標識每個遊戲
     
       // 創建外圍的 12 個 grid-item
