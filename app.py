@@ -22,11 +22,6 @@ from linebot.v3.messaging import (
 	TextMessage,
 )
 import time
-import threading
-
-for thread in threading.enumerate():
-    print(f"Thread Name: {thread.name}, Thread ID: {thread.ident}, Daemon: {thread.daemon}")
-
 
 app = Flask(__name__)
 CORS(app)
@@ -73,7 +68,7 @@ def send_at_every_hour():
 		now = datetime.datetime.now()
 		# 檢查是否是整點（分鐘為 0）
 		# print(now.minute, now.second)
-		if ((now.minute == 42 and now.second == 40) or image_flag):
+		if ((now.minute == 0 and now.second == 40) or image_flag):
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
 				if info["people_count"] >= min_limit or info["update_count"] >= min_limit:	
