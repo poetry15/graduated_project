@@ -593,10 +593,10 @@ function pushMsg() {
   }
   else if (document.getElementById("Text").value == "" || emotionFactor_count == 0) {
     console.log("其中一個為空");
-    randomPoints = Math.floor(Math.random() * 3) + 1; // 1~3
+    randomPoints = Math.floor(Math.random() * 3) + 2; // 2~4
   }
   else {
-    randomPoints = Math.floor(Math.random() * 4) + 2; // 2~5
+    randomPoints = Math.floor(Math.random() * 4) + 3; // 3~6
   }
 
   let emotionFactor_without_emoji = [];
@@ -613,14 +613,47 @@ function pushMsg() {
   const message = flexMessage(randomPoints, emotionFactor_without_emoji);
   console.log(message);
 
-  const formData = getformData(emotionFactor_without_emoji);
+  const formData = getformData(emotionFactor_without_emoji);  
   Swal.fire({
-    title: '情緒轉換中...',
-    text: '請稍候',
-    allowOutsideClick: false, // 防止用戶點擊外部關閉
+    title: '骰出你的創作點數吧！',
+    html: `
+      <div class="slideshow-container">
+        <img id="slideshowImage" class="slideshow-image" src="/static/dice1.png" />
+      </div>
+    `,
+    showConfirmButton: false,
     didOpen: () => {
-      Swal.showLoading(); // 顯示內建的 loading 動畫
-    }
+      // 獲取圖片元素
+      const imgElement = document.getElementById('slideshowImage');
+      const maxLoops = 18+randomPoints-1;
+      let currentIndex = 0;
+      let loopCount = 0;
+
+      const interval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % 6; // 輪流顯示圖片
+        imgElement.src = `static/dice${currentIndex+1}.png`; // 更新圖片
+        if (++loopCount >= maxLoops) {
+          // 停止輪播並顯示最終圖片
+          clearInterval(interval);
+        //   imgElement.src = finalImage;
+
+          // 在 5 秒後自動關閉彈窗
+          setTimeout(() => {
+            Swal.close();
+          }, 5000); // 5000 毫秒 = 5 秒
+        }
+      }, 300); // 每 1 秒切換一次
+    },
+  })
+  .then(() => {
+    return Swal.fire({
+      title: '情緒轉換中...',
+      text: '請稍候',
+      allowOutsideClick: false, // 防止用戶點擊外部關閉
+      didOpen: () => {
+        Swal.showLoading(); // 顯示內建的 loading 動畫
+      }
+    });
   });
 
   let round_ID = '';
