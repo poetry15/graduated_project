@@ -48,7 +48,7 @@
         <div id="form2" style="display: none;"> <!-- 表單第二頁 -->
             <div id ="MoodTextArea">
                 <p></p>
-                <label class="form-label">讓你有這種感受的原因為何？(若沒有符合的請直接跳過此欄位並於下方說明)</label>
+                <label class="form-label">讓你有這種感受的來源來自什麼？(沒有符合的請直接跳過此欄位)</label>
                 <div id="EmotionFactorsContainer"></div>
                 <p> </p>
                 <p>當下發生了什麼？簡單說說吧！</p>
@@ -115,14 +115,14 @@
 		})
 		.then(res => res.text())
 		.then(req => {
-			if (req === 'reject') {  // 服务器返回 'reject'
+			if (req === 'reject') {
 				alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
 				liff.closeWindow(); // 关闭 LIFF 窗口
-				window.location.href = "google.com"; // 重定向到谷歌 
-				return Promise.reject('User is rejected due to time limit.'); // 返回 rejected Promise，停止后续执行
+				window.location.href = "google.com";
+				return Promise.reject('User is rejected due to time limit.');
 			} else {
 				console.log("checkfivemin no problem");
-				return 'ok'; // 成功时返回 'ok'，后续的 then() 处理这个值
+				return 'ok';
 			}
 		})
 		.then((ans) => {
