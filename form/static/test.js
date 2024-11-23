@@ -340,20 +340,9 @@ function showEmotionFactor() {
 
     // 在每區的間隔處換行，但因排版是用grid，所以需要確認需跳過幾格
 
-    if (factor.label === "心靈 🌿") {
-      for (let i = 0; i < 2; i++) {
-        const emptyDiv = document.createElement("div");
-        EmotionFactorsContainer.appendChild(emptyDiv);
-      }
-      // 添加更多空白空間
+    if (factor.label === "寵物 🐾") {
       const spacer = document.createElement("div");
-      spacer.style.gridColumn = "span 4"; // 占據兩個網格單元
-      spacer.style.height = "0.5rem";
-      EmotionFactorsContainer.appendChild(spacer);
-
-    } else if (factor.label === "約會 🌹") {
-      const spacer = document.createElement("div");
-      spacer.style.gridColumn = "span 4"; // 占據兩個網格單元
+      spacer.style.gridColumn = "span 4";
       spacer.style.height = "0.5rem";
       EmotionFactorsContainer.appendChild(spacer);
 
