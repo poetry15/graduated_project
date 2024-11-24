@@ -48,12 +48,11 @@
         <div id="form2" style="display: none;"> <!-- 表單第二頁 -->
             <div id ="MoodTextArea">
                 <p></p>
-                <label class="form-label">讓你有這種感受的原因為何？</label>
+                <label class="form-label">讓你有這種感受的來源來自什麼？(沒有符合的請直接跳過此欄位)</label>
                 <div id="EmotionFactorsContainer"></div>
                 <p> </p>
-                <p>當下發生了什麼？詳細說說吧！(可獲得額外創作點數)</p>
-                <!-- 提示文字半透明，輸入文字則正常 -->
-                <textarea id="Text" placeholder="請說說你的感受..." style="opacity: 0.7;" onfocus="this.style.opacity='1';" onblur="this.style.opacity='0.5';"></textarea>
+                <p>當下發生了什麼？簡單說說吧！</p>
+                <textarea id="Text" placeholder="請說說你的遭遇..." style="opacity: 0.7;" onfocus="this.style.opacity='1';" onblur="this.style.opacity='0.5';"></textarea>
                 <p> </p>
                 <button id="prevstep" class="btn btn-secondary btn-sm" style="margin-left: 2%; " onclick="previousstep()"> < 上一步</button> <!-- 按鈕置左 -->
                 <button class="btn btn-secondary btn-sm" style="float:right; width: 60px;" id="submit"> 完成 </button>
@@ -116,14 +115,14 @@
 		})
 		.then(res => res.text())
 		.then(req => {
-			if (req === 'reject') {  // 服务器返回 'reject'
+			if (req === 'reject') {
 				alert("我知道你有很多想說的話! 但距離上次來抒發情緒才剛過沒多久，請間隔一段時間再來");
 				liff.closeWindow(); // 关闭 LIFF 窗口
-				window.location.href = "google.com"; // 重定向到谷歌 
-				return Promise.reject('User is rejected due to time limit.'); // 返回 rejected Promise，停止后续执行
+				window.location.href = "google.com";
+				return Promise.reject('User is rejected due to time limit.');
 			} else {
 				console.log("checkfivemin no problem");
-				return 'ok'; // 成功时返回 'ok'，后续的 then() 处理这个值
+				return 'ok';
 			}
 		})
 		.then((ans) => {

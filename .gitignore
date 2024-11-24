@@ -5,3 +5,4 @@
 startup.py
 .gitignore
 .env
+config.js

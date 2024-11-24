@@ -27,20 +27,24 @@ def imagePromptGenerate(keywords):
   return text
 
 def imageGenerate(keywords):
-  response = openai.images.generate(
-    model="dall-e-3",
-    prompt= f"Generate a landscape image with a predominant {keywords} color scheme and no palette. The scene should showcase natural beauty, with {keywords} as the central theme throughout the environment. Use soft gradients, detailed textures, and a harmonious composition that evokes a peaceful and immersive atmosphere. The {keywords} should enhance the visual appeal, creating depth and tranquility in the landscape.",
-    size="1024x1024",
-    quality="standard",
-    n=1,
-  )
-  image_url = response.data[0].url
-  with urllib.request.urlopen(image_url) as response:
-    image_data = response.read()
-    base64_encoded_data = base64.b64encode(image_data).decode('utf-8')
-    img_url = upload_image_to_imgur(base64_encoded_data)
-    print(img_url)
-  return img_url
+  try:
+    response = openai.images.generate(
+      model="dall-e-3",
+      prompt= f"Generate a landscape image with a predominant {keywords} color scheme and no palette.",
+      size="1024x1024",
+      quality="standard",
+      n=1,
+    )
+    image_url = response.data[0].url
+    with urllib.request.urlopen(image_url) as response:
+      image_data = response.read()
+      base64_encoded_data = base64.b64encode(image_data).decode('utf-8')
+      img_url = upload_image_to_imgur(base64_encoded_data)
+      print(img_url)
+    return img_url
+  except Exception as e:
+    print(e)
+    return None
 
 def upload_image_to_imgur(image_data):
     url = "https://api.imgur.com/3/image"

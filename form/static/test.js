@@ -340,20 +340,9 @@ function showEmotionFactor() {
 
     // 在每區的間隔處換行，但因排版是用grid，所以需要確認需跳過幾格
 
-    if (factor.label === "心靈 🌿") {
-      for (let i = 0; i < 2; i++) {
-        const emptyDiv = document.createElement("div");
-        EmotionFactorsContainer.appendChild(emptyDiv);
-      }
-      // 添加更多空白空間
+    if (factor.label === "寵物 🐾") {
       const spacer = document.createElement("div");
-      spacer.style.gridColumn = "span 4"; // 占據兩個網格單元
-      spacer.style.height = "0.5rem";
-      EmotionFactorsContainer.appendChild(spacer);
-
-    } else if (factor.label === "約會 🌹") {
-      const spacer = document.createElement("div");
-      spacer.style.gridColumn = "span 4"; // 占據兩個網格單元
+      spacer.style.gridColumn = "span 4";
       spacer.style.height = "0.5rem";
       EmotionFactorsContainer.appendChild(spacer);
 
@@ -593,10 +582,10 @@ function pushMsg() {
   }
   else if (document.getElementById("Text").value == "" || emotionFactor_count == 0) {
     console.log("其中一個為空");
-    randomPoints = Math.floor(Math.random() * 3) + 1; // 1~3
+    randomPoints = Math.floor(Math.random() * 3) + 2; // 2~4
   }
   else {
-    randomPoints = Math.floor(Math.random() * 4) + 2; // 2~5
+    randomPoints = Math.floor(Math.random() * 4) + 3; // 3~6
   }
 
   let emotionFactor_without_emoji = [];
@@ -613,77 +602,107 @@ function pushMsg() {
   const message = flexMessage(randomPoints, emotionFactor_without_emoji);
   console.log(message);
 
-  const formData = getformData(emotionFactor_without_emoji);
+  const formData = getformData(emotionFactor_without_emoji);  
   Swal.fire({
-    title: '情緒轉換中...',
-    text: '請稍候',
-    allowOutsideClick: false, // 防止用戶點擊外部關閉
+    title: '骰出你的創作點數！',
+    html: `
+      <div class="slideshow-container">
+        <img id="slideshowImage" class="slideshow-image" src="/static/dice1.png" />
+      </div>
+      <p id="showpoint" style="font-size: large"> </p>
+    `,
+    showConfirmButton: false,
     didOpen: () => {
-      Swal.showLoading(); // 顯示內建的 loading 動畫
-    }
-  });
+      // 獲取圖片元素
+      const imgElement = document.getElementById('slideshowImage');
+      const maxLoops = 18+randomPoints-1;
+      let currentIndex = 0;
+      let loopCount = 0;
 
-  Promise.all([
-    fetch(url + '/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then(response => response.json())
-      .then(data => {
-        message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
-          type: "image",
-          url: data.image,
-          size: "full",
-          aspectRatio: "1792:1024",
-        });
-  
-        return fetch(url + '/send-message', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(message),
-        });
-      })
-      .then(response => {
-        console.log('訊息發送成功:', response);
-      })
-      .catch(error => {
-        console.error('訊息發送失敗:', error);
-      }),
-  
-    fetch(url + '/moodmap', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        randomPoints: randomPoints,
-        LineID: userId,
-        MoodValue: moodscore,
-      }),
-    }).catch(error => {
-      console.error('Moodmap 傳送失敗:', error);
-    })
-  ])
-  .then(() => { // 等到兩個 fetch 都完成後，換成完成 Swal
-    Swal.fire({
-      icon: 'success',
-      title: '轉換完成',
-      confirmButtonText: "確認"
-    })
-    .then(result => {
-      if(result.isConfirmed){
-        liff.closeWindow();
+      const interval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % 6; // 輪流顯示圖片
+        imgElement.src = `static/dice${currentIndex+1}.png`; // 更新圖片
+        if (++loopCount >= maxLoops) {
+          // 停止輪播並顯示最終圖片
+          clearInterval(interval);
+          document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
+          setTimeout(() => { // 結束後3秒自動關閉
+            Swal.close();
+          }, 3000);
+        }
+      }, 200);
+    },
+  })
+  .then(() => {
+    return Swal.fire({
+      title: '情緒轉換中...',
+      text: '請稍候',
+      allowOutsideClick: false, // 防止用戶點擊外部關閉
+      didOpen: () => {
+        Swal.showLoading(); // 顯示內建的 loading 動畫
       }
     });
+  });
+
+  let round_ID = '';
+  fetch(url + '/api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData),
   })
-  .catch(error => {
-    Swal.fire({
-      icon: 'error',
-      title: '錯誤',
-      text: '請求處理過程中發生錯誤，請稍後再試！'
+    .then(response => response.json())
+    .then(data => {
+      round_ID = data.round_ID;
+      message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
+        type: "image",
+        url: data.image,
+        size: "full",
+        aspectRatio: "1024:1024",
+      });
+
+      return fetch(url + '/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(message),
+      });
+    })
+    .then(response => {
+      console.log("成功傳送",response);
+      return fetch(url + '/moodmap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          randomPoints: randomPoints,
+          LineID: userId,
+          MoodValue: moodscore,
+          roundID: round_ID
+        }),
+      });
+    })
+    .then(() => {
+      // 所有操作完成後，顯示成功彈窗
+      Swal.fire({
+        icon: 'success',
+        title: '轉換完成',
+        confirmButtonText: "確認"
+      })
+        .then(result => {
+          if (result.isConfirmed) {
+            liff.closeWindow();
+          }
+        });
+    })
+    .catch(error => {
+      // 任何階段的錯誤處理
+      Swal.fire({
+        icon: 'error',
+        title: '錯誤',
+        text: '請求處理過程中發生錯誤，請稍後再試！'
+      });
+      console.error('There has been a problem with your fetch operation:', error);
     });
-    console.error('There has been a problem with your fetch operation:', error);
-  })
-  
+
+
 }
 
 document.addEventListener('DOMContentLoaded', function () {

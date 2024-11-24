@@ -4,7 +4,7 @@
   <head>
     <title>心情地圖</title>
     <meta charset="utf-8" name="viewport"
-      content="width=device-width, initial-scale=1">
+      content="width=device-width, initial-scale=3">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
       rel="stylesheet">
@@ -25,6 +25,14 @@
     var vConsole = new VConsole();
   </script>
     <style>
+    body {
+      background-color: #f7d8a6;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .grid-container {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -37,8 +45,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: lightblue;
-      border: 1px solid black;
+      /*background-color: lightblue;
+      border: 1px solid black;*/
       height: 100%;
       width: 100%;
     }
@@ -125,101 +133,14 @@
   </style>
   </head>
   <body>
-    <div class="container mt-4">
-      <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
-      <div class="grid-container">
-        <div class="grid-item item-1" id="item1"></div>
-        <div class="grid-item item-2" id="item2"></div>
-        <div class="grid-item item-3" id="item3"></div>
-        <div class="grid-item item-4" id="item4"></div>
-        <div class="grid-item item-5" id="item5"></div>
-        <div class="grid-item item-6" id="item6"></div>
-        <div class="grid-item item-7" id="item7"></div>
-        <div class="grid-item item-8" id="item8"></div>
-        <div class="grid-item item-9" id="item9"></div>
-        <div class="grid-item item-10" id="item10"></div>
-        <div class="grid-item item-11" id="item11"></div>
-        <div class="grid-item item-12" id="item12"></div>
-        <div class="grid-item middle">
-          <div class="middle-item" id="1"></div>
-          <div class="middle-item" id="2"></div>
-          <div class="middle-item" id="3"></div>
-          <div class="middle-item" id="4"></div>
-          <div class="middle-item" id="5"></div>
-          <div class="middle-item" id="6"></div>
-          <div class="middle-item" id="7"></div>
-          <div class="middle-item" id="8"></div>
-          <div class="middle-item" id="9"></div>
-          <div class="middle-item" id="10"></div>
-          <div class="middle-item" id="11"></div>
-          <div class="middle-item" id="12"></div>
-          <div class="middle-item" id="13"></div>
-          <div class="middle-item" id="14"></div>
-          <div class="middle-item" id="15"></div>
-          <div class="middle-item" id="16"></div>
-          <div class="middle-item" id="17"></div>
-          <div class="middle-item" id="18"></div>
-          <div class="middle-item" id="19"></div>
-          <div class="middle-item" id="20"></div>
-          <div class="middle-item" id="21"></div>
-          <div class="middle-item" id="22"></div>
-          <div class="middle-item" id="23"></div>
-          <div class="middle-item" id="24"></div>
-          <div class="middle-item" id="25"></div>
-          <div class="middle-item" id="26"></div>
-          <div class="middle-item" id="27"></div>
-          <div class="middle-item" id="28"></div>
-          <div class="middle-item" id="29"></div>
-          <div class="middle-item" id="30"></div>
-          <div class="middle-item" id="31"></div>
-          <div class="middle-item" id="32"></div>
-          <div class="middle-item" id="33"></div>
-          <div class="middle-item" id="34"></div>
-          <div class="middle-item" id="35"></div>
-          <div class="middle-item" id="36"></div>
-          <div class="middle-item" id="37"></div>
-          <div class="middle-item" id="38"></div>
-          <div class="middle-item" id="39"></div>
-          <div class="middle-item" id="40"></div>
-          <div class="middle-item" id="41"></div>
-          <div class="middle-item" id="42"></div>
-          <div class="middle-item" id="43"></div>
-          <div class="middle-item" id="44"></div>
-          <div class="middle-item" id="45"></div>
-          <div class="middle-item" id="46"></div>
-          <div class="middle-item" id="47"></div>
-          <div class="middle-item" id="48"></div>
-          <div class="middle-item" id="49"></div>
-          <div class="middle-item" id="50"></div>
-          <div class="middle-item" id="51"></div>
-          <div class="middle-item" id="52"></div>
-          <div class="middle-item" id="53"></div>
-          <div class="middle-item" id="54"></div>
-          <div class="middle-item" id="55"></div>
-          <div class="middle-item" id="56"></div>
-          <div class="middle-item" id="57"></div>
-          <div class="middle-item" id="58"></div>
-          <div class="middle-item" id="59"></div>
-          <div class="middle-item" id="60"></div>
-          <div class="middle-item" id="61"></div>
-          <div class="middle-item" id="62"></div>
-          <div class="middle-item" id="63"></div>
-          <div class="middle-item" id="64"></div>
-        </div>
-      </div>
-      <button id="clear" class="my-2 btn btn-primary d-none"
-        onclick="clearMapData()">清除</button>
-      <button id="submit" class="my-2 btn btn-primary d-none"
-        onclick="sendMapData()">提交</button>
-      <button onclick="captureImage()">Capture Image</button>
-      <canvas id="canvas" style="display:none;"></canvas>
-    </div>
-
+    <div id="games-container" class="container mt-4" style="transform: scale(2); transform-origin:top"></div>
+    <canvas id="canvas"></canvas>
     <script>
-    function captureImage() {
-      const middleDiv = document.querySelector('.middle');
+    function captureImage(ID) {
+      const container = document.getElementById(ID);
+      const middleDiv = container.querySelector('.middle');
       if (middleDiv) {
-        return html2canvas(middleDiv, { scale: 10 }).then(canvas => {
+        return html2canvas(middleDiv, { scale: 5 }).then(canvas => {
           return canvas.toDataURL('image/png'); // 在 Promise resolve 中返回 imgData
         });
       } else {
@@ -230,273 +151,149 @@
     <script>
     const color = ["rgb(106, 76, 147)", "rgb(25, 130, 196)", "rgb(138, 201, 38)", "rgb(255, 202, 58)", "rgb(255, 89, 94)"];
     let put_color = {};
+    let roundsData = {};
     let socket;
     let point = 0;
     let MoodColor = 0;
-    let imgindex = 0;
-    let userID = '2312312';
-
-    async function FetchData() {
-      try {
-        const response = await fetch(url+'/moodmap?UserID='+ userID, {
-          method: 'GET',
-          headers: {
-            'ngrok-skip-browser-warning': 'true'
-          }
-        });
-        const result = await response.json();
-        console.log(result)
-        if (result.length > 0) 
-          return JSON.parse(result);
-        else
-          return [];
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        return [];
-      }
-    }
 
     function initializeWebSocket() {
       socket = io(url, { transports: ['websocket'] });
       socket.on('connect', () => {
-        socket.emit('message',{action: 'initMap'});
-        socket.emit('message',{action: 'socketID',data:JSON.stringify({
-          randomPoints: 0,
-          LineID: userID,
-          MoodValue: MoodColor+1
-        }),});
+        console.log('Connected to server');
       });
       socket.on ('message', async(event) => {
         const data = event;
         console.log(data);
         if (data.action == 'updateMap') {
           data.map.forEach((item) => {
-            const gridItem = document.getElementById(item.id);
+            const container = document.getElementById(data.round_ID);
+            const gridItem = container.querySelector(`.middle #\\3${(item.id).toString().split('').join(' ')}`);
             gridItem.style.backgroundColor = color[item.color-1];
           });
         }
         if(data.action == 'finish') {
-          let img_data = await captureImage();
-          socket.emit('message',{action:'finish','img': img_data});
-          window.location.reload();
+          let img_data = await captureImage(data.round_ID);
+          socket.emit('message',{action:'finish','img': img_data,'round_ID':data.round_ID});
         }
-        if (data.action == 'initMap') {
-          let index = 0;
-          data.map.forEach((item) => {
-            const gridItem = document.getElementById(String(++index));
-            gridItem.style.backgroundColor = color[item-1];
-          });
-          data.image.forEach((item) => {
-            const gridItem = document.getElementById("item"+String(((imgindex++)%12+1)));
-            const img = document.createElement('img');
-            if (imgindex > 12) {
-              const existingImg = gridItem.querySelector('img');
-              if (existingImg) {
-                existingImg.src = item;
-              } else {
-                img.src = item;
-                img.id = 'img'
-                img.style.width = "100%";
-                img.style.height = "100%";
-                gridItem.appendChild(img);
-              }
-            } else {
-              img.src = item;
-              img.id = 'img'
-              img.style.width = "100%";
-              img.style.height = "100%";
-              gridItem.appendChild(img);
-            }
-          })
+        if (data.action == 'deleteData') {
+          const container = document.getElementById(data.round_ID);
+          container.remove();
+          delete roundsData[data.round_ID];
         }
         if (data.action == 'generateImage') {
-          const gridItem = document.getElementById("item"+String((imgindex++)%12+1));
-          const img = document.createElement('img');
-          if (imgindex > 12) {
-            location.reload();
-            const existingImg = gridItem.querySelector('img');
-            if (existingImg) {
-              existingImg.src = data.image;
-            } else {
-              img.src = data.image;
-              img.id = 'img'
-              img.style.width = "100%";
-              img.style.height = "100%";
-              gridItem.appendChild(img);
-            }
-          } else {
-            img.src = data.image;
-            img.id = 'img'
-            img.style.width = "100%";
-            img.style.height = "100%";
-            gridItem.appendChild(img);
+          if (roundsData[data.round_ID]) {
+            roundsData[data.round_ID].images.push(data.image);
           }
+          else {
+            roundsData[data.round_ID] = {
+              map: new Array(64).fill(0),
+              images: [data.image]
+            };
+            createGridContainer(data.round_ID);
+          }
+          displayMap(data.round_ID);
         }
       });
     }
 
-    async function InitializePage() {
-      const data = await FetchData();
+    async function initMap() {
+      const response = await fetch(url+'/map', {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
+        },
+      });
+
+      const data = await response.json();
       console.log(data);
-      if (data.length != 0) {
-        /*if (!data['viewed']) {
-          document.querySelector('.container').classList.add('d-none');
-          document.getElementById('carouselExampleIndicators').classList.remove('d-none');
-        }*/
-        if(data.randomPoints != 0) {
-          for (let i = 1; i <= 12; i++) {
-            document.getElementById('item' + i).classList.add('d-none');
-          }
-          document.getElementById('clear').classList.remove('d-none');
-          document.getElementById('submit').classList.remove('d-none');
-          document.getElementById('hint').classList.remove('d-none');
-          const middle = document.querySelector('.middle');
-          const grid_container = document.querySelector('.grid-container');
-          grid_container.style.width = '200px';
-          grid_container.style.height = '200px';
-          middle.style.gridColumn = '1 / span 4';
-          middle.style.gridRow = '1 / span 4';
+      let index = 0;
+      data.map.forEach((mapInfo) => {
+        const roundID = mapInfo._id;
+        if ( !roundsData[roundID] ) {
+          roundsData[roundID] = {
+            map: mapInfo.map,
+            images: []
+          };
+          createGridContainer(roundID);
         }
-        point = data["randomPoints"]
-        updatePointDisplay(point);
-        MoodColor = data["MoodValue"]-1
-        document.querySelectorAll('.middle-item').forEach(item => {
-          item.addEventListener('click', () => {
-            if( item.id in put_color){
-              item.style.backgroundColor = "white";
-              delete put_color[item.id];
-              point++;
-              updatePointDisplay(point);
-            }
-            else if(point > 0){
-              if (item.style.backgroundColor != color[MoodColor]) {
-                item.style.backgroundColor = color[MoodColor];
-                put_color[item.id] = data["MoodValue"];
-                point--;
-                updatePointDisplay(point);
-              }
-            }
-          });
-        });
-      }
-    }
-
-    function clearMapData() {
-      point += Object.keys(put_color).length;
-      Object.entries(put_color).forEach(([id, color]) => {
-        const gridItem = document.getElementById(id);
-        gridItem.style.backgroundColor = 'white';
+        else {
+          roundsData[roundID].map = mapInfo.map;
+        }
       });
-      put_color = {};
-    }
-
-    function randomChooseGrid() {
-      while(point != 0) {
-        const randomIndex = Math.floor(Math.random() * 36) + 1;
-        const gridItem = document.getElementById(String(randomIndex));
-        if (gridItem.style.backgroundColor != color[MoodColor]) {
-          gridItem.style.backgroundColor = color[MoodColor];
-          put_color[randomIndex] = MoodColor+1;
-          point--;
-          updatePointDisplay(point);
+      data.image.forEach((imageInfo) => {
+        const roundID = imageInfo.round_ID;
+        if ( !roundsData[roundID] ) {
+          roundsData[roundID] = {
+            map: new Array(64).fill(0),
+            images: [imageInfo.image]
+          };
         }
-      }
+        else {
+          roundsData[roundID].images.push(imageInfo.image);
+        }
+      });
     }
 
-    async function sendMapData() {
-      if (point != 0) {
-        await Swal.fire({
-          icon: 'info',
-          title: '還有 ' + point + ' 個方塊尚未填入',
-          text: '請確認是否提交，確定後，將放棄其餘未填入方塊',
-          color: 'white',
-          confirmButtonText: '確定',
-          showDenyButton: true,
-          denyButtonText: '取消',
-        }).then(async(result) => {
-          if (result.isConfirmed) {
-            const map = [];
-            for (const [id, color] of Object.entries(put_color)) {
-              map.push({ id, color });
+    async function displayMap(ID) {
+      info = roundsData[ID];
+      const gridContainer = document.getElementById(ID);
+      if (info && gridContainer) {
+        info.map.forEach((value,index) => {
+          const gridItem = gridContainer.querySelector(`.middle #\\3${(index+1).toString().split('').join(' ')} `);
+          if (gridItem)
+            gridItem.style.backgroundColor = color[value-1];
+            if (value != 0) {
+              console.log(index);
             }
-            socket.send({ action: 'updateMap', map: map});
-            await fetch(url+'/moodmap', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                randomPoints: 0,
-                LineID: userID,
-                MoodValue: MoodColor+1
-              }),
-            });
-            window.location.reload();
-          }
-          else if (result.isDenied) {
-            return;
-          }
+        });
+        console.log(info);
+        info.images.forEach((imgurl,index) => {
+          const gridItem = gridContainer.querySelector(`#item${(index++)%12+1}`);
+          const img = document.createElement('img');
+          img.src = imgurl;
+          img.id = 'img'
+          img.style.width = "100%";
+          img.style.height = "100%";
+          gridItem.appendChild(img);
         });
       }
-      else {
-        const map = [];
-        for (const [id, color] of Object.entries(put_color)) {
-          map.push({ id, color });
-        }
-        console.log(map);
-        await fetch(url+'/moodmap', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            randomPoints: 0,
-            LineID: userID,
-            MoodValue: MoodColor+1
-          }),
-        });
-        socket.send({ action: 'updateMap', map: map});
-        window.location.reload();
-      }
     }
 
-    function updatePointDisplay(point) {
-      document.getElementById('point').textContent = point;
-    }
-    async function initializeLiff() {
-      try {
-        await liff.init({ liffId: "2004371526-QNE54xpZ",withLoginOnExternalBrowser: true  });
-        if (!liff.isLoggedIn()) {
-          liff.login();
-        } else {
-          const profile = await liff.getProfile();
-          userID = profile.userId;
-        }
-      } catch (error) {
-        console.error("LIFF initialization failed", error);
-      }
-    }
+    function createGridContainer(roundID) {
+      // 創建包含 grid-items 的主容器
+      const gameContainer = document.createElement('div');
+      gameContainer.className = 'grid-container';
+      gameContainer.classList.add('mb-5');
+      gameContainer.id = roundID;  // 使用 roundID 來唯一標識每個遊戲
     
-    const originalFetch = window.fetch;
-
-		// 自定義的 fetch 函數
-		function customFetch(URL, options) {
-			// 確保 URL 是字符串
-			if (typeof URL === 'object' && URL !== null)
-				URL = URL.toString();
-			// 檢查 URL 是否符合條件
-			if (URL.startsWith('https://liffsdk.line-scdn.net/xlt/') && URL.endsWith('.json'))
-				URL = URL + '?ts=' + Math.random();
-
-			// 調用原始的 fetch 函數
-			return originalFetch(URL, options);
-		}
-		// 替換 window.fetch 為自定義的 fetch 函數
-		window.fetch = customFetch;
+      // 創建外圍的 12 個 grid-item
+      for (let i = 1; i <= 12; i++) {
+        const item = document.createElement('div');
+        item.className = `grid-item item-${i}`;
+        item.id = `item${i}`;
+        gameContainer.appendChild(item);
+      }
     
+      // 創建中心的 middle 區域
+      const middleContainer = document.createElement('div');
+      middleContainer.className = 'grid-item middle';
+    
+      // 創建中間的 64 個 grid-item
+      for (let i = 1; i <= 64; i++) {
+        const middleItem = document.createElement('div');
+        middleItem.className = 'middle-item';
+        middleItem.id = i;
+        middleContainer.appendChild(middleItem);
+      }
+      gameContainer.appendChild(middleContainer);
+      document.getElementById('games-container').appendChild(gameContainer);
+    }
+
     document.addEventListener('DOMContentLoaded', async() => {
-      // await initializeLiff(); // 初始化 LIFF
-      await InitializePage();
+      await initMap();
+      for (const roundID in roundsData) {
+        displayMap(roundID);
+      }
       initializeWebSocket();
     });
   </script>
