@@ -607,7 +607,7 @@ function pushMsg() {
     title: '骰出你的創作點數！',
     html: `
       <div class="slideshow-container">
-        <img id="slideshowImage" class="slideshow-image" src="/static/dice1.png" />
+        <img id="slideshowImage" style="height:50px" class="slideshow-image" src="/static/dice1.png" />
       </div>
       <p id="showpoint" style="font-size: large"> </p>
     `,
