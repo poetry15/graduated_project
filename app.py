@@ -22,11 +22,6 @@ from linebot.v3.messaging import (
 	TextMessage,
 )
 import time
-import threading
-
-for thread in threading.enumerate():
-    print(f"Thread Name: {thread.name}, Thread ID: {thread.ident}, Daemon: {thread.daemon}")
-
 
 app = Flask(__name__)
 CORS(app)
@@ -229,12 +224,12 @@ def generate_image(image_data,userid_list, round_ID):
 		send_images_to_users(userid_list,url)
 
 		# 將結束的輪次資料刪除
-		latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
-		delete_image = [record["_id"] for record in latest_image]
-		image.delete_many({"_id": {"$in": delete_image}})
-		moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
-		map.delete_one({"_id": ObjectId(round_ID)})
-		socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
+		# latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
+		# delete_image = [record["_id"] for record in latest_image]
+		# image.delete_many({"_id": {"$in": delete_image}})
+		# moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
+		# map.delete_one({"_id": ObjectId(round_ID)})
+		# socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
 	except Exception as e:
 		print(f"生成圖片時出現錯誤: {e}")
 

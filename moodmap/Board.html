@@ -133,7 +133,11 @@
   </style>
   </head>
   <body>
-    <div id="games-container" class="container mt-4" style="transform: scale(2); transform-origin:top"></div>
+    <div id="games-container" class="carousel slide container mt-4" style="transform: scale(2); transform-origin:top" data-bs-ride="carousel">
+      <div class="carousel-inner">
+      </div>
+    </div>
+    <div id="games-container" class="container mt-4" ></div>
     <canvas id="canvas"></canvas>
     <script>
     function captureImage(ID) {
@@ -262,7 +266,10 @@
     function createGridContainer(roundID) {
       // 創建包含 grid-items 的主容器
       const gameContainer = document.createElement('div');
-      gameContainer.className = 'grid-container';
+      if ( Object.keys(roundsData).length)
+        gameContainer.className = 'grid-container carousel-item active';
+      else
+        gameContainer.className = 'grid-container carousel-item';
       gameContainer.classList.add('mb-5');
       gameContainer.id = roundID;  // 使用 roundID 來唯一標識每個遊戲
     
@@ -286,7 +293,7 @@
         middleContainer.appendChild(middleItem);
       }
       gameContainer.appendChild(middleContainer);
-      document.getElementById('games-container').appendChild(gameContainer);
+      document.querySelector('.carousel-inner').appendChild(gameContainer);
     }
 
     document.addEventListener('DOMContentLoaded', async() => {
