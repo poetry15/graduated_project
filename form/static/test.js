@@ -420,7 +420,7 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
   let msg;
   let boxcontext = [{
       type: "text",
-      text: "情緒喵出門啦~離開前帶來了一份心情小記！",
+      text: "情緒喵帶來心情小記後出門啦~！",
       size: "lg",
     },
     {
