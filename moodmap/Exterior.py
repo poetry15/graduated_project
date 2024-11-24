@@ -47,15 +47,26 @@ def imageGenerate(keywords):
     return None
 
 def upload_image_to_imgur(image_data):
-    url = "https://api.imgur.com/3/image"
-    headers = {
-        "Authorization": f"Client-ID fa8c9cac55933c1"
-    }
-    data = {
-        "image": image_data,
-    }
-    response = requests.post(url, headers=headers, data=data)
-    if response.status_code == 200:
-        return response.json()["data"]["link"]
-    else:
-        raise Exception("Failed to upload image to Imgur")
+  url = "https://api.imgur.com/3/image"
+  headers = {
+    "Authorization": f"Client-ID ef14f9fb39946ee"
+  }
+  data = {
+    "image": image_data,
+  }
+  
+  response = requests.post(url, headers=headers, data=data)
+  
+  if response.status_code == 200:
+    response_data = response.json()["data"]
+    link = response_data["link"]
+    deletehash = response_data["deletehash"]
+
+      # 將 link 和 deletehash 保存到文本文件中
+    with open("imgur_images.txt", "a") as file:
+        file.write(f"Link: {link}, Deletehash: {deletehash}\n")
+
+      # 返回圖片的 URL
+    return link
+  else:
+    raise Exception(f"Failed to upload image to Imgur. Status code: {response.status_code}, Response: {response.text}")
