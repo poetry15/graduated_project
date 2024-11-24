@@ -25,6 +25,9 @@
     var vConsole = new VConsole();
   </script>
     <style>
+    body {
+      background-color: #f7d8a6;
+    }
     .grid-container {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -163,11 +166,11 @@
 
     <button id="confirmButton" class="btn btn-primary" style="display: none;"
       onclick>確定</button>
-    <div id = "roundSelectDiv">
+    <div id = "roundSelectDiv" class="ms-4">
       <label for="roundSelect">選擇一個 Round:</label>
       <select id="roundSelect" onchange="selectRound()"></select>
     </div>
-    <div class="container mt-4 d-none">
+    <div class="container mt-4 ms-4 d-none">
       <span class="d-none" id="hint">剩餘點數: <span id="point"></span></span>
       <div class="grid-container">
         <div class="grid-item item-1" id="item1"></div>
