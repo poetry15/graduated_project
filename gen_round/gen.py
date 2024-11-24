@@ -328,7 +328,7 @@ def round_photo_generator(pixeled_image, avg_mood_score):
     # cv2.imshow("combine_img", combine_img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    combine_img = combine_images(image, combine_img, "bgcolorimg.png")
+    combine_img = combine_images(image, combine_img, "./gen_round/bgcolorimg.png")
     combine_img = cv2.cvtColor(np.array(combine_img), cv2.COLOR_RGB2BGR) # 轉CV2格式
     cv2.imwrite('combine_img.png', combine_img)
 
@@ -337,9 +337,11 @@ def round_photo_generator(pixeled_image, avg_mood_score):
     return combine_url
 
 def validate_gen():
+    print("valid gen try")
     output = replicate.run(
         "gogochi/t2i-adapter-sd-color:dba7f5f41c17395348e47c8c10944037ac2d4852713d4235eef4de86e419d7f2",
         input={
+	    "image": "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimages2.fanpop.com%2Fimage%2Fphotos%2F9400000%2FFunny-Cats-cats-9473111-1600-1200.jpg&f=1&nofb=1&ipt=4bbbd8ec03ddad568b984aea6580eba1b330cb05cadceecd88578727366086ef&ipo=images",
             "prompt": "a cute cat",
             "scheduler": "K_EULER_ANCESTRAL",
             "num_samples": 1,
