@@ -190,7 +190,7 @@ def dealSingleData(document):
     MoodKeyword = {}
     MoodFactors = {}
     text = []
-    today = document.get("Time", "").date()
+    today = document.get("Time", "")
   elif (document and today > time_obj.date()): # 如果日期比今天早，跳過
     return
   mood_word = document.get("MoodWord", "")

@@ -26,21 +26,23 @@
   </script>
     <style>
     body {
-      background-color: #f7d8a6;
+      background-color: #ebebec;
     }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+
+    /*修改大小在這邊*/
+    .image {
+      width: 30%; /*圖片大小*/
     }
-    .grid-container {
-      display: grid;
+    .grid-container { 
+      display: inline-grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(4, 1fr);
-      width: 300px;
-      height: 300px;
+      /*地圖大小*/
+      width: 400px; 
+      height: 400px;
       gap: 0px;
     }
+
     .grid-item {
       display: flex;
       align-items: center;
@@ -118,8 +120,6 @@
     .middle {
       grid-row: 2 / span 2;
       grid-column: 2 / span 2;
-      /*grid-column: 1 / span 4;
-      grid-row: 1 / span 4;*/
       background-color: white;
       display: grid;
       grid-template-columns: repeat(8, 1fr);
@@ -133,7 +133,14 @@
   </style>
   </head>
   <body>
-    <div id="games-container" class="container mt-4" style="transform: scale(2); transform-origin:top"></div>
+    <div id="games-container" class="container mt-3 text-center d-none">
+      <h1>心情地圖</h1>
+      <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+        </div>
+      </div>
+      <img class="image" src="./proj_poster.png">
+    </div>
     <canvas id="canvas"></canvas>
     <script>
     function captureImage(ID) {
@@ -242,11 +249,12 @@
           const gridItem = gridContainer.querySelector(`.middle #\\3${(index+1).toString().split('').join(' ')} `);
           if (gridItem)
             gridItem.style.backgroundColor = color[value-1];
-            if (value != 0) {
-              console.log(index);
-            }
         });
         console.log(info);
+        const Item = gridContainer.querySelectorAll('img');
+        Item.forEach((item) => {
+          item.remove();
+        });
         info.images.forEach((imgurl,index) => {
           const gridItem = gridContainer.querySelector(`#item${(index++)%12+1}`);
           const img = document.createElement('img');
@@ -286,7 +294,15 @@
         middleContainer.appendChild(middleItem);
       }
       gameContainer.appendChild(middleContainer);
-      document.getElementById('games-container').appendChild(gameContainer);
+      const carouselInner = document.querySelector('.carousel-inner');
+      const carouselItem = document.createElement('div');
+      carouselItem.setAttribute('data-bs-interval', '15000');
+      carouselItem.className = 'carousel-item';
+      if (carouselInner.children.length === 0) {
+        carouselItem.classList.add('active');
+      }
+      carouselItem.appendChild(gameContainer);
+      carouselInner.appendChild(carouselItem);
     }
 
     document.addEventListener('DOMContentLoaded', async() => {
@@ -295,6 +311,7 @@
         displayMap(roundID);
       }
       initializeWebSocket();
+      document.getElementById('games-container').classList.remove('d-none');
     });
   </script>
   </body>
