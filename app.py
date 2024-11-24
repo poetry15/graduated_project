@@ -233,7 +233,7 @@ def generate_image(image_data,userid_list, round_ID):
 		latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
 		delete_image = [record["_id"] for record in latest_image]
 		image.delete_many({"_id": {"$in": delete_image}})
-		moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
+		moodmap.delete_many({"_id": {"$in": [ObjectId(entry["_id"]) for entry in latest_data]}})
 		map.delete_one({"_id": ObjectId(round_ID)})
 		socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
 	except Exception as e:
