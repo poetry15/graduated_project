@@ -102,7 +102,7 @@
         var detailsButton = $('<button class="btn btn-info btn-sm ml-auto">詳細</button>');
         
         detailsButton.click(function() {
-          let uri = "detail.html?l1="+ diary.LineID +"&l2=" + diary.Time;
+          let uri = "detail.html?LineID="+ diary.LineID +"&TimeStamp=" + diary.TimeStamp;
           window.location.href = uri;
         });
 
