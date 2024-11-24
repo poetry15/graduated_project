@@ -99,7 +99,7 @@
 
         // url="http://localhost:5000";
         const urlparams = new URLSearchParams(window.location.search);
-        const time = urlparams.get('Time');
+        const time = urlparams.get('TimeStamp');
         const useid = urlparams.get('LineID');
         fetch(url + '/getoneform',{
             method: 'POST',
@@ -108,7 +108,7 @@
             },
             body: JSON.stringify({
                 "LineID": useid,
-                "Time": time
+                "TimeStamp": time
             })
         })
         .then(response => response.json())
