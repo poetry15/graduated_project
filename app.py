@@ -1,7 +1,7 @@
 from flask import Flask, request, abort, jsonify,render_template
 from flask_socketio import SocketIO,emit
 from moodmap.Exterior import imageGenerate, upload_image_to_imgur
-from gen_round.gen import round_photo_generator, read_image_from_url
+from gen_round.gen import round_photo_generator, read_image_from_url, validate_gen
 from WordCloud.WordCloud import dealAllData, dealSingleData
 from pymongo import MongoClient
 import requests,os
@@ -22,6 +22,11 @@ from linebot.v3.messaging import (
 	TextMessage,
 )
 import time
+import threading
+
+for thread in threading.enumerate():
+    print(f"Thread Name: {thread.name}, Thread ID: {thread.ident}, Daemon: {thread.daemon}")
+
 
 app = Flask(__name__)
 CORS(app)
@@ -61,6 +66,7 @@ quick_flag = True
 image_flag = False
 people_limit = 12
 min_limit = 5
+gen_min = 20
 
 # 定義一個函數，用於每小時檢查並發送消息
 def send_at_every_hour():
@@ -68,7 +74,9 @@ def send_at_every_hour():
 		now = datetime.datetime.now()
 		# 檢查是否是整點（分鐘為 0）
 		# print(now.minute, now.second)
-		if ((now.minute == 0 and now.second == 40) or image_flag):
+		if(now.minute == gen_min and now.second == 0):
+			validate_gen()
+		if ((now.minute == (gen_min-2)%60 and now.second == 40) or image_flag):
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
 				if info["people_count"] >= min_limit or info["update_count"] >= min_limit:	
@@ -80,8 +88,6 @@ def send_at_every_hour():
 					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
 			time.sleep(60)  # 避免在同一分鐘內重複多次發送
 		time.sleep(1)  # 每秒檢查一次
-
-
 
 # QRcode
 @app.route('/', methods=['GET'])
