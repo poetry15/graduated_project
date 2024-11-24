@@ -336,6 +336,20 @@ def round_photo_generator(pixeled_image, avg_mood_score):
 
     return combine_url
 
+def validate_gen():
+    output = replicate.run(
+        "gogochi/t2i-adapter-sd-color:dba7f5f41c17395348e47c8c10944037ac2d4852713d4235eef4de86e419d7f2",
+        input={
+            "prompt": "a cute cat",
+            "scheduler": "K_EULER_ANCESTRAL",
+            "num_samples": 1,
+            "guidance_scale": 8.0,
+            "negative_prompt": "anime, cartoon, graphic, text, painting, crayon, graphite, abstract, glitch, deformed, mutated, ugly, disfigured",
+            "num_inference_steps": 30,
+            "adapter_conditioning_scale": 0.95
+        }
+    )
+
 if __name__ == "__main__":
     # img_url = "https://i.imgur.com/QuwUUPR.png"
     # pixeled_image = read_image_from_url(img_url)
