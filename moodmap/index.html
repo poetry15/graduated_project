@@ -444,15 +444,14 @@
     }
 
     function populateDropdown(roundID) {
-      console.log(13123)
-      console.log(roundID)
       const roundSelect = document.getElementById('roundSelect');
+      let length = roundSelect.options.length
       const option = document.createElement('option');
       option.value = roundID;
-      option.text = roundID;
+      option.text = length+1;
       roundSelect.appendChild(option);
       roundSelect.value = display_roundID
-      if (roundSelect.options.length <= 1) {
+      if (length+1 <= 1) {
         document.getElementById('roundSelectDiv').classList.add('d-none');
       } else {
         document.getElementById('roundSelectDiv').classList.remove('d-none');
