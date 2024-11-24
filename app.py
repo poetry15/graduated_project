@@ -61,7 +61,7 @@ quick_flag = True
 image_flag = False
 people_limit = 12
 min_limit = 5
-gen_min = 20
+gen_min = 40
 
 # 定義一個函數，用於每小時檢查並發送消息
 def send_at_every_hour():
@@ -191,7 +191,7 @@ def handle_connect():
 def handle_message(data):
 	userid_list = []
 	action = data['action']
-	print(data)
+	# print(data)
 	if action == 'updateMap': # 要記得round_ID
 		round_ID = data['round_ID']
 		map_updates = data['map']
@@ -362,6 +362,7 @@ def NowStep():
 		return jsonify({"error": str(error)}), 500
 
 def send_images_to_users(user_id,url):
+	print(user_id, url)
 	for user in user_id:
 		data = {
 			"to": user,
