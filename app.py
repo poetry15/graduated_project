@@ -224,12 +224,11 @@ def generate_image(image_data,userid_list, round_ID):
 		pixeled_image = read_image_from_url(image_url)
 		url = round_photo_generator(pixeled_image, 0)
 		print(f"生成的圖片 URL: {url}")
+		latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
+		userid_list = list(set([entry["LineID"] for entry in latest_data]))
 		send_images_to_users(userid_list,url)
 
 		# 將結束的輪次資料刪除
-		latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
-		userid_list = list(set([entry["LineID"] for entry in latest_data]))
-
 		latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
 		delete_image = [record["_id"] for record in latest_image]
 		image.delete_many({"_id": {"$in": delete_image}})
