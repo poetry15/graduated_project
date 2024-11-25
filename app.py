@@ -381,46 +381,57 @@ def send_images_to_users(user_id,url, avg_mood, usercount, round_ID):
 	print(user_id, url)
 	ret_text1 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~本次一同出遊的旅行者共有{usercount}位，希望你們會喜歡這次的景色!\n\n人數過少時可能發生顏色不夠精準的情形，敬請見諒'
 	ret_text2 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~這次的作畫活動很熱鬧，下次也歡迎你一起來參加喔～期待你的創意！'
-	ret_text = ret_text1
+	# ret_text = ret_text1
 	for user,randpoints in user_id.items():
+		data = {}
 		if ( randpoints != 0):
-			ret_text = ret_text2
-		data = {
-			"to": user,  # 接收者 ID
-			"messages": [  # `messages` 是一個列表
-		        {
-		            "type": "flex",
-		            "altText": "小貓旅行回來啦～快來看看結果",  # 替代文字
-		            "contents": {
-		                "type": "bubble",
-		                "hero": {
-		                    "type": "image",
-		                    "url": url,  # 圖片的 URL
-		                    "size": "full",
-							"aspectRatio": "1.5:1",
-							"aspectMode": "fit",
-		                    "action": {
-		                        "type": "uri",
-		                        "label": "查看圖片",
-		                        "uri": url
-		                    }
-		                },
-		                "body": {
-		                    "type": "box",
-		                    "layout": "vertical",
-		                    "contents": [
-		                        {
-		                            "type": "text",
-		                            "text": ret_text,
-		                            "wrap": True,
-		                            "size": "md"
-		                        }
-		                    ]
-		                }
-		            }
-		        }
-		    ]
-		}
+			data = {
+				"to": user,  # 接收者 ID
+				"messages": [  # `messages` 是一個列表
+			        {
+			            "type": "text",
+			            "text": ret_text2,
+			        }
+			    ]
+			}
+
+		else:
+			data = {
+				"to": user,  # 接收者 ID
+				"messages": [  # `messages` 是一個列表
+			        {
+			            "type": "flex",
+			            "altText": "小貓旅行回來啦～快來看看結果",  # 替代文字
+			            "contents": {
+			                "type": "bubble",
+			                "hero": {
+			                    "type": "image",
+			                    "url": url,  # 圖片的 URL
+			                    "size": "full",
+								"aspectRatio": "1.5:1",
+								"aspectMode": "fit",
+			                    "action": {
+			                        "type": "uri",
+			                        "label": "查看圖片",
+			                        "uri": url
+			                    }
+			                },
+			                "body": {
+			                    "type": "box",
+			                    "layout": "vertical",
+			                    "contents": [
+			                        {
+			                            "type": "text",
+			                            "text": ret_text1,
+			                            "wrap": True,
+			                            "size": "md"
+			                        }
+			                    ]
+			                }
+			            }
+			        }
+			    ]
+			}
 
 		headers = {
 			"Content-Type": "application/json",
