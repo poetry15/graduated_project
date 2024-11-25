@@ -223,7 +223,10 @@ def generate_image(image_data,userid_list, round_ID):
 		avg_mood = sum([entry["MoodValue"] for entry in latest_data]) / moodmap.find({"roundID": round_ID})
 		user_count = len(userid_list)
 		print("avg_mood", avg_mood)
-		userid_list = list(set([entry["LineID"] for entry in latest_data]))
+		userid_list = {}
+		for entry in latest_data:
+			if entry["LineID"] not in userid_list:
+				userid_list[entry["LineID"]] = entry["randomPoints"]
 		send_images_to_users(userid_list,url, avg_mood, user_count)
 
 		# 將結束的輪次資料刪除
@@ -368,7 +371,11 @@ color_for_mood = ['紫', '藍', '綠', '黃', '紅']
 def send_images_to_users(user_id,url, avg_mood, usercount):
 	print(user_id, url)
 	ret_text = f'小{color_for_mood[round(avg_mood)-1]}旅行回來啦~本次一同出遊的旅行者共有{usercount}位，希望你們會喜歡這次的景色!'
-	for user in user_id:
+	for user,randpoints in user_id.items():
+		if ( randpoints != 0):
+			
+		else:
+			
 		data = {
     "to": user,  # 接收者 ID
     "messages": [  # `messages` 是一個列表
