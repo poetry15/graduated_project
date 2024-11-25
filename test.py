@@ -1,33 +1,18 @@
-from moodmap.Exterior import imageGenerate
-from dotenv import load_dotenv
-from pymongo import MongoClient
-import os
+import requests
 
-load_dotenv()
-client = MongoClient(os.getenv("ALTAS_URL"))
-db = client["test"]
-All_Keywords = db["All_Keywords"]
-keywords = All_Keywords.find()[0]['AllKeyWords']
-print(imageGenerate("#fcba03"))
-# from pymongo import MongoClient, errors
-# import osx
-# from dotenv import load_dotenv
+# 使用 OAuth token 認證
+access_token = 'adfd8e81b51cfa246aaa1d5b5f6e7f41353a055b'
 
-# # 載入環境變數
-# load_dotenv()
+headers = {
+    "Authorization": f"Bearer {access_token}"
+}
 
-# # 獲取 MongoDB 連接字符串
-# mongo_url = "mongodb+srv://jimmy147156:DeOw1n6fZVOcyi0t@cluster0.zbbv4pu.mongodb.net/"
+# 獲取帳戶中的所有圖片
+response = requests.get("https://api.imgur.com/3/account/me/images", headers=headers)
 
-# # 連接到 MongoDB
-# try:
-#     client = MongoClient(mongo_url)
-#     # 測試連接
-#     client.admin.command('ping')
-#     print("Successfully connected to MongoDB Atlas")
-# except errors.ServerSelectionTimeoutError as err:
-#     print(f"Failed to connect to MongoDB Atlas: {err}")
-# except errors.ConnectionFailure as err:
-#     print(f"Connection to MongoDB Atlas failed: {err}")
-# except Exception as e:
-#     print(f"An error occurred: {e}")
+if response.status_code == 200:
+  images = response.json()["data"]
+  for image in images:
+    print(images)
+else:
+  print(f"獲取圖片失敗，錯誤代碼：{response.status_code}")

@@ -21,7 +21,7 @@
     <script
       src="https://cdn.jsdelivr.net/npm/vconsole@3.2.0/dist/vconsole.min.js"></script>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-<!--     <script>
+    <!--     <script>
     var vConsole = new VConsole();
   </script> -->
     <style>
@@ -31,7 +31,7 @@
 
     /*修改大小在這邊*/
     .image {
-      width: 30%; /*圖片大小*/
+      width: 80%; /*圖片大小*/
     }
     .grid-container { 
       display: inline-grid;
@@ -146,13 +146,25 @@
     function captureImage(ID) {
       const container = document.getElementById(ID);
       const middleDiv = container.querySelector('.middle');
-      if (middleDiv) {
-        return html2canvas(middleDiv, { scale: 5 }).then(canvas => {
-          return canvas.toDataURL('image/png'); // 在 Promise resolve 中返回 imgData
-        });
-      } else {
-        return Promise.reject("Element not found"); // 如果元素不存在，返回拒絕的 Promise
+      if (!middleDiv) {
+        console.error(`Middle div for ID ${ID} not found`);
+        return Promise.reject("Middle div not found");
       }
+    
+      // 複製到臨時容器
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.top = '-150px';
+      tempContainer.style.left = '-150px';
+      tempContainer.style.width = '150px';
+      tempContainer.style.height = '150px';
+      tempContainer.appendChild(middleDiv.cloneNode(true));
+      document.body.appendChild(tempContainer);
+      return html2canvas(tempContainer, { scale: 5 }).then(canvas => {
+        document.body.removeChild(tempContainer);
+        return canvas.toDataURL('image/png'); // 返回圖片數據（如果需要）
+
+      });
     }
   </script>
     <script>
