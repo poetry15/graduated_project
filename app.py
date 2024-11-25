@@ -220,8 +220,11 @@ def generate_image(image_data,userid_list, round_ID):
 		url = round_photo_generator(pixeled_image, 0)
 		print(f"生成的圖片 URL: {url}")
 		latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
+		avg_mood = sum([entry["MoodValue"] for entry in latest_data]) / moodmap.find({"roundID": round_ID})
+		user_count = len(userid_list)
+		print("avg_mood", avg_mood)
 		userid_list = list(set([entry["LineID"] for entry in latest_data]))
-		send_images_to_users(userid_list,url)
+		send_images_to_users(userid_list,url, avg_mood, user_count)
 
 		# 將結束的輪次資料刪除
 		# latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
@@ -361,19 +364,38 @@ def NowStep():
 		print(error)
 		return jsonify({"error": str(error)}), 500
 
-def send_images_to_users(user_id,url):
+color_for_mood = ['紫', '藍', '綠', '黃', '紅']
+def send_images_to_users(user_id,url, avg_mood, usercount):
 	print(user_id, url)
+	ret_text = f'小{color_for_mood[round(avg_mood)-1]}旅行回來啦~本次一同出遊的旅行者共有{usercount}位，希望你們會喜歡這次的景色!'
 	for user in user_id:
 		data = {
-			"to": user,
-			"messages": [{
+			"to": user,  # 接收者 ID
+			"type": "bubble",  # Bubble 結構
+			"hero": {  # 圖片部分
 				"type": "image",
-				"originalContentUrl": url,
-				"previewImageUrl": url,
+				"url": url,  # 圖片的 URL
 				"size": "full",
-				"aspectRatio": "1792:1024",
-			}]
+				"action": {
+					"type": "uri",  # 點擊圖片時的行為
+					"label": "查看圖片",
+					"uri": url  # 點擊後跳轉的連結
+				}
+			},
+			"body": {  # 文字敘述部分
+				"type": "box",
+				"layout": "vertical",
+				"contents": [
+					{
+						"type": "text",
+						"text": ret_text,
+						"wrap": True,  # 啟用文字換行
+						"size": "md",
+					}
+				]
+			}
 		}
+
 		headers = {
 			"Content-Type": "application/json",
 			"Authorization": f"Bearer {channel_access_token}",
