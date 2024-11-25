@@ -370,30 +370,38 @@ def send_images_to_users(user_id,url, avg_mood, usercount):
 	ret_text = f'小{color_for_mood[round(avg_mood)-1]}旅行回來啦~本次一同出遊的旅行者共有{usercount}位，希望你們會喜歡這次的景色!'
 	for user in user_id:
 		data = {
-			"to": user,  # 接收者 ID
-			"type": "bubble",  # Bubble 結構
-			"hero": {  # 圖片部分
-				"type": "image",
-				"url": url,  # 圖片的 URL
-				"size": "full",
-				"action": {
-					"type": "uri",  # 點擊圖片時的行為
-					"label": "查看圖片",
-					"uri": url  # 點擊後跳轉的連結
-				}
-			},
-			"body": {  # 文字敘述部分
-				"type": "box",
-				"layout": "vertical",
-				"contents": [
-					{
-						"type": "text",
-						"text": ret_text,
-						"wrap": True,  # 啟用文字換行
-						"size": "md",
-					}
-				]
-			}
+    "to": user,  # 接收者 ID
+    "messages": [  # `messages` 是一個列表
+		        {
+		            "type": "flex",
+		            "altText": "這是一則彈性訊息",  # 替代文字
+		            "contents": {
+		                "type": "bubble",
+		                "hero": {
+		                    "type": "image",
+		                    "url": url,  # 圖片的 URL
+		                    "size": "full",
+		                    "action": {
+		                        "type": "uri",
+		                        "label": "查看圖片",
+		                        "uri": url
+		                    }
+		                },
+		                "body": {
+		                    "type": "box",
+		                    "layout": "vertical",
+		                    "contents": [
+		                        {
+		                            "type": "text",
+		                            "text": ret_text,
+		                            "wrap": True,
+		                            "size": "md"
+		                        }
+		                    ]
+		                }
+		            }
+		        }
+		    ]
 		}
 
 		headers = {
