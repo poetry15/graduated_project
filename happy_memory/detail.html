@@ -113,7 +113,7 @@
         })
         .then(response => response.json())
         .then(diary => {
-            document.getElementById('diaryDate').textContent = time;
+            document.getElementById('diaryDate').textContent = diary[0].Time;
             changebgcolor(diary[0].MoodColor);
             const content = document.getElementById('diaryContent');
             content.innerHTML = ''; // 清空原有內容
