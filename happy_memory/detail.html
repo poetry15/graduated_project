@@ -108,7 +108,7 @@
             },
             body: JSON.stringify({
                 "LineID": useid,
-                "TimeStamp": time
+                "TimeStamp": parseInt(time)
             })
         })
         .then(response => response.json())
