@@ -379,7 +379,7 @@ def send_images_to_users(user_id,url, avg_mood, usercount, round_ID):
 	ret_text1 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~本次一同出遊的旅行者共有{usercount}位，希望你們會喜歡這次的景色!\n\n人數過少時可能發生顏色不夠精準的情形，敬請見諒'
 	ret_text2 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~這次的作畫活動很熱鬧，下次也歡迎你一起來參加喔～期待你的創意！'
 	for user in user_id:
-		
+		ret_text = ret_text1
 		data = {
 			"to": user,  # 接收者 ID
 			"messages": [  # `messages` 是一個列表
