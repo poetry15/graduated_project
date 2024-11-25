@@ -196,7 +196,11 @@
         }
         if (data.action == 'deleteData') {
           const container = document.getElementById(data.round_ID);
-          container.remove();
+          const carouselItem =  container.parentNode
+          if (carouselItem.classList.contains('active')) {
+            carouselItem.nextElementSibling.classList.add('active');
+          }
+          carouselItem.remove();
           delete roundsData[data.round_ID];
         }
         if (data.action == 'generateImage') {
