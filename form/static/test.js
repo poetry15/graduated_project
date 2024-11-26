@@ -211,10 +211,10 @@ function updateKeywords() {
   showingMore = false; // 重置顯示狀態
 
   // 根據情緒狀態顯示對應的關鍵字
-  if (newMood === "愉快") {
+  if (newMood === "愉快" || newMood === "非常愉快") {
     currentKeywords = happyKeywords;
     additionalKeywords = happyaddi;
-  } else if (newMood === "不愉快") {
+  } else if (newMood === "不愉快" || newMood === "非常不愉快") {
     currentKeywords = sadKeywords;
     additionalKeywords = sadaddi;
   } else {
