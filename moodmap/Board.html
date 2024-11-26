@@ -359,7 +359,7 @@
   const fetch_new_pw = setInterval(function() {
       var refresh = document.getElementById("refresh_time");
       var pw;
-      refresh.innerHTML = "刷新時間: " + String(refresh_sec);
+      // refresh.innerHTML = "刷新時間: " + String(refresh_sec);
       refresh_sec--;
       if(refresh_sec == -1){
           refresh_sec = 20;
@@ -369,7 +369,7 @@
           pw = "https://line.me/R/ti/p/@547axzgh?text=" +  gen_password(10);
           var URL = "https://quickchart.io/qr?text=" + pw + "&size=25";
           qrcode.src = URL;
-          pw_show.innerHTML = URL;
+          // pw_show.innerHTML = URL;
 
           console.log("刷新結果: " + pw + "\n完整url: " + URL);
           fetch(ngrok_url + "/qrcode/genpassword", {
