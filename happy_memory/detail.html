@@ -99,7 +99,7 @@
 
         // url="http://localhost:5000";
         const urlparams = new URLSearchParams(window.location.search);
-        const time = urlparams.get('Time');
+        const time = urlparams.get('TimeStamp');
         const useid = urlparams.get('LineID');
         fetch(url + '/getoneform',{
             method: 'POST',
@@ -108,12 +108,12 @@
             },
             body: JSON.stringify({
                 "LineID": useid,
-                "Time": time
+                "TimeStamp": parseInt(time)
             })
         })
         .then(response => response.json())
         .then(diary => {
-            document.getElementById('diaryDate').textContent = time;
+            document.getElementById('diaryDate').textContent = diary[0].Time;
             changebgcolor(diary[0].MoodColor);
             const content = document.getElementById('diaryContent');
             content.innerHTML = ''; // 清空原有內容

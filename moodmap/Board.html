@@ -21,26 +21,31 @@
     <script
       src="https://cdn.jsdelivr.net/npm/vconsole@3.2.0/dist/vconsole.min.js"></script>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script>
+    <script src="../config.js"></script>
+    <!--     <script>
     var vConsole = new VConsole();
-  </script>
+  </script> -->
     <style>
     body {
-      background-color: #f7d8a6;
+      background-color: #ebebec;
     }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+
+    /*修改大小在這邊*/
+    .image {
+      width: 80%;
+      /*圖片大小*/
     }
+
     .grid-container {
-      display: grid;
+      display: inline-grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(4, 1fr);
-      width: 300px;
-      height: 300px;
+      /*地圖大小*/
+      width: 400px;
+      height: 400px;
       gap: 0px;
     }
+
     .grid-item {
       display: flex;
       align-items: center;
@@ -50,7 +55,7 @@
       height: 100%;
       width: 100%;
     }
-   
+
     /* 頂部行 */
     .item-1 {
       grid-column: 1;
@@ -118,34 +123,155 @@
     .middle {
       grid-row: 2 / span 2;
       grid-column: 2 / span 2;
-      /*grid-column: 1 / span 4;
-      grid-row: 1 / span 4;*/
       background-color: white;
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       grid-template-rows: repeat(8, 1fr);
     }
+
     .middle-item {
       height: 100%;
       width: 100%;
       border: 1px solid black;
     }
+
+    #floating {
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      flex-direction: column;
+      cursor: grab;
+      text-align: center;
+      z-index: 1000;
+  }
   </style>
   </head>
+
   <body>
-    <div id="games-container" class="container mt-4" style="transform: scale(2); transform-origin:top"></div>
+    <div id="games-container" class="container mt-3 text-center d-none">
+      <h1>心情地圖</h1>
+      <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+        </div>
+      </div>
+      <img class="image" src="../assets/proj_poster.png">
+      <div class="floating" id="floating">
+        <h3>掃描QRcode</h3>
+        <h3>加入情緒創作的行列吧!</h3>
+        <div id="qrcode-container"></div>
+      </div>
+    </div>
+    <img id="qrcode" width="200px">
     <canvas id="canvas"></canvas>
+    <script>
+      // 獲取浮動 DIV 元素
+      const floatingDiv = document.getElementById("floating");
+  
+      // 初始化變數，用來記錄滑鼠和元素的位置
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+  
+      // 滑鼠按下事件（開始拖動）
+      floatingDiv.addEventListener("mousedown", (event) => {
+          isDragging = true;
+          // 記錄滑鼠與元素左上角的距離
+          offsetX = event.clientX - floatingDiv.offsetLeft;
+          offsetY = event.clientY - floatingDiv.offsetTop;
+          // 改變游標樣式
+          floatingDiv.style.cursor = "grabbing";
+      });
+  
+      // 滑鼠移動事件（移動元素）
+      document.addEventListener("mousemove", (event) => {
+          if (isDragging) {
+              // 計算新的位置
+              const newX = event.clientX - offsetX;
+              const newY = event.clientY - offsetY;
+              // 更新浮動 DIV 的位置
+              floatingDiv.style.left = `${newX}px`;
+              floatingDiv.style.top = `${newY}px`;
+          }
+      });
+  
+      // 滑鼠放開事件（結束拖動）
+      document.addEventListener("mouseup", () => {
+          if (isDragging) {
+              isDragging = false;
+              // 恢復游標樣式
+              floatingDiv.style.cursor = "move";
+          }
+      });
+  
+    let refresh_sec = 0; // 添加這個變數定義
+    // 修改圖片插入的位置
+    const qrcodeImg = document.createElement('img');
+    qrcodeImg.width = 300; /*QRcode大小*/
+    document.getElementById('qrcode-container').appendChild(qrcodeImg);
+    setInterval(updateQRCode, 1000); // 添加這個定時器
+    function gen_password(length) {
+      const cha_set = '012qrstNOPQ789ablR34uvwJKLM56xyzABCDEFcdefghnopSTUVWijkGHImXYZ';
+      let pw = '';
+      for (let i = 0; i < length; i++) {
+        let index = Math.floor(Math.random() * cha_set.length);
+        pw += cha_set[index];
+      }
+      console.log("pw is: " + pw);
+      return pw;
+    }
+
+    function updateQRCode() {
+      if (refresh_sec <= 0) {
+        refresh_sec = 20;
+        console.log("倒數完成，刷新密碼");
+
+        const pw = "https://line.me/R/ti/p/@084xgtuv?text=" + gen_password(10);
+        const URL = "https://quickchart.io/qr?text=" + pw + "&size=25";
+        qrcodeImg.src = URL;
+
+        console.log("刷新結果: " + pw + "\n完整url: " + URL);
+
+        if (url) {
+          fetch(url + "/qrcode/genpassword", {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              "ngrok-skip-browser-warning": true,
+            },
+            body: JSON.stringify({
+              "password": pw
+            })
+          })
+            .catch(e => console.log('error' + e));
+        }
+      }
+      refresh_sec--;
+      // console.log("倒數：", refresh_sec); // 添加倒數日誌
+    }
+  </script>
     <script>
     function captureImage(ID) {
       const container = document.getElementById(ID);
       const middleDiv = container.querySelector('.middle');
-      if (middleDiv) {
-        return html2canvas(middleDiv, { scale: 5 }).then(canvas => {
-          return canvas.toDataURL('image/png'); // 在 Promise resolve 中返回 imgData
-        });
-      } else {
-        return Promise.reject("Element not found"); // 如果元素不存在，返回拒絕的 Promise
+      if (!middleDiv) {
+        console.error(`Middle div for ID ${ID} not found`);
+        return Promise.reject("Middle div not found");
       }
+
+      // 複製到臨時容器
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.top = '-150px';
+      tempContainer.style.left = '-150px';
+      tempContainer.style.width = '150px';
+      tempContainer.style.height = '150px';
+      tempContainer.appendChild(middleDiv.cloneNode(true));
+      document.body.appendChild(tempContainer);
+      return html2canvas(tempContainer, { scale: 5 }).then(canvas => {
+        document.body.removeChild(tempContainer);
+        return canvas.toDataURL('image/png'); // 返回圖片數據（如果需要）
+
+      });
     }
   </script>
     <script>
@@ -161,23 +287,27 @@
       socket.on('connect', () => {
         console.log('Connected to server');
       });
-      socket.on ('message', async(event) => {
+      socket.on('message', async (event) => {
         const data = event;
         console.log(data);
         if (data.action == 'updateMap') {
           data.map.forEach((item) => {
             const container = document.getElementById(data.round_ID);
             const gridItem = container.querySelector(`.middle #\\3${(item.id).toString().split('').join(' ')}`);
-            gridItem.style.backgroundColor = color[item.color-1];
+            gridItem.style.backgroundColor = color[item.color - 1];
           });
         }
-        if(data.action == 'finish') {
+        if (data.action == 'finish') {
           let img_data = await captureImage(data.round_ID);
-          socket.emit('message',{action:'finish','img': img_data,'round_ID':data.round_ID});
+          socket.emit('message', { action: 'finish', 'img': img_data, 'round_ID': data.round_ID });
         }
         if (data.action == 'deleteData') {
           const container = document.getElementById(data.round_ID);
-          container.remove();
+          const carouselItem = container.parentNode
+          if (carouselItem.classList.contains('active')) {
+            carouselItem.nextElementSibling.classList.add('active');
+          }
+          carouselItem.remove();
           delete roundsData[data.round_ID];
         }
         if (data.action == 'generateImage') {
@@ -197,7 +327,7 @@
     }
 
     async function initMap() {
-      const response = await fetch(url+'/map', {
+      const response = await fetch(url + '/map', {
         method: 'GET',
         headers: {
           'ngrok-skip-browser-warning': 'true'
@@ -209,7 +339,7 @@
       let index = 0;
       data.map.forEach((mapInfo) => {
         const roundID = mapInfo._id;
-        if ( !roundsData[roundID] ) {
+        if (!roundsData[roundID]) {
           roundsData[roundID] = {
             map: mapInfo.map,
             images: []
@@ -222,7 +352,7 @@
       });
       data.image.forEach((imageInfo) => {
         const roundID = imageInfo.round_ID;
-        if ( !roundsData[roundID] ) {
+        if (!roundsData[roundID]) {
           roundsData[roundID] = {
             map: new Array(64).fill(0),
             images: [imageInfo.image]
@@ -238,17 +368,18 @@
       info = roundsData[ID];
       const gridContainer = document.getElementById(ID);
       if (info && gridContainer) {
-        info.map.forEach((value,index) => {
-          const gridItem = gridContainer.querySelector(`.middle #\\3${(index+1).toString().split('').join(' ')} `);
+        info.map.forEach((value, index) => {
+          const gridItem = gridContainer.querySelector(`.middle #\\3${(index + 1).toString().split('').join(' ')} `);
           if (gridItem)
-            gridItem.style.backgroundColor = color[value-1];
-            if (value != 0) {
-              console.log(index);
-            }
+            gridItem.style.backgroundColor = color[value - 1];
         });
         console.log(info);
-        info.images.forEach((imgurl,index) => {
-          const gridItem = gridContainer.querySelector(`#item${(index++)%12+1}`);
+        const Item = gridContainer.querySelectorAll('img');
+        Item.forEach((item) => {
+          item.remove();
+        });
+        info.images.forEach((imgurl, index) => {
+          const gridItem = gridContainer.querySelector(`#item${(index++) % 12 + 1}`);
           const img = document.createElement('img');
           img.src = imgurl;
           img.id = 'img'
@@ -265,7 +396,7 @@
       gameContainer.className = 'grid-container';
       gameContainer.classList.add('mb-5');
       gameContainer.id = roundID;  // 使用 roundID 來唯一標識每個遊戲
-    
+
       // 創建外圍的 12 個 grid-item
       for (let i = 1; i <= 12; i++) {
         const item = document.createElement('div');
@@ -273,11 +404,11 @@
         item.id = `item${i}`;
         gameContainer.appendChild(item);
       }
-    
+
       // 創建中心的 middle 區域
       const middleContainer = document.createElement('div');
       middleContainer.className = 'grid-item middle';
-    
+
       // 創建中間的 64 個 grid-item
       for (let i = 1; i <= 64; i++) {
         const middleItem = document.createElement('div');
@@ -286,15 +417,24 @@
         middleContainer.appendChild(middleItem);
       }
       gameContainer.appendChild(middleContainer);
-      document.getElementById('games-container').appendChild(gameContainer);
+      const carouselInner = document.querySelector('.carousel-inner');
+      const carouselItem = document.createElement('div');
+      carouselItem.setAttribute('data-bs-interval', '15000');
+      carouselItem.className = 'carousel-item';
+      if (carouselInner.children.length === 0) {
+        carouselItem.classList.add('active');
+      }
+      carouselItem.appendChild(gameContainer);
+      carouselInner.appendChild(carouselItem);
     }
 
-    document.addEventListener('DOMContentLoaded', async() => {
+    document.addEventListener('DOMContentLoaded', async () => {
       await initMap();
       for (const roundID in roundsData) {
         displayMap(roundID);
       }
       initializeWebSocket();
+      document.getElementById('games-container').classList.remove('d-none');
     });
   </script>
   </body>

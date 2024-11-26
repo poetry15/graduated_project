@@ -6,6 +6,17 @@ from dotenv import load_dotenv
 from PIL import Image
 import base64
 import requests
+import uuid
+import firebase_admin
+from firebase_admin import credentials, storage
+
+cred = credentials.Certificate("updatepicture-3ea0e-firebase-adminsdk-egrig-039fa4e622.json")
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'updatepicture-3ea0e.appspot.com'
+})
+
+# 初始化 Storage Bucket
+bucket = storage.bucket()
 
 load_dotenv()
 # 初始化 OpenAI 客戶端
@@ -39,23 +50,46 @@ def imageGenerate(keywords):
     with urllib.request.urlopen(image_url) as response:
       image_data = response.read()
       base64_encoded_data = base64.b64encode(image_data).decode('utf-8')
-      img_url = upload_image_to_imgur(base64_encoded_data)
+      img_url = upload_image_to_firebase(base64_encoded_data)
       print(img_url)
     return img_url
   except Exception as e:
     print(e)
     return None
 
+def upload_image_to_firebase(image_data):
+  filename = f"{uuid.uuid4().hex}.png"  # 為圖片生成唯一名稱
+  # 上傳到 Firebase Storage
+  blob = bucket.blob(filename)
+  blob.upload_from_string(base64.b64decode(image_data), content_type="image/png")
+
+  # 設置圖片為公開（可選）
+  blob.make_public()
+
+  # 返回公開圖片 URL
+  return blob.public_url
+
 def upload_image_to_imgur(image_data):
-    url = "https://api.imgur.com/3/image"
-    headers = {
-        "Authorization": f"Client-ID fa8c9cac55933c1"
-    }
-    data = {
-        "image": image_data,
-    }
-    response = requests.post(url, headers=headers, data=data)
-    if response.status_code == 200:
-        return response.json()["data"]["link"]
-    else:
-        raise Exception("Failed to upload image to Imgur")
+  url = "https://api.imgur.com/3/image"
+  headers = {
+    "Authorization": f"Client-ID ef14f9fb39946ee"
+  }
+  data = {
+    "image": image_data,
+  }
+  
+  response = requests.post(url, headers=headers, data=data)
+  
+  if response.status_code == 200:
+    response_data = response.json()["data"]
+    link = response_data["link"]
+    deletehash = response_data["deletehash"]
+
+      # 將 link 和 deletehash 保存到文本文件中
+    with open("imgur_images.txt", "a") as file:
+        file.write(f"Link: {link}, Deletehash: {deletehash}\n")
+
+      # 返回圖片的 URL
+    return link
+  else:
+    raise Exception(f"Failed to upload image to Imgur. Status code: {response.status_code}, Response: {response.text}")

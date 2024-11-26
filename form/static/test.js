@@ -361,11 +361,11 @@ function scancode() {
     denyButtonText: "不同意",
     confirmButtonText: "同意",
   })
-  .then(result => {
-    if(result.isDenied)
-      liff.closeWindow();
-  })
-  .then(() => liff.scanCodeV2())
+    .then(result => {
+      if (result.isDenied)
+        liff.closeWindow();
+    })
+    .then(() => liff.scanCodeV2())
     .then(result => {
       // const resultElement = document.getElementById('result');
       // resultElement.textContent = `QR Code result: ${result.value}`;
@@ -411,7 +411,7 @@ function scancode() {
 function getNextHour() {
   let date = new Date();
   date = date.getHours() + 1;
-  if(date >= 24)  date -= 24;
+  if (date >= 24) date -= 24;
   return date;
 }
 
@@ -419,31 +419,31 @@ function getNextHour() {
 function flexMessage(randomPoints, emotionFactor_without_emoji) {
   let msg;
   let boxcontext = [{
-      type: "text",
-      text: "目前圖片結果",
-      size: "xl",
+    type: "text",
+    text: "情緒喵帶來心情小記後出門啦~",
+    size: "lg",
+  },
+  {
+    type: "text",
+    text: "紀錄時間：" + new Date().toLocaleString(),
+  },
+  {
+    type: "text",
+    text: `情緒分數：` + moodscore,
+  },
+  {
+    type: 'text',
+    text: `獲得創作積分：${randomPoints}`,
+    size: 'xl',
+  },
+  {
+    "type": "button",
+    "action": {
+      "type": "uri",
+      "label": `請於${getNextHour()}點前點此前往創作`,
+      "uri": "https://liff.line.me/2004371526-QNE54xpZ"
     },
-    {
-      type: "text",
-      text: "紀錄時間：" + new Date().toLocaleString(),
-    },
-    {
-      type: "text",
-      text: `情緒分數：` + moodscore,
-    },
-    {
-      type: 'text',
-      text: `獲得創作積分：${randomPoints}`,
-      size: 'xl',
-    },
-    {
-      "type": "button",
-      "action": {
-        "type": "uri",
-        "label": `請於${getNextHour()}點前點此前往創作`,
-        "uri": "https://liff.line.me/2004371526-QNE54xpZ"
-      },
-    },
+  },
     // {
     //   type: "text",
     //   text: `情緒關鍵詞：${keyword.join(", ")}`,
@@ -602,107 +602,143 @@ function pushMsg() {
   const message = flexMessage(randomPoints, emotionFactor_without_emoji);
   console.log(message);
 
-  const formData = getformData(emotionFactor_without_emoji);  
+  const formData = getformData(emotionFactor_without_emoji);
   Swal.fire({
     title: '骰出你的創作點數！',
     html: `
       <div class="slideshow-container">
-        <img id="slideshowImage" class="slideshow-image" src="/static/dice1.png" />
+        <img id="slideshowImage" style="height:50px" class="slideshow-image" src="static/dice1.png" />
       </div>
       <p id="showpoint" style="font-size: large"> </p>
     `,
+    allowOutsideClick: false,
     showConfirmButton: false,
     didOpen: () => {
       // 獲取圖片元素
       const imgElement = document.getElementById('slideshowImage');
-      const maxLoops = 18+randomPoints-1;
+      const showpoint = document.getElementById('showpoint');
+      const maxLoops = 12 + randomPoints - 1;
       let currentIndex = 0;
       let loopCount = 0;
-
+      // let spmessage = `恭喜獲得 ${randomPoints} 點共創點數！`;
       const interval = setInterval(() => {
         currentIndex = (currentIndex + 1) % 6; // 輪流顯示圖片
-        imgElement.src = `static/dice${currentIndex+1}.png`; // 更新圖片
+        imgElement.src = `static/dice${currentIndex + 1}.png`; // 更新圖片
         if (++loopCount >= maxLoops) {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
-          document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
-          setTimeout(() => { // 結束後3秒自動關閉
-            Swal.close();
-          }, 3000);
+          // setTimeout(() => {
+          showpoint.innerHTML = `恭喜獲得 ${randomPoints} 點共創點數！`;
+          // },2000);
+          setTimeout(() => {
+            Swal.fire({
+              title: '情緒轉換中...',
+              text: '請稍候',
+              allowOutsideClick: false, // 防止用戶點擊外部關閉
+              didOpen: () => {
+                Swal.showLoading(); // 顯示內建的 loading 動畫
+              }
+            })
+          }, 2000)
         }
       }, 200);
     },
-  })
-  .then(() => {
-    return Swal.fire({
-      title: '情緒轉換中...',
-      text: '請稍候',
-      allowOutsideClick: false, // 防止用戶點擊外部關閉
-      didOpen: () => {
-        Swal.showLoading(); // 顯示內建的 loading 動畫
-      }
-    });
-  });
-
-  let round_ID = '';
-  fetch(url + '/api', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData),
-  })
-    .then(response => response.json())
-    .then(data => {
-      round_ID = data.round_ID;
-      message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
-        type: "image",
-        url: data.image,
-        size: "full",
-        aspectRatio: "1024:1024",
-      });
-
-      return fetch(url + '/send-message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(message),
-      });
+  }).then(() => {
+    let round_ID = '';
+    fetch(url + '/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
     })
-    .then(response => {
-      console.log("成功傳送",response);
-      return fetch(url + '/moodmap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          randomPoints: randomPoints,
-          LineID: userId,
-          MoodValue: moodscore,
-          roundID: round_ID
-        }),
-      });
-    })
-    .then(() => {
-      // 所有操作完成後，顯示成功彈窗
-      Swal.fire({
-        icon: 'success',
-        title: '轉換完成',
-        confirmButtonText: "確認"
-      })
-        .then(result => {
-          if (result.isConfirmed) {
-            liff.closeWindow();
-          }
+      .then(response => response.json())
+      .then(data => {
+        round_ID = data.round_ID;
+        message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
+          type: "image",
+          url: data.image,
+          size: "full",
+          aspectRatio: "1024:1024",
         });
-    })
-    .catch(error => {
-      // 任何階段的錯誤處理
-      Swal.fire({
-        icon: 'error',
-        title: '錯誤',
-        text: '請求處理過程中發生錯誤，請稍後再試！'
+
+        return fetch(url + '/send-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(message),
+        });
+      })
+      .then(response => {
+        console.log("成功傳送", response);
+        return fetch(url + '/moodmap', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            randomPoints: randomPoints,
+            LineID: userId,
+            MoodValue: moodscore,
+            roundID: round_ID
+          }),
+        });
+      })
+      // .then(() => {
+      // const formuri = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`
+      // let msg = {
+      //   to: userId, // 接收者的 User ID
+      //   messages: [
+      //     {
+      //       type: "flex", // 訊息類型為 Flex Message
+      //       altText: "開啟前測表單", // 當 Flex Message 無法顯示時的替代文字
+      //       contents: {
+      //         type: "bubble", // Bubble 容器
+      //         body: {
+      //           type: "box", // 使用 box 容器
+      //           layout: "vertical", // 垂直排列內容
+      //           contents: [
+      //             {
+      //               type: "button", // 按鈕元件
+      //               action: {
+      //                 type: "uri", // 按鈕動作類型為 URI
+      //                 label: "開啟前測表單", // 按鈕顯示的文字
+      //                 uri: formuri, // 點擊按鈕後打開的網址
+      //               },
+      //               style: "primary", // 按鈕樣式為主要（藍色）
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //   ],
+      // };
+
+      //   return fetch(url + '/send-message'), {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     },
+      //     body: JSON.stringify(message)
+      //   };
+      // })
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: '轉換完成',
+          confirmButtonText: "確認"
+        })
+          .then(result => {
+            if (result.isConfirmed) {
+              liff.closeWindow();
+            }
+          });
+      })
+      .catch(error => {
+        // 任何階段的錯誤處理
+        Swal.fire({
+          icon: 'error',
+          title: '錯誤',
+          text: '請求處理過程中發生錯誤，請稍後再試！'
+        });
+        console.error('There has been a problem with your fetch operation:', error);
       });
-      console.error('There has been a problem with your fetch operation:', error);
-    });
-
-
+  })
 }
 
 document.addEventListener('DOMContentLoaded', function () {

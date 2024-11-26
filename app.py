@@ -1,6 +1,6 @@
 from flask import Flask, request, abort, jsonify,render_template
 from flask_socketio import SocketIO,emit
-from moodmap.Exterior import imageGenerate, upload_image_to_imgur
+from moodmap.Exterior import imageGenerate, upload_image_to_firebase
 from gen_round.gen import round_photo_generator, read_image_from_url, validate_gen
 from WordCloud.WordCloud import dealAllData, dealSingleData
 from pymongo import MongoClient
@@ -57,8 +57,8 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
-quick_flag = True
-image_flag = False
+quick_flag = False
+image_flag = True
 people_limit = 12
 min_limit = 5
 gen_min = 40
@@ -70,17 +70,24 @@ def send_at_every_hour():
 		# 檢查是否是整點（分鐘為 0）
 		# print(now.minute, now.second)
 		if(now.minute == gen_min and now.second == 0):
-			validate_gen()
-		if ((now.minute == (gen_min-2)%60 and now.second == 40) or image_flag):
+			try:
+				validate_gen()
+			except Exception as e:
+				print("valid gen error", e)
+		if ((now.minute == (gen_min+1)%60 and 50 >= now.second >= 30) or image_flag):
+			print("gen_pic", now.minute, now.second)
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
 				if info["people_count"] >= min_limit or info["update_count"] >= min_limit:	
 					map.find_one_and_update({"_id": info["_id"]}, {"$set": {"state": "completed"}})
 			map_info = list(map.find({}))
+			print(map_info)
 			for info in map_info:	
+				print("round num" + info["state"] + " " + str(info["_id"]))
 				if (info["state"] == "completed"):
 					print("i'm here")
 					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
+					# time.sleep(3)
 			time.sleep(60)  # 避免在同一分鐘內重複多次發送
 		time.sleep(1)  # 每秒檢查一次
 
@@ -171,9 +178,9 @@ def get_user_form():
 def get_one_form():
 	reqdata = request.json
 	userid = reqdata["LineID"]
-	time = reqdata["Time"]
+	time = reqdata["TimeStamp"]
 	if userid:
-		user_form = list(formdata.find({"LineID": userid, "Time": time}).limit(1))
+		user_form = list(formdata.find({"LineID": userid, "TimeStamp": time}).limit(1))
 		print(user_form)
 		if user_form:
 			for f in user_form:
@@ -215,21 +222,28 @@ def handle_message(data):
 		
 def generate_image(image_data,userid_list, round_ID):
 	try:
-		image_url = upload_image_to_imgur(image_data)
+		image_url = upload_image_to_firebase(image_data)
 		pixeled_image = read_image_from_url(image_url)
-		url = round_photo_generator(pixeled_image, 0)
-		print(f"生成的圖片 URL: {url}")
+		results = list(moodmap.find({"roundID": round_ID}))
 		latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
-		userid_list = list(set([entry["LineID"] for entry in latest_data]))
-		send_images_to_users(userid_list,url)
+		avg_mood = sum([entry["MoodValue"] for entry in latest_data]) / len(results)
+		url = round_photo_generator(pixeled_image, round(avg_mood-1))
+		print(f"生成的圖片 URL: {url}")
+		user_count = len(results)
+		print("avg_mood", avg_mood)
+		userid_list = {}
+		for entry in latest_data:
+			if entry["LineID"] not in userid_list:
+				userid_list[entry["LineID"]] = entry["randomPoints"]
+		send_images_to_users(userid_list,url, avg_mood-1, user_count)
 
 		# 將結束的輪次資料刪除
-		# latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
-		# delete_image = [record["_id"] for record in latest_image]
-		# image.delete_many({"_id": {"$in": delete_image}})
-		# moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
-		# map.delete_one({"_id": ObjectId(round_ID)})
-		# socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
+		latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
+		delete_image = [record["_id"] for record in latest_image]
+		image.delete_many({"_id": {"$in": delete_image}})
+		moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
+		map.delete_one({"_id": ObjectId(round_ID)})
+		socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
 	except Exception as e:
 		print(f"生成圖片時出現錯誤: {e}")
 
@@ -361,19 +375,64 @@ def NowStep():
 		print(error)
 		return jsonify({"error": str(error)}), 500
 
-def send_images_to_users(user_id,url):
+
+color_for_mood = ['紫', '藍', '綠', '黃', '紅']
+def send_images_to_users(user_id,url, avg_mood, usercount, round_ID):
 	print(user_id, url)
-	for user in user_id:
-		data = {
-			"to": user,
-			"messages": [{
-				"type": "image",
-				"originalContentUrl": url,
-				"previewImageUrl": url,
-				"size": "full",
-				"aspectRatio": "1792:1024",
-			}]
-		}
+	ret_text1 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~本次一同出遊的旅行者共有{usercount}位，希望你們會喜歡這次的景色!\n\n人數過少時可能發生顏色不夠精準的情形，敬請見諒'
+	ret_text2 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~這次的作畫活動很熱鬧，下次也歡迎你一起來參加喔～期待你的創意！'
+	# ret_text = ret_text1
+	for user,randpoints in user_id.items():
+		data = {}
+		if ( randpoints != 0):
+			data = {
+				"to": user,  # 接收者 ID
+				"messages": [  # `messages` 是一個列表
+			        {
+			            "type": "text",
+			            "text": ret_text2,
+			        }
+			    ]
+			}
+
+		else:
+			data = {
+				"to": user,  # 接收者 ID
+				"messages": [  # `messages` 是一個列表
+			        {
+			            "type": "flex",
+			            "altText": "小貓旅行回來啦～快來看看結果",  # 替代文字
+			            "contents": {
+			                "type": "bubble",
+			                "hero": {
+			                    "type": "image",
+			                    "url": url,  # 圖片的 URL
+			                    "size": "full",
+								"aspectRatio": "1.5:1",
+								"aspectMode": "fit",
+			                    "action": {
+			                        "type": "uri",
+			                        "label": "查看圖片",
+			                        "uri": url
+			                    }
+			                },
+			                "body": {
+			                    "type": "box",
+			                    "layout": "vertical",
+			                    "contents": [
+			                        {
+			                            "type": "text",
+			                            "text": ret_text1,
+			                            "wrap": True,
+			                            "size": "md"
+			                        }
+			                    ]
+			                }
+			            }
+			        }
+			    ]
+			}
+
 		headers = {
 			"Content-Type": "application/json",
 			"Authorization": f"Bearer {channel_access_token}",
