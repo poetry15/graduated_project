@@ -58,7 +58,7 @@ print("url: " + url)
 scancode_flag = False
 check5min_flag = False
 quick_flag = False
-image_flag = True
+image_flag = False
 people_limit = 12
 min_limit = 5
 gen_min = 40
@@ -75,15 +75,15 @@ def send_at_every_hour():
 			except Exception as e:
 				print("valid gen error", e)
 		if ((now.minute == (gen_min+1)%60 and 50 >= now.second >= 30) or image_flag):
-			print("gen_pic", now.minute, now.second)
+			# print("gen_pic", now.minute, now.second)
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
 				if info["people_count"] >= min_limit or info["update_count"] >= min_limit:	
 					map.find_one_and_update({"_id": info["_id"]}, {"$set": {"state": "completed"}})
 			map_info = list(map.find({}))
-			print(map_info)
+			# print(map_info)
 			for info in map_info:	
-				print("round num" + info["state"] + " " + str(info["_id"]))
+				# print("round num" + info["state"] + " " + str(info["_id"]))
 				if (info["state"] == "completed"):
 					print("i'm here")
 					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
@@ -281,7 +281,6 @@ def get_data():
 	except Exception as e:
 		return str(e), 400
 
-
 # DataRecord, 接收表單資料
 @app.route("/api", methods=["POST"])
 def save_data():
@@ -291,7 +290,19 @@ def save_data():
 		formdata.insert_one(form_data)
 		dealSingleData(form_data)
 		if (quick_flag == False):
-			imageUrl = imageGenerate(form_data["MoodColor"])
+			try:
+				imageUrl = imageGenerate(form_data["MoodColor"])
+			except:
+				if (form_data["MoodValue"] == 1):
+					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/728523625c224f8caf8ecb0ff6ae618f.png"
+				elif(form_data["MoodValue"] == 2):
+					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/f58f34d9c7b848f587bd758b3b602663.png"
+				elif(form_data["MoodValue"] == 3):
+					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/b5ef3470ecf44db4bd45304c63da09a9.png"
+				elif(form_data["MoodValue"] == 4):
+					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/fdf78b9e3e4e44c280096eee3e64856a.png" 
+				elif(form_data["MoodValue"] == 5):
+					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/f58f34d9c7b848f587bd758b3b602663.png"
 		else:
 			imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
 
@@ -505,7 +516,7 @@ def callback():
 if __name__ == "__main__":
 	# 啟動線程，保持運行，檢查時間
 	threading.Thread(target=send_at_every_hour, daemon=True).start()
-	socketio.run(app,debug=True)
+	socketio.run(app, debug=True)
 
 # ------------------- 測試用 -------------------------------
 # 有問必答hello world

@@ -3,7 +3,6 @@ import urllib.request
 import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from PIL import Image
 import base64
 import requests
 import uuid
