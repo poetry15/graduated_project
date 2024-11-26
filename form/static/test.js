@@ -625,7 +625,9 @@ function pushMsg() {
         if (++loopCount >= maxLoops) {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
-          document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
+          setTimeout(() => {
+            document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
+          },1000);
         }
       }, 200);
     },
@@ -640,7 +642,7 @@ function pushMsg() {
           Swal.showLoading(); // 顯示內建的 loading 動畫
         }
       });
-    }, 3000);
+    }, 2000);
   });
 
   let round_ID = '';
