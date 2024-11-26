@@ -337,7 +337,7 @@
       const data = await response.json();
       console.log(data);
       let index = 0;
-      if (data) {
+      if (data.length != 0) {
         data.map.forEach((mapInfo) => {
           const roundID = mapInfo._id;
           if (!roundsData[roundID]) {
