@@ -680,7 +680,7 @@ function pushMsg() {
         }),
       });
     })
-    .then(() => {
+    // .then(() => {
       // const formuri = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`
       // let msg = {
       //   to: userId, // 接收者的 User ID
@@ -710,14 +710,14 @@ function pushMsg() {
       //   ],
       // };
 
-      return fetch(url + '/send-message'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(msg)
-      };
-    })
+    //   return fetch(url + '/send-message'), {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(message)
+    //   };
+    // })
     .then(() => {
       Swal.fire({
         icon: 'success',
