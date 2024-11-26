@@ -618,7 +618,7 @@ function pushMsg() {
       const maxLoops = 18+randomPoints-1;
       let currentIndex = 0;
       let loopCount = 0;
-
+      let spmessage = `恭喜獲得 ${randomPoints} 點共創點數！`;
       const interval = setInterval(() => {
         currentIndex = (currentIndex + 1) % 6; // 輪流顯示圖片
         imgElement.src = `static/dice${currentIndex+1}.png`; // 更新圖片
@@ -626,8 +626,8 @@ function pushMsg() {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
           setTimeout(() => {
-            document.getElementById('showpoint').textContent = `恭喜獲得點共創點數！`;
-          },1000);
+            document.getElementById('showpoint').innerHTML = spmessage;
+          },2000);
         }
       }, 200);
     },
