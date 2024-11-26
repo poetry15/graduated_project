@@ -196,6 +196,7 @@ function updateKeywords() {
     (newMood === "非常不愉快" && previousMood === "不愉快") ||
     (newMood === "不愉快" && previousMood === "非常不愉快")
   ) {
+    console.log("情緒狀態沒有變化，不刷新選單" + newMood + " " + previousMood);
     return; // 結束函式，不刷新選單
   }
 
