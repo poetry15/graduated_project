@@ -309,6 +309,10 @@
           }
           carouselItem.remove();
           delete roundsData[data.round_ID];
+          const element = document.querySelectorAll('.carousel-item');
+          if (element.length === 0) {
+            createGridContainer('empty');
+          }
         }
         if (data.action == 'generateImage') {
           if (roundsData[data.round_ID]) {
@@ -364,6 +368,9 @@
           }
         });
       }
+      else {
+        createGridContainer('empty');
+      }
     }
 
     async function displayMap(ID) {
@@ -396,6 +403,12 @@
 
     function createGridContainer(roundID) {
       // 創建包含 grid-items 的主容器
+      if (roundID != 'empty') {
+        const emptyelement = document.getElementById('empty');
+        if (emptyelement) {
+          emptyelement.remove();
+        }
+      }
       const gameContainer = document.createElement('div');
       gameContainer.className = 'grid-container';
       gameContainer.classList.add('mb-5');
