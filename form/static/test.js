@@ -681,6 +681,17 @@ function pushMsg() {
     })
     .then(() => {
       // 所有操作完成後，顯示成功彈窗
+      return fetch(url + '/send-form'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          LineID: userId
+        })
+      };
+    })
+    .then(() => {
       Swal.fire({
         icon: 'success',
         title: '轉換完成',
