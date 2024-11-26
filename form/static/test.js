@@ -680,34 +680,34 @@ function pushMsg() {
       });
     })
     .then(() => {
-      const formuri = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`
-      let msg = {
-        to: userId, // 接收者的 User ID
-        messages: [
-          {
-            type: "flex", // 訊息類型為 Flex Message
-            altText: "開啟前測表單", // 當 Flex Message 無法顯示時的替代文字
-            contents: {
-              type: "bubble", // Bubble 容器
-              body: {
-                type: "box", // 使用 box 容器
-                layout: "vertical", // 垂直排列內容
-                contents: [
-                  {
-                    type: "button", // 按鈕元件
-                    action: {
-                      type: "uri", // 按鈕動作類型為 URI
-                      label: "開啟前測表單", // 按鈕顯示的文字
-                      uri: formuri, // 點擊按鈕後打開的網址
-                    },
-                    style: "primary", // 按鈕樣式為主要（藍色）
-                  },
-                ],
-              },
-            },
-          },
-        ],
-      };
+      // const formuri = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`
+      // let msg = {
+      //   to: userId, // 接收者的 User ID
+      //   messages: [
+      //     {
+      //       type: "flex", // 訊息類型為 Flex Message
+      //       altText: "開啟前測表單", // 當 Flex Message 無法顯示時的替代文字
+      //       contents: {
+      //         type: "bubble", // Bubble 容器
+      //         body: {
+      //           type: "box", // 使用 box 容器
+      //           layout: "vertical", // 垂直排列內容
+      //           contents: [
+      //             {
+      //               type: "button", // 按鈕元件
+      //               action: {
+      //                 type: "uri", // 按鈕動作類型為 URI
+      //                 label: "開啟前測表單", // 按鈕顯示的文字
+      //                 uri: formuri, // 點擊按鈕後打開的網址
+      //               },
+      //               style: "primary", // 按鈕樣式為主要（藍色）
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //   ],
+      // };
 
       return fetch(url + '/send-message'), {
         method: 'POST',
