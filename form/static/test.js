@@ -626,22 +626,21 @@ function pushMsg() {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
           document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
-          setTimeout(() => { // 結束後3秒自動關閉
-            Swal.close();
-          }, 3000);
         }
       }, 200);
     },
   })
   .then(() => {
-    return Swal.fire({
-      title: '情緒轉換中...',
-      text: '請稍候',
-      allowOutsideClick: false, // 防止用戶點擊外部關閉
-      didOpen: () => {
-        Swal.showLoading(); // 顯示內建的 loading 動畫
-      }
-    });
+    setTimeout(() => { // 結束後3秒自動關閉
+      Swal.fire({
+        title: '情緒轉換中...',
+        text: '請稍候',
+        allowOutsideClick: false, // 防止用戶點擊外部關閉
+        didOpen: () => {
+          Swal.showLoading(); // 顯示內建的 loading 動畫
+        }
+      });
+    }, 3000);
   });
 
   let round_ID = '';
