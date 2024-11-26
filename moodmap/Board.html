@@ -337,31 +337,33 @@
       const data = await response.json();
       console.log(data);
       let index = 0;
-      data.map.forEach((mapInfo) => {
-        const roundID = mapInfo._id;
-        if (!roundsData[roundID]) {
-          roundsData[roundID] = {
-            map: mapInfo.map,
-            images: []
-          };
-          createGridContainer(roundID);
-        }
-        else {
-          roundsData[roundID].map = mapInfo.map;
-        }
-      });
-      data.image.forEach((imageInfo) => {
-        const roundID = imageInfo.round_ID;
-        if (!roundsData[roundID]) {
-          roundsData[roundID] = {
-            map: new Array(64).fill(0),
-            images: [imageInfo.image]
-          };
-        }
-        else {
-          roundsData[roundID].images.push(imageInfo.image);
-        }
-      });
+      if (data) {
+        data.map.forEach((mapInfo) => {
+          const roundID = mapInfo._id;
+          if (!roundsData[roundID]) {
+            roundsData[roundID] = {
+              map: mapInfo.map,
+              images: []
+            };
+            createGridContainer(roundID);
+          }
+          else {
+            roundsData[roundID].map = mapInfo.map;
+          }
+        });
+        data.image.forEach((imageInfo) => {
+          const roundID = imageInfo.round_ID;
+          if (!roundsData[roundID]) {
+            roundsData[roundID] = {
+              map: new Array(64).fill(0),
+              images: [imageInfo.image]
+            };
+          }
+          else {
+            roundsData[roundID].images.push(imageInfo.image);
+          }
+        });
+      }
     }
 
     async function displayMap(ID) {
@@ -375,9 +377,11 @@
         });
         console.log(info);
         const Item = gridContainer.querySelectorAll('img');
-        Item.forEach((item) => {
-          item.remove();
-        });
+        if(Item) {
+          Item.forEach((item) => {
+            item.remove();
+          });
+        }
         info.images.forEach((imgurl, index) => {
           const gridItem = gridContainer.querySelector(`#item${(index++) % 12 + 1}`);
           const img = document.createElement('img');
