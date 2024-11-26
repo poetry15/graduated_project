@@ -21,6 +21,7 @@
     <script
       src="https://cdn.jsdelivr.net/npm/vconsole@3.2.0/dist/vconsole.min.js"></script>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="../config.js"></script>
     <!--     <script>
     var vConsole = new VConsole();
   </script> -->
@@ -130,6 +131,13 @@
       width: 100%;
       border: 1px solid black;
     }
+    #qrcode {
+      position: absolute;
+      top: 20px;  /* 距離頂部的距離 */
+      right: 20px;  /* 距離右側的距離 */
+      width: 200px;
+      z-index: 1000;  /* 確保 QR code 在其他元素上方 */
+  }
   </style>
   </head>
   <body>
@@ -141,6 +149,7 @@
       </div>
       <img class="image" src="../assets/proj_poster.png">
     </div>
+    <img id="qrcode" width="200px">
     <canvas id="canvas"></canvas>
     <script>
     function captureImage(ID) {
@@ -330,6 +339,54 @@
       document.getElementById('games-container').classList.remove('d-none');
     });
   </script>
+
+<script> // qrcode.js
+  console.log(url);
+  const ngrok_url = url;
+  let refresh_sec = 0;
+
+  function gen_password(length){
+      const cha_set = '012qrstNOPQ789ablR34uvwJKLM56xyzABCDEFcdefghnopSTUVWijkGHImXYZ';
+      let pw = '';
+      for(let i = 0 ; i < length ; i++){
+          let index = Math.floor(Math.random() * cha_set.length);
+          pw += cha_set[index];
+      }
+      console.log("pw is: " + pw);
+      return pw;
+  }
+
+  const fetch_new_pw = setInterval(function() {
+      var refresh = document.getElementById("refresh_time");
+      var pw;
+      refresh.innerHTML = "刷新時間: " + String(refresh_sec);
+      refresh_sec--;
+      if(refresh_sec == -1){
+          refresh_sec = 20;
+          console.log("倒數完成，刷新密碼");
+          var qrcode = document.getElementById("qrcode");
+          var pw_show = document.getElementById("pw_number");
+          pw = "https://line.me/R/ti/p/@547axzgh?text=" +  gen_password(10);
+          var URL = "https://quickchart.io/qr?text=" + pw + "&size=25";
+          qrcode.src = URL;
+          pw_show.innerHTML = URL;
+
+          console.log("刷新結果: " + pw + "\n完整url: " + URL);
+          fetch(ngrok_url + "/qrcode/genpassword", {
+              method:'POST',
+              headers : {
+                  'content-type': 'application/json',
+                  "ngrok-skip-browser-warning": true,
+              },
+              body: JSON.stringify({
+                  "password" : pw
+              })
+          })
+          // .then(req => {console.log(req)})
+          .catch(e => console.log('error' + e))
+      }
+  }, 1000);
+</script>
   </body>
 
 </html>
