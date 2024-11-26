@@ -615,6 +615,7 @@ function pushMsg() {
     didOpen: () => {
       // 獲取圖片元素
       const imgElement = document.getElementById('slideshowImage');
+      const showpoint = document.getElementById('showpoint');
       const maxLoops = 18+randomPoints-1;
       let currentIndex = 0;
       let loopCount = 0;
@@ -626,7 +627,7 @@ function pushMsg() {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
           // setTimeout(() => {
-          //   document.getElementById('showpoint').innerHTML = spmessage;
+          document.getElementById('showpoint').innerHTML = `恭喜獲得 ${randomPoints} 點共創點數！`;
           // },2000);
         }
       }, 200);
