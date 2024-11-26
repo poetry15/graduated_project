@@ -6,6 +6,17 @@ from dotenv import load_dotenv
 from PIL import Image
 import base64
 import requests
+import uuid
+import firebase_admin
+from firebase_admin import credentials, storage
+
+cred = credentials.Certificate("updatepicture-3ea0e-firebase-adminsdk-egrig-039fa4e622.json")
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'updatepicture-3ea0e.appspot.com'
+})
+
+# 初始化 Storage Bucket
+bucket = storage.bucket()
 
 load_dotenv()
 # 初始化 OpenAI 客戶端
@@ -45,6 +56,18 @@ def imageGenerate(keywords):
   except Exception as e:
     print(e)
     return None
+
+def upload_image_to_firebase(image_data):
+  filename = f"{uuid.uuid4().hex}.png"  # 為圖片生成唯一名稱
+  # 上傳到 Firebase Storage
+  blob = bucket.blob(filename)
+  blob.upload_from_string(image_data, content_type="image/png")
+
+  # 設置圖片為公開（可選）
+  blob.make_public()
+
+  # 返回公開圖片 URL
+  return blob.public_url
 
 def upload_image_to_imgur(image_data):
   url = "https://api.imgur.com/3/image"

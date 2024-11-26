@@ -57,7 +57,7 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
-quick_flag = True
+quick_flag = False
 image_flag = True
 people_limit = 12
 min_limit = 5
