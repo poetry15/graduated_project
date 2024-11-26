@@ -626,7 +626,7 @@ function pushMsg() {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
           setTimeout(() => {
-            document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
+            document.getElementById('showpoint').textContent = `恭喜獲得點共創點數！`;
           },1000);
         }
       }, 200);
