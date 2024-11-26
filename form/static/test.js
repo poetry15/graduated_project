@@ -630,7 +630,7 @@ function pushMsg() {
             Swal.close();
           }, 500);
         }
-      }, 100);
+      }, 60);
     },
   })
   .then(() => {
