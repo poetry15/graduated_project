@@ -628,9 +628,9 @@ function pushMsg() {
           document.getElementById('showpoint').textContent = `恭喜獲得 ${randomPoints} 點共創點數！`;
           setTimeout(() => { // 結束後3秒自動關閉
             Swal.close();
-          }, 3000);
+          }, 500);
         }
-      }, 200);
+      }, 100);
     },
   })
   .then(() => {
