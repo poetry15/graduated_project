@@ -607,7 +607,7 @@ function pushMsg() {
     title: '骰出你的創作點數！',
     html: `
       <div class="slideshow-container">
-        <img id="slideshowImage" style="height:50px" class="slideshow-image" src="dice1.png" />
+        <img id="slideshowImage" style="height:50px" class="slideshow-image" src="static/dice1.png" />
       </div>
       <p id="showpoint" style="font-size: large"> </p>
     `,
@@ -621,7 +621,7 @@ function pushMsg() {
 
       const interval = setInterval(() => {
         currentIndex = (currentIndex + 1) % 6; // 輪流顯示圖片
-        imgElement.src = `dice${currentIndex+1}.png`; // 更新圖片
+        imgElement.src = `static/dice${currentIndex+1}.png`; // 更新圖片
         if (++loopCount >= maxLoops) {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
