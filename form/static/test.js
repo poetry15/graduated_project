@@ -633,16 +633,14 @@ function pushMsg() {
       }, 200);
     },
   }).then(() => {
-    setTimeout(() => { // 結束後3秒自動關閉
-      Swal.fire({
-        title: '情緒轉換中...',
-        text: '請稍候',
-        allowOutsideClick: false, // 防止用戶點擊外部關閉
-        didOpen: () => {
-          Swal.showLoading(); // 顯示內建的 loading 動畫
-        }
-      });
-    }, 4000);
+    Swal.fire({
+      title: '情緒轉換中...',
+      text: '請稍候',
+      allowOutsideClick: false, // 防止用戶點擊外部關閉
+      didOpen: () => {
+        Swal.showLoading(); // 顯示內建的 loading 動畫
+      }
+    });
 
     let round_ID = '';
     fetch(url + '/api', {
