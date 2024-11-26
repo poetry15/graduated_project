@@ -115,6 +115,10 @@ slider.addEventListener("input", function () {
 // 更換背景顏色
 function changebgcolor() {
   const value = slider.value;
+  if(value == 100){ // 特殊處理
+    body.style.backgroundColor = "#ff595e";
+    return;
+  }
   // 根據 colorplace 計算當前滑動條在哪一個區間
   for (let i = 0; i < colorplace.length - 1; i++) {
     if (value >= colorplace[i] && value < colorplace[i + 1]) {
