@@ -361,11 +361,11 @@ function scancode() {
     denyButtonText: "不同意",
     confirmButtonText: "同意",
   })
-  .then(result => {
-    if(result.isDenied)
-      liff.closeWindow();
-  })
-  .then(() => liff.scanCodeV2())
+    .then(result => {
+      if (result.isDenied)
+        liff.closeWindow();
+    })
+    .then(() => liff.scanCodeV2())
     .then(result => {
       // const resultElement = document.getElementById('result');
       // resultElement.textContent = `QR Code result: ${result.value}`;
@@ -411,7 +411,7 @@ function scancode() {
 function getNextHour() {
   let date = new Date();
   date = date.getHours() + 1;
-  if(date >= 24)  date -= 24;
+  if (date >= 24) date -= 24;
   return date;
 }
 
@@ -419,31 +419,31 @@ function getNextHour() {
 function flexMessage(randomPoints, emotionFactor_without_emoji) {
   let msg;
   let boxcontext = [{
-      type: "text",
-      text: "情緒喵帶來心情小記後出門啦~",
-      size: "lg",
+    type: "text",
+    text: "情緒喵帶來心情小記後出門啦~",
+    size: "lg",
+  },
+  {
+    type: "text",
+    text: "紀錄時間：" + new Date().toLocaleString(),
+  },
+  {
+    type: "text",
+    text: `情緒分數：` + moodscore,
+  },
+  {
+    type: 'text',
+    text: `獲得創作積分：${randomPoints}`,
+    size: 'xl',
+  },
+  {
+    "type": "button",
+    "action": {
+      "type": "uri",
+      "label": `請於${getNextHour()}點前點此前往創作`,
+      "uri": "https://liff.line.me/2004371526-QNE54xpZ"
     },
-    {
-      type: "text",
-      text: "紀錄時間：" + new Date().toLocaleString(),
-    },
-    {
-      type: "text",
-      text: `情緒分數：` + moodscore,
-    },
-    {
-      type: 'text',
-      text: `獲得創作積分：${randomPoints}`,
-      size: 'xl',
-    },
-    {
-      "type": "button",
-      "action": {
-        "type": "uri",
-        "label": `請於${getNextHour()}點前點此前往創作`,
-        "uri": "https://liff.line.me/2004371526-QNE54xpZ"
-      },
-    },
+  },
     // {
     //   type: "text",
     //   text: `情緒關鍵詞：${keyword.join(", ")}`,
@@ -602,7 +602,7 @@ function pushMsg() {
   const message = flexMessage(randomPoints, emotionFactor_without_emoji);
   console.log(message);
 
-  const formData = getformData(emotionFactor_without_emoji);  
+  const formData = getformData(emotionFactor_without_emoji);
   Swal.fire({
     title: '骰出你的創作點數！',
     html: `
@@ -611,37 +611,39 @@ function pushMsg() {
       </div>
       <p id="showpoint" style="font-size: large"> </p>
     `,
+    allowOutsideClick: false,
     showConfirmButton: false,
     didOpen: () => {
       // 獲取圖片元素
       const imgElement = document.getElementById('slideshowImage');
       const showpoint = document.getElementById('showpoint');
-      const maxLoops = 12+randomPoints-1;
+      const maxLoops = 12 + randomPoints - 1;
       let currentIndex = 0;
       let loopCount = 0;
       // let spmessage = `恭喜獲得 ${randomPoints} 點共創點數！`;
       const interval = setInterval(() => {
         currentIndex = (currentIndex + 1) % 6; // 輪流顯示圖片
-        imgElement.src = `static/dice${currentIndex+1}.png`; // 更新圖片
+        imgElement.src = `static/dice${currentIndex + 1}.png`; // 更新圖片
         if (++loopCount >= maxLoops) {
           // 停止輪播並顯示最終圖片
           clearInterval(interval);
           // setTimeout(() => {
-          document.getElementById('showpoint').innerHTML = `恭喜獲得 ${randomPoints} 點共創點數！`;
+          showpoint.innerHTML = `恭喜獲得 ${randomPoints} 點共創點數！`;
           // },2000);
+          setTimeout(() => {
+            Swal.fire({
+              title: '情緒轉換中...',
+              text: '請稍候',
+              allowOutsideClick: false, // 防止用戶點擊外部關閉
+              didOpen: () => {
+                Swal.showLoading(); // 顯示內建的 loading 動畫
+              }
+            })
+          }, 2000)
         }
       }, 200);
     },
   }).then(() => {
-    Swal.fire({
-      title: '情緒轉換中...',
-      text: '請稍候',
-      allowOutsideClick: false, // 防止用戶點擊外部關閉
-      didOpen: () => {
-        Swal.showLoading(); // 顯示內建的 loading 動畫
-      }
-    });
-
     let round_ID = '';
     fetch(url + '/api', {
       method: 'POST',
@@ -665,7 +667,7 @@ function pushMsg() {
         });
       })
       .then(response => {
-        console.log("成功傳送",response);
+        console.log("成功傳送", response);
         return fetch(url + '/moodmap', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -677,7 +679,7 @@ function pushMsg() {
           }),
         });
       })
-    // .then(() => {
+      // .then(() => {
       // const formuri = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`
       // let msg = {
       //   to: userId, // 接收者的 User ID
@@ -707,35 +709,35 @@ function pushMsg() {
       //   ],
       // };
 
-    //   return fetch(url + '/send-message'), {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(message)
-    //   };
-    // })
-    .then(() => {
-      Swal.fire({
-        icon: 'success',
-        title: '轉換完成',
-        confirmButtonText: "確認"
+      //   return fetch(url + '/send-message'), {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json'
+      //     },
+      //     body: JSON.stringify(message)
+      //   };
+      // })
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: '轉換完成',
+          confirmButtonText: "確認"
+        })
+          .then(result => {
+            if (result.isConfirmed) {
+              liff.closeWindow();
+            }
+          });
       })
-        .then(result => {
-          if (result.isConfirmed) {
-            liff.closeWindow();
-          }
+      .catch(error => {
+        // 任何階段的錯誤處理
+        Swal.fire({
+          icon: 'error',
+          title: '錯誤',
+          text: '請求處理過程中發生錯誤，請稍後再試！'
         });
-    })
-    .catch(error => {
-      // 任何階段的錯誤處理
-      Swal.fire({
-        icon: 'error',
-        title: '錯誤',
-        text: '請求處理過程中發生錯誤，請稍後再試！'
+        console.error('There has been a problem with your fetch operation:', error);
       });
-      console.error('There has been a problem with your fetch operation:', error);
-    });
   })
 }
 
