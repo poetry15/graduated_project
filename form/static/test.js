@@ -616,7 +616,7 @@ function pushMsg() {
       // 獲取圖片元素
       const imgElement = document.getElementById('slideshowImage');
       const showpoint = document.getElementById('showpoint');
-      const maxLoops = 18+randomPoints-1;
+      const maxLoops = 12+randomPoints-1;
       let currentIndex = 0;
       let loopCount = 0;
       // let spmessage = `恭喜獲得 ${randomPoints} 點共創點數！`;
@@ -642,7 +642,7 @@ function pushMsg() {
         Swal.showLoading(); // 顯示內建的 loading 動畫
       }
     });
-  }, 2000);
+  }, 4000);
 
   let round_ID = '';
   fetch(url + '/api', {
