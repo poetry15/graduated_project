@@ -677,7 +677,6 @@ function pushMsg() {
           }),
         });
       })
-    })
     // .then(() => {
       // const formuri = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`
       // let msg = {
@@ -737,8 +736,7 @@ function pushMsg() {
       });
       console.error('There has been a problem with your fetch operation:', error);
     });
-
-
+  })
 }
 
 document.addEventListener('DOMContentLoaded', function () {
