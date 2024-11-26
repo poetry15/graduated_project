@@ -1,6 +1,6 @@
 from flask import Flask, request, abort, jsonify,render_template
 from flask_socketio import SocketIO,emit
-from moodmap.Exterior import imageGenerate, upload_image_to_imgur
+from moodmap.Exterior import imageGenerate, upload_image_to_firebase
 from gen_round.gen import round_photo_generator, read_image_from_url, validate_gen
 from WordCloud.WordCloud import dealAllData, dealSingleData
 from pymongo import MongoClient
@@ -222,7 +222,7 @@ def handle_message(data):
 		
 def generate_image(image_data,userid_list, round_ID):
 	try:
-		image_url = upload_image_to_imgur(image_data)
+		image_url = upload_image_to_firebase(image_data)
 		pixeled_image = read_image_from_url(image_url)
 		results = list(moodmap.find({"roundID": round_ID}))
 		latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))

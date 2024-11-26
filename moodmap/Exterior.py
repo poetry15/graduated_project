@@ -50,7 +50,7 @@ def imageGenerate(keywords):
     with urllib.request.urlopen(image_url) as response:
       image_data = response.read()
       base64_encoded_data = base64.b64encode(image_data).decode('utf-8')
-      img_url = upload_image_to_imgur(base64_encoded_data)
+      img_url = upload_image_to_firebase(base64_encoded_data)
       print(img_url)
     return img_url
   except Exception as e:
@@ -61,7 +61,7 @@ def upload_image_to_firebase(image_data):
   filename = f"{uuid.uuid4().hex}.png"  # 為圖片生成唯一名稱
   # 上傳到 Firebase Storage
   blob = bucket.blob(filename)
-  blob.upload_from_string(image_data, content_type="image/png")
+  blob.upload_from_string(base64.b64decode(image_data), content_type="image/png")
 
   # 設置圖片為公開（可選）
   blob.make_public()
