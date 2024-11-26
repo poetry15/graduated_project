@@ -219,8 +219,8 @@
         onclick="clearMapData()">清除</button>
       <button id="submit" class="my-2 btn btn-primary d-none"
         onclick="sendMapData()">提交</button>
-      <button id="random" class="my-2 btn btn-primary d-none"
-        onclick="randomChooseGrid()">隨機點數</button>
+      <!-- <button id="random" class="my-2 btn btn-primary d-none"
+        onclick="randomChooseGrid()">隨機點數</button> -->
       <canvas id="canvas"></canvas>
     </div>
     <script>
@@ -302,7 +302,7 @@
         document.getElementById('roundSelectDiv').classList.add('d-none');
         document.getElementById('clear').classList.remove('d-none');
         document.getElementById('submit').classList.remove('d-none');
-        document.getElementById('random').classList.remove('d-none');
+        // document.getElementById('random').classList.remove('d-none');
         document.getElementById('hint').classList.remove('d-none');
         const middle = document.querySelector('.middle');
         const grid_container = document.querySelector('.grid-container');
