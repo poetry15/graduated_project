@@ -726,6 +726,7 @@ function pushMsg() {
         Swal.fire({
           icon: 'success',
           title: '轉換完成',
+          allowOutsideClick: false,
           confirmButtonText: "確認"
         })
           .then(result => {
