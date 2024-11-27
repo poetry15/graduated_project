@@ -549,7 +549,7 @@ function flexMessage(randomPoints, emotionFactor_without_emoji) {
 function getformData(emotionFactor_without_emoji) {
   const date = new Date(); // 當前時間
   let data = {
-    Time: date.toLocaleString(),
+    Time: date.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
     TimeStamp: Math.floor(date.getTime() / 1000),
     LineID: userId,
     MoodVaule: moodscore,
