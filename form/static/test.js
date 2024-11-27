@@ -115,6 +115,10 @@ slider.addEventListener("input", function () {
 // 更換背景顏色
 function changebgcolor() {
   const value = slider.value;
+  if(value == 100){ // 特殊處理
+    body.style.backgroundColor = "#ff595e";
+    return;
+  }
   // 根據 colorplace 計算當前滑動條在哪一個區間
   for (let i = 0; i < colorplace.length - 1; i++) {
     if (value >= colorplace[i] && value < colorplace[i + 1]) {
@@ -196,6 +200,7 @@ function updateKeywords() {
     (newMood === "非常不愉快" && previousMood === "不愉快") ||
     (newMood === "不愉快" && previousMood === "非常不愉快")
   ) {
+    console.log("情緒狀態沒有變化，不刷新選單" + newMood + " " + previousMood);
     return; // 結束函式，不刷新選單
   }
 
@@ -210,10 +215,10 @@ function updateKeywords() {
   showingMore = false; // 重置顯示狀態
 
   // 根據情緒狀態顯示對應的關鍵字
-  if (newMood === "愉快") {
+  if (newMood === "愉快" || newMood === "非常愉快") {
     currentKeywords = happyKeywords;
     additionalKeywords = happyaddi;
-  } else if (newMood === "不愉快") {
+  } else if (newMood === "不愉快" || newMood === "非常不愉快") {
     currentKeywords = sadKeywords;
     additionalKeywords = sadaddi;
   } else {
@@ -721,6 +726,7 @@ function pushMsg() {
         Swal.fire({
           icon: 'success',
           title: '轉換完成',
+          allowOutsideClick: false,
           confirmButtonText: "確認"
         })
           .then(result => {
