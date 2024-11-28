@@ -283,6 +283,7 @@ def upload_imgBB(image):
     return None
 
 def delete_bloack_line(image):
+    image = cv2.resize(image, (512, 512))
     height, width = image.shape[:2]
     grid_size = 8
     cell_height = height // grid_size

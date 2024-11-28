@@ -66,24 +66,23 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
-quick_flag = False
+quick_flag = True
 image_flag = False
 people_limit = 12
 min_limit = 5
-gen_min = 40
+gen_min = 0
 
 # 定義一個函數，用於每小時檢查並發送消息
 def send_at_every_hour():
 	while True:
 		now = datetime.datetime.now()
-		# 檢查是否是整點（分鐘為 0）
-		# print(now.minute, now.second)
-		if(now.minute == gen_min and now.second == 0):
+		# 檢查是否是整點（分鐘為 0）且是在工作時間（9:00 ~ 19:00）
+		if((9 <= now.hour <= 19) and now.minute == gen_min and now.second == 0):
 			try:
 				validate_gen()
 			except Exception as e:
 				print("valid gen error", e)
-		if ((now.minute == (gen_min+1)%60 and 50 >= now.second >= 30) or image_flag):
+		if ((now.minute == (gen_min+1)%60 and 50 >= now.second >= 30) and image_flag):
 			# print("gen_pic", now.minute, now.second)
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
@@ -112,12 +111,12 @@ def show_qrcode():
 def a():
 	return render_template("/form/index.html")
 
-@app.route('/qrcode/genpassword', methods=['POST'])
-def gen_password(): # 接收生成的 pw 並存起來
-	password = (request.json)["password"]
-	print("gen：\t" + password)
-	db["parameters"].update_one({}, {'$set' : {'password': password}}, upsert=True)
-	return "get new pw."
+# @app.route('/qrcode/genpassword', methods=['POST'])
+# def gen_password(): # 接收生成的 pw 並存起來
+# 	password = (request.json)["password"]
+# 	print("gen：\t" + password)
+# 	db["parameters"].update_one({}, {'$set' : {'password': password}}, upsert=True)
+# 	return "get new pw."
 
 @app.route('/check_scanres', methods=['POST'])
 def get_now_password(): # 提供表單驗證是否正確，用於驗證位於螢幕前
