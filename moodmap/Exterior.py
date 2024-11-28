@@ -6,16 +6,6 @@ from dotenv import load_dotenv
 import base64
 import requests
 import uuid
-import firebase_admin
-from firebase_admin import credentials, storage
-
-cred = credentials.Certificate("updatepicture-3ea0e-firebase-adminsdk-egrig-039fa4e622.json")
-firebase_admin.initialize_app(cred, {
-    'storageBucket': 'updatepicture-3ea0e.appspot.com'
-})
-
-# 初始化 Storage Bucket
-bucket = storage.bucket()
 
 load_dotenv()
 # 初始化 OpenAI 客戶端
@@ -36,7 +26,7 @@ def imagePromptGenerate(keywords):
   print(text)
   return text
 
-def imageGenerate(keywords):
+def imageGenerate(keywords,bucket):
   try:
     response = openai.images.generate(
       model="dall-e-3",
@@ -49,14 +39,14 @@ def imageGenerate(keywords):
     with urllib.request.urlopen(image_url) as response:
       image_data = response.read()
       base64_encoded_data = base64.b64encode(image_data).decode('utf-8')
-      img_url = upload_image_to_firebase(base64_encoded_data)
+      img_url = upload_image_to_firebase(base64_encoded_data,bucket)
       print(img_url)
     return img_url
   except Exception as e:
     print(e)
     return None
 
-def upload_image_to_firebase(image_data):
+def upload_image_to_firebase(image_data,bucket):
   filename = f"{uuid.uuid4().hex}.png"  # 為圖片生成唯一名稱
   # 上傳到 Firebase Storage
   blob = bucket.blob(filename)

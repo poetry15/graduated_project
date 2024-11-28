@@ -54,6 +54,7 @@ def clean_sensitive_content(text):
 
 
 def extract_keywords(text):
+  retry = 0
   while openai.moderations.create(input=text).results[0].flagged:
     text = clean_sensitive_content(text)
     print("處理過的資料",text)
@@ -90,7 +91,11 @@ def extract_keywords(text):
         keywords = ast.literal_eval(keywords)
         if isinstance(keywords, dict):
           return keywords
-      except (ValueError, SyntaxError):
+      except (ValueError, SyntaxError) as e:
+        retry+=1
+        print("擷取關鍵字錯誤: ",e)
+        if (retry == 11):
+          return 
         continue
 
 def wordcloud(items):

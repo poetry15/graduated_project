@@ -22,6 +22,16 @@ from linebot.v3.messaging import (
 	TextMessage,
 )
 import time
+import firebase_admin
+from firebase_admin import credentials, storage
+
+cred = credentials.Certificate("updatepicture-3ea0e-firebase-adminsdk-egrig-039fa4e622.json")
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'updatepicture-3ea0e.appspot.com'
+})
+
+# 初始化 Storage Bucket
+bucket = storage.bucket()
 
 app = Flask(__name__)
 CORS(app)
@@ -52,7 +62,6 @@ handler = WebhookHandler(os.getenv("channel_secret"))
 url= os.getenv("url")
 session_ID = {}
 print("url: " + url)
-
 
 # 系統檢查設定開關
 scancode_flag = False
@@ -222,7 +231,7 @@ def handle_message(data):
 		
 def generate_image(image_data,userid_list, round_ID):
 	try:
-		image_url = upload_image_to_firebase(image_data)
+		image_url = upload_image_to_firebase(image_data,bucket)
 		pixeled_image = read_image_from_url(image_url)
 		results = list(moodmap.find({"roundID": round_ID}))
 		latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
@@ -284,19 +293,18 @@ def get_data():
 # DataRecord, 接收表單資料
 @app.route("/api", methods=["POST"])
 def save_data():
+	global bucket
 	try:
 		# 從 request.json 獲取數據並插入到 MongoDB
 		form_data = request.json
-		formdata.insert_one(form_data)
-		dealSingleData(form_data)
-		if (quick_flag == False):
+		if (quick_flag == False):	
 			try:
-				imageUrl = imageGenerate(form_data["MoodColor"])
+				imageUrl = imageGenerate(form_data["MoodColor"],bucket)
 			except:
 				if (form_data["MoodValue"] == 1):
 					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/728523625c224f8caf8ecb0ff6ae618f.png"
 				elif(form_data["MoodValue"] == 2):
-					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/f58f34d9c7b848f587bd758b3b602663.png"
+					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/1547cdc7d7e14fd4a311e6b0ad7651e5.png"
 				elif(form_data["MoodValue"] == 3):
 					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/b5ef3470ecf44db4bd45304c63da09a9.png"
 				elif(form_data["MoodValue"] == 4):
@@ -307,8 +315,17 @@ def save_data():
 			imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
 
 		round_ID = setRound()
+
+		formdata.insert_one(form_data)
 		image.insert_one({'image':imageUrl, 'Line_ID': form_data['LineID'], 'round_ID': round_ID})
 		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl,'round_ID': round_ID})
+
+		for _ in range(3):
+			try:
+				dealSingleData(form_data)
+				break
+			except Exception as error:
+				print("WordCloud: ",error)
 		return jsonify({"message": "Data saved", "image": imageUrl, "round_ID": round_ID}), 201
 	except Exception as error:
 		print("錯誤:", error)
@@ -388,7 +405,7 @@ def NowStep():
 
 
 color_for_mood = ['紫', '藍', '綠', '黃', '紅']
-def send_images_to_users(user_id,url, avg_mood, usercount, round_ID):
+def send_images_to_users(user_id,url, avg_mood, usercount):
 	print(user_id, url)
 	ret_text1 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~本次一同出遊的旅行者共有{usercount}位，希望你們會喜歡這次的景色!\n\n人數過少時可能發生顏色不夠精準的情形，敬請見諒'
 	ret_text2 = f'小{color_for_mood[round(avg_mood)]}旅行回來啦~這次的作畫活動很熱鬧，下次也歡迎你一起來參加喔～期待你的創意！'
