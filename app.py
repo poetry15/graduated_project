@@ -71,6 +71,7 @@ image_flag = False
 people_limit = 12
 min_limit = 5
 gen_min = 0
+retry_time = 3
 
 # 定義一個函數，用於每小時檢查並發送消息
 def send_at_every_hour():
@@ -229,31 +230,33 @@ def handle_message(data):
 		threading.Thread(target=generate_image, args=(image_data_split, userid_list, data['round_ID'])).start()
 		
 def generate_image(image_data,userid_list, round_ID):
-	try:
-		image_url = upload_image_to_firebase(image_data,bucket)
-		pixeled_image = read_image_from_url(image_url)
-		results = list(moodmap.find({"roundID": round_ID}))
-		latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
-		avg_mood = sum([entry["MoodValue"] for entry in latest_data]) / len(results)
-		url = round_photo_generator(pixeled_image, round(avg_mood-1))
-		print(f"生成的圖片 URL: {url}")
-		user_count = len(results)
-		print("avg_mood", avg_mood)
-		userid_list = {}
-		for entry in latest_data:
-			if entry["LineID"] not in userid_list:
-				userid_list[entry["LineID"]] = entry["randomPoints"]
-		send_images_to_users(userid_list,url, avg_mood-1, user_count)
+	for _ in range(retry_time):
+		try:
+			image_url = upload_image_to_firebase(image_data,bucket)
+			pixeled_image = read_image_from_url(image_url)
+			results = list(moodmap.find({"roundID": round_ID}))
+			latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
+			avg_mood = sum([entry["MoodValue"] for entry in latest_data]) / len(results)
+			url = round_photo_generator(pixeled_image, round(avg_mood-1))
+			print(f"生成的圖片 URL: {url}")
+			user_count = len(results)
+			print("avg_mood", avg_mood)
+			userid_list = {}
+			for entry in latest_data:
+				if entry["LineID"] not in userid_list:
+					userid_list[entry["LineID"]] = entry["randomPoints"]
+			send_images_to_users(userid_list,url, avg_mood-1, user_count)
 
-		# 將結束的輪次資料刪除
-		latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
-		delete_image = [record["_id"] for record in latest_image]
-		image.delete_many({"_id": {"$in": delete_image}})
-		moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
-		map.delete_one({"_id": ObjectId(round_ID)})
-		socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
-	except Exception as e:
-		print(f"生成圖片時出現錯誤: {e}")
+			# 將結束的輪次資料刪除
+			latest_image = image.find({"round_ID": round_ID}).sort("_id", 1).limit(people_limit)
+			delete_image = [record["_id"] for record in latest_image]
+			image.delete_many({"_id": {"$in": delete_image}})
+			moodmap.delete_many({"_id": {"$in": [entry["_id"] for entry in latest_data]}})
+			map.delete_one({"_id": ObjectId(round_ID)})
+			socketio.emit('message', {'action': 'deleteData', 'round_ID': round_ID})
+			break
+		except Exception as e:
+			print(f"生成圖片時出現錯誤: {e}")
 
 # @socketio.on('disconnect')
 # def handle_disconnect():
