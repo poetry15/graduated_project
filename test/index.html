@@ -9,6 +9,10 @@
     <title>Pretest Form</title>
 </head>
 <body>
+	<iframe 
+    src="https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326={LineID}" 
+    style="width:100%; height:100vh; border:none;">
+  </iframe>
     <script>
 		// 保存原始的 fetch 函數
 		const originalFetch = window.fetch;
@@ -44,7 +48,7 @@
 			.then(profile => { // 確認可以抓取userid
 				userId = profile.userId;
 				const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`;
-        		window.location.href = formUrl; // 導向 Google 表單
+        		document.querySelector("iframe").src = formUrl;
 			})
 			
         }
