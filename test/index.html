@@ -6,11 +6,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 	<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 	
-    <title>Document</title>
+    <title>Pretest Form</title>
 </head>
 <body>
-    <p>User ID:<span id="userId"></span></p>
-    <!-- <button id="close">關閉畫面</button> -->
     <script>
 		// 保存原始的 fetch 函數
 		const originalFetch = window.fetch;
@@ -41,7 +39,6 @@
 					liff.login();
 					return;
 				}
-				console.log("login: " + liff.isLoggedIn());
 				return liff.getProfile();
 			})
 			.then(profile => { // 確認可以抓取userid
