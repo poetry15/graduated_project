@@ -10,9 +10,8 @@
 </head>
 <body>
     <p>User ID:<span id="userId"></span></p>
-    <button id="close">關閉畫面</button>
+    <!-- <button id="close">關閉畫面</button> -->
     <script>
-		// 維修 liff init 方法來自：https://narongdej.dev/blog/th/2024/04/04/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%81%E0%B8%81%E0%B9%89-type-error-failed-to-fetch-%E0%B9%83%E0%B8%99-line-liff-android
 		// 保存原始的 fetch 函數
 		const originalFetch = window.fetch;
 
@@ -47,7 +46,8 @@
 			})
 			.then(profile => { // 確認可以抓取userid
 				userId = profile.userId;
-				document.getElementById('userId').textContent = userId;
+				const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`;
+        		window.location.href = formUrl; // 導向 Google 表單
 			})
 			
         }
