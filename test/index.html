@@ -5,14 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 	<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-	
-    <title>Document</title>
+	<style>
+		body, html {
+		  margin: 0;
+		  padding: 0;
+		  overflow: hidden; /* 防止外部拖拉條 */
+		}
+		iframe {
+		  width: 100%;
+		  border: none;
+		}
+	  </style>
+    <title>Pretest Form</title>
 </head>
 <body>
-    <p>User ID:<span id="userId"></span></p>
-    <button id="close">關閉畫面</button>
+	<iframe src="" style="width:100%; height:100vh; border:none;">
+  </iframe>
     <script>
-		// 維修 liff init 方法來自：https://narongdej.dev/blog/th/2024/04/04/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B9%81%E0%B8%81%E0%B9%89-type-error-failed-to-fetch-%E0%B9%83%E0%B8%99-line-liff-android
 		// 保存原始的 fetch 函數
 		const originalFetch = window.fetch;
 
@@ -42,19 +51,15 @@
 					liff.login();
 					return;
 				}
-				console.log("login: " + liff.isLoggedIn());
 				return liff.getProfile();
 			})
 			.then(profile => { // 確認可以抓取userid
 				userId = profile.userId;
-				document.getElementById('userId').textContent = userId;
+				const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`;
+        		document.querySelector("iframe").src = formUrl;
 			})
 			
         }
-        
-        document.getElementById('close').addEventListener('click', function(){
-            liff.closeWindow();
-        });
 
         window.onload = function(){
 			triggerLIFF();
