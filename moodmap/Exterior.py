@@ -47,7 +47,7 @@ def imageGenerate(keywords,bucket):
     return None
 
 def upload_image_to_firebase(image_data,bucket):
-  filename = f"{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}.png"  # 為圖片生成唯一名稱
+  filename = f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"  # 為圖片生成唯一名稱
   # 上傳到 Firebase Storage
   blob = bucket.blob(filename)
   blob.upload_from_string(base64.b64decode(image_data), content_type="image/png")

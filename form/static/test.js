@@ -649,41 +649,54 @@ function pushMsg() {
       }, 200);
     },
   }).then(() => {
-    let round_ID = '';
+    fetch(url + '/moodmap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        randomPoints: randomPoints,
+        LineID: userId,
+        MoodValue: moodscore,
+      }),
+    }).then(response => response.json())
+    .then(data => {
+      fetch(url + '/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({message,"MoodValue": moodscore,"MoodColor": RGBTohex(currentColor),"round_ID": data.round_ID}),
+      })
+      .then(response => {
+        console.log("成功傳送", response);
+      })
+    })
+
     fetch(url + '/api', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     })
-      .then(response => response.json())
-      .then(data => {
-        round_ID = data.round_ID;
-        message['messages'][0]['contents']['body']['contents'].splice(1, 0, {
-          type: "image",
-          url: data.image,
-          size: "full",
-          aspectRatio: "1024:1024",
-        });
-
-        return fetch(url + '/send-message', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(message),
-        });
+    .then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: '轉換完成',
+        allowOutsideClick: false,
+        confirmButtonText: "確認"
       })
-      .then(response => {
-        console.log("成功傳送", response);
-        return fetch(url + '/moodmap', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            randomPoints: randomPoints,
-            LineID: userId,
-            MoodValue: moodscore,
-            roundID: round_ID
-          }),
+        .then(result => {
+          if (result.isConfirmed) {
+            liff.closeWindow();
+          }
         });
-      })
+    })
+    .catch(error => {
+      // 任何階段的錯誤處理
+      Swal.fire({
+        icon: 'error',
+        title: '錯誤',
+        text: '請求處理過程中發生錯誤，請稍後再試！'
+      });
+      console.error('There has been a problem with your fetch operation:', error);
+    });
+  })
       // .then(() => {
       // const formuri = `https://docs.google.com/forms/d/e/1FAIpQLSchzPdn89h3EMD0wOopOoX5OI-09vcsQ3rZ2WF4FH-77TXIQA/viewform?usp=pp_url&entry.1311539326=${userId}`
       // let msg = {
@@ -722,29 +735,6 @@ function pushMsg() {
       //     body: JSON.stringify(message)
       //   };
       // })
-      .then(() => {
-        Swal.fire({
-          icon: 'success',
-          title: '轉換完成',
-          allowOutsideClick: false,
-          confirmButtonText: "確認"
-        })
-          .then(result => {
-            if (result.isConfirmed) {
-              liff.closeWindow();
-            }
-          });
-      })
-      .catch(error => {
-        // 任何階段的錯誤處理
-        Swal.fire({
-          icon: 'error',
-          title: '錯誤',
-          text: '請求處理過程中發生錯誤，請稍後再試！'
-        });
-        console.error('There has been a problem with your fetch operation:', error);
-      });
-  })
 }
 
 document.addEventListener('DOMContentLoaded', function () {

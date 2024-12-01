@@ -66,8 +66,7 @@ print("url: " + url)
 # 系統檢查設定開關
 scancode_flag = False
 check5min_flag = False
-quick_flag = True
-image_flag = False
+quick_flag = False
 people_limit = 12
 min_limit = 5
 gen_min = 0
@@ -83,7 +82,7 @@ def send_at_every_hour():
 				validate_gen()
 			except Exception as e:
 				print("valid gen error", e)
-		if ((now.minute == (gen_min+1)%60 and 50 >= now.second >= 30) and image_flag):
+		if (now.minute == (gen_min+1)%60 and 50 >= now.second >= 30):
 			# print("gen_pic", now.minute, now.second)
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
@@ -299,36 +298,14 @@ def save_data():
 	try:
 		# 從 request.json 獲取數據並插入到 MongoDB
 		form_data = request.json
-		if (quick_flag == False):	
-			try:
-				imageUrl = imageGenerate(form_data["MoodColor"],bucket)
-			except:
-				if (form_data["MoodValue"] == 1):
-					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/728523625c224f8caf8ecb0ff6ae618f.png"
-				elif(form_data["MoodValue"] == 2):
-					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/1547cdc7d7e14fd4a311e6b0ad7651e5.png"
-				elif(form_data["MoodValue"] == 3):
-					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/b5ef3470ecf44db4bd45304c63da09a9.png"
-				elif(form_data["MoodValue"] == 4):
-					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/fdf78b9e3e4e44c280096eee3e64856a.png" 
-				elif(form_data["MoodValue"] == 5):
-					imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/f58f34d9c7b848f587bd758b3b602663.png"
-		else:
-			imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
-
-		round_ID = setRound()
-
 		formdata.insert_one(form_data)
-		image.insert_one({'image':imageUrl, 'Line_ID': form_data['LineID'], 'round_ID': round_ID})
-		socketio.emit('message', {'action': 'generateImage', 'image': imageUrl,'round_ID': round_ID})
-
 		for _ in range(3):
 			try:
 				dealSingleData(form_data)
 				break
 			except Exception as error:
 				print("WordCloud: ",error)
-		return jsonify({"message": "Data saved", "image": imageUrl, "round_ID": round_ID}), 201
+		return jsonify({"message": "Data saved"}), 201
 	except Exception as error:
 		print("錯誤:", error)
 		return jsonify({"error": "Error saving data"}), 500
@@ -363,14 +340,38 @@ def setRound():
 # LineBot回傳情緒紀錄給使用者
 @app.route("/send-message", methods=["POST"])
 def send_message():
-	data = request.json	
+	data = request.json
+	if (quick_flag == False):	
+		try:
+			imageUrl = imageGenerate(data["MoodColor"],bucket)
+		except:
+			if (data["MoodValue"] == 1):
+				imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/728523625c224f8caf8ecb0ff6ae618f.png"
+			elif(data["MoodValue"] == 2):
+				imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/1547cdc7d7e14fd4a311e6b0ad7651e5.png"
+			elif(data["MoodValue"] == 3):
+				imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/b5ef3470ecf44db4bd45304c63da09a9.png"
+			elif(data["MoodValue"] == 4):
+				imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/fdf78b9e3e4e44c280096eee3e64856a.png" 
+			elif(data["MoodValue"] == 5):
+				imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/f58f34d9c7b848f587bd758b3b602663.png"
+	else:
+		imageUrl = "https://i.imgur.com/hwNs4fY.jpeg"
+	data['message']['messages'][0]['contents']['body']['contents'][1:1] = [{
+		'type': 'image',
+		'url': imageUrl,
+		'size': "full",
+		'aspectRatio': "1024:1024"
+	}]
 	print(data)
+	socketio.emit('message', {'action': 'generateImage', 'image': imageUrl,'round_ID': data['round_ID']})
+	image.insert_one({'image':imageUrl, 'Line_ID': data['message']['to'], 'round_ID': data['round_ID']})
 	headers = {
 		"Content-Type": "application/json",
 		"Authorization": f"Bearer {channel_access_token}",
 	}
 	response = requests.post(
-		"https://api.line.me/v2/bot/message/push", json=data, headers=headers
+		"https://api.line.me/v2/bot/message/push", json=data['message'], headers=headers
 	)
 
 	if response.status_code == 200:
@@ -398,9 +399,13 @@ def NowStep():
 				{"$set": {"LineID": Info["LineID"], "randomPoints": Info["randomPoints"]}},
 			)
 			print(result)
+			return jsonify({"message": "Data received and processed"}), 200
 		else:
+			round_ID = setRound()
+			Info['roundID'] = round_ID
 			moodmap.insert_one(Info)
-		return jsonify({"message": "Data received and processed"}), 200
+			return jsonify({"round_ID":round_ID}), 201
+
 	except Exception as error:
 		print(error)
 		return jsonify({"error": str(error)}), 500
