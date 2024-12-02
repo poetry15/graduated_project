@@ -232,11 +232,11 @@ def generate_image(image_data,userid_list, round_ID):
 	for _ in range(retry_time):
 		try:
 			image_url = upload_image_to_firebase(image_data,bucket)
-			pixeled_image = read_image_from_url(image_url)
+			pixeled_image = read_image_from_url(image_url) # cv2 array
 			results = list(moodmap.find({"roundID": round_ID}))
 			latest_data = list(moodmap.find({"roundID": round_ID}).sort("_id",1).limit(people_limit))
 			avg_mood = sum([entry["MoodValue"] for entry in latest_data]) / len(results)
-			url = round_photo_generator(pixeled_image, round(avg_mood-1))
+			url = round_photo_generator(pixeled_image, round(avg_mood-1), bucket)
 			print(f"生成的圖片 URL: {url}")
 			user_count = len(results)
 			print("avg_mood", avg_mood)

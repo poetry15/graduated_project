@@ -1,4 +1,4 @@
-import os
+import os, sys
 from rembg import remove
 from PIL import Image
 import cv2
@@ -8,6 +8,9 @@ import time
 import replicate
 import requests
 import uuid
+import base64
+import datetime
+import urllib
 from dotenv import load_dotenv
 from gen_round.combine_res import combine_images
 
@@ -95,7 +98,6 @@ def read_image_from_url(url):
     # cv2.imshow("Image", image)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    
     return image
 
 def color_preprocessor(image):
@@ -284,6 +286,23 @@ def upload_imgBB(image):
         print(f"發生錯誤: {str(e)}")
     return None
 
+def turn_cv_to_base64(image):
+    _, img_encoded = cv2.imencode('.png', image)
+    base64_encoded_data = base64.b64encode(img_encoded).decode('utf-8')
+    return base64_encoded_data
+
+def upload_image_to_firebase1(image_data,bucket):
+  filename = f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.png"  # 為圖片生成唯一名稱
+  # 上傳到 Firebase Storage
+  blob = bucket.blob(filename)
+  blob.upload_from_string(base64.b64decode(image_data), content_type="image/png")
+
+  # 設置圖片為公開（可選）
+  blob.make_public()
+
+  # 返回公開圖片 URL
+  return blob.public_url
+
 def delete_bloack_line(image):
     image = cv2.resize(image, (512, 512))
     height, width = image.shape[:2]
@@ -314,28 +333,26 @@ def delete_bloack_line(image):
     output_image = cv2.resize(output_image, (512, 512))
     return output_image
 
-def round_photo_generator(pixeled_image, avg_mood_score):
+def round_photo_generator(pixeled_image, avg_mood_score, bucket):
     image = delete_bloack_line(pixeled_image)  # 這裡需要放"正方形" 要用來生圖的像素畫
     # image = color_preprocessor(pixeled_image) 
-    # cv2.imwrite('pixel.png', image)
-    # cv2.imshow("pixel", image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-    
-    url = upload_imgBB(image)
+    cv2.imwrite('pixel.png', image)
+
+    # cv2轉為base64
+    base64_encoded_data = turn_cv_to_base64(image)
+    url = upload_image_to_firebase1(base64_encoded_data, bucket)
 
     background_img = run_color_model(url)
     
     cat_rmbg = run_cat_model(avg_mood_score) # 0 ~ 4
     combine_img = combine_cat_and_background(cat_rmbg, background_img)
-    # cv2.imshow("combine_img", combine_img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-    combine_img = combine_images(image, combine_img, "./gen_round/bgcolorimg.png")
-    combine_img = cv2.cvtColor(np.array(combine_img), cv2.COLOR_RGB2BGR) # 轉CV2格式
-    cv2.imwrite('combine_img.png', combine_img)
 
-    combine_url = upload_imgBB(combine_img)
+    combine_img = combine_images(image, combine_img, "./gen_round/bgcolorimg.png")
+    combine_img = cv2.cvtColor(np.array(combine_img), cv2.COLOR_RGB2BGR) # 原本為PIL格式，轉CV2格式
+    cv2.imwrite('combine_img.png', combine_img)
+    # combine_img = cv2.imread('./combine_img.png')
+    base64_encoded_data = turn_cv_to_base64(combine_img) # 再轉base64
+    combine_url = upload_image_to_firebase1(base64_encoded_data, bucket)
 
     return combine_url
 
@@ -355,9 +372,14 @@ def validate_gen():
         }
     )
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+    # with open("combine_img.png", "rb") as image_file:
+    #     image_data = image_file.read()
+    # base64_encoded_data = base64.b64encode(image_data).decode('utf-8')
+    # img_url = Exterior.upload_image_to_firebase(base64_encoded_data, bucket)
+    # print(img_url)
     # img_url = "https://i.imgur.com/QuwUUPR.png"
     # pixeled_image = read_image_from_url(img_url)
     # url = "https://i.ibb.co/YDY1b0g/img6-resize.png"
-    pixeled_image = cv2.imread('./img41.png')
-    round_photo_generator(pixeled_image, 0)
+    # pixeled_image = cv2.imread('./img41.png')
+    # round_photo_generator(pixeled_image, 0)
