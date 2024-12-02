@@ -550,7 +550,7 @@
       const currentDay = currentTime.getDay();
 
       // 檢查是否在允許的時間範圍內：六日不開放，平日開放時間為 09:00 - 19:00
-      if (currentDay == 6 || currentDay == 0 ||  currentHour < 9 || currentHour >= 19) {
+      if (currentDay == 6 || currentDay == 0 ||  currentHour < 8 || currentHour >= 19) {
           // 使用 swal 顯示訊息
           swal({
               title: "目前不開放使用",
