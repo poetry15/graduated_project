@@ -64,8 +64,8 @@ session_ID = {}
 print("url: " + url)
 
 # 系統檢查設定開關
-scancode_flag = False
-check5min_flag = False
+scancode_flag = True
+check5min_flag = True
 quick_flag = False
 people_limit = 12
 min_limit = 5
