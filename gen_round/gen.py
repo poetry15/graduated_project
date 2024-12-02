@@ -367,7 +367,7 @@ def validate_gen():
             "num_samples": 1,
             "guidance_scale": 8.0,
             "negative_prompt": "anime, cartoon, graphic, text, painting, crayon, graphite, abstract, glitch, deformed, mutated, ugly, disfigured",
-            "num_inference_steps": 30,
+            "num_inference_steps": 5,
             "adapter_conditioning_scale": 0.95
         }
     )
