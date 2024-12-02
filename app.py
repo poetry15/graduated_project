@@ -79,8 +79,7 @@ def send_at_every_hour():
 		# 檢查是否是整點（分鐘為 0）且是在工作時間（9:00 ~ 19:00）
 		if((9 <= now.hour <= 19) and now.minute == gen_min and now.second == 0):
 			try:
-				# 改用多執行緒處理，避免主執行緒被阻塞
-				threading.Thread(target=validate_gen, args=()).start()
+				threading.Thread(target=validate_gen, args=()).start() # 避免阻塞主要程式
 			except Exception as e:
 				print("valid gen error", e)
 		if (now.minute == (gen_min+1)%60 and 50 >= now.second >= 30):
