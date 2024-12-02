@@ -7,6 +7,7 @@ import random
 import time
 import replicate
 import requests
+import uuid
 from dotenv import load_dotenv
 from gen_round.combine_res import combine_images
 
@@ -250,7 +251,8 @@ def combine_cat_and_background(cat_img, background_image, scale=0.6):
 def upload_imgBB(image):
     try:
         url = "https://api.imgbb.com/1/upload"
-        
+        filename = f"image_{uuid.uuid4().hex[:8]}.png"
+        print(filename)
         # 將 OpenCV 圖片編碼為 PNG 格式的字節
         _, img_encoded = cv2.imencode('.png', image)
         
@@ -259,7 +261,7 @@ def upload_imgBB(image):
             "key": IMG_BB_API_KEY,
         }
         files = {
-            "image": ("image.png", img_encoded.tobytes(), "image/png")
+            "image": (filename, img_encoded.tobytes(), "image/png")
         }
         
         # 發送請求
