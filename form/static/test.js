@@ -682,8 +682,11 @@ function pushMsg() {
         confirmButtonText: "確認"
       })
         .then(result => {
-          if (result.isConfirmed) {
-            liff.closeWindow();
+          if (result.isConfirmed) { // 直接導向心情地圖
+            liff.openWindow({
+              url: 'https://liff.line.me/2004371526-QNE54xpZ',
+              external: false
+            });
           }
         });
     })
