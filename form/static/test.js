@@ -679,7 +679,7 @@ function pushMsg() {
         icon: 'success',
         title: '轉換完成',
         allowOutsideClick: false,
-        confirmButtonText: "確認"
+        confirmButtonText: "前往心情地圖開始創作"
       })
         .then(result => {
           if (result.isConfirmed) { // 直接導向心情地圖
