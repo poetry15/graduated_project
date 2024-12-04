@@ -683,10 +683,11 @@ function pushMsg() {
       })
         .then(result => {
           if (result.isConfirmed) { // 直接導向心情地圖
-            liff.openWindow({
-              url: 'https://liff.line.me/2004371526-QNE54xpZ',
-              external: false
-            });
+            liff.closeWindow();
+            // liff.openWindow({
+            //   url: 'https://liff.line.me/2004371526-QNE54xpZ',
+            //   external: false
+            // });
           }
         });
     })
