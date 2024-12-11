@@ -344,6 +344,8 @@ def send_message():
 	if (quick_flag == False):	
 		try:
 			imageUrl = imageGenerate(data["MoodColor"],bucket)
+			if imageUrl is None:
+				raise ValueError("imageGenerate returned None")
 		except:
 			if (data["MoodValue"] == 1):
 				imageUrl = "https://storage.googleapis.com/updatepicture-3ea0e.appspot.com/728523625c224f8caf8ecb0ff6ae618f.png"
