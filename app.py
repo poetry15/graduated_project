@@ -67,14 +67,16 @@ print("url: " + url)
 scancode_flag = True
 check5min_flag = True
 quick_flag = False
+img_flag = False # false 代表不生成圖片
 people_limit = 12
-min_limit = 5
+min_limit = 20
 gen_min = 0
 retry_time = 3
 
 # 定義一個函數，用於每小時檢查並發送消息
 def send_at_every_hour():
 	while True:
+		print("img_flag", img_flag)
 		now = datetime.datetime.now()
 		# 檢查是否是整點（分鐘為 0）且是在工作時間（9:00 ~ 19:00）
 		if((9 <= now.hour <= 19) and now.minute == gen_min and now.second == 0):
@@ -97,8 +99,20 @@ def send_at_every_hour():
 					socketio.emit('message', {'action': 'finish', 'round_ID': str(info["_id"])})
 					# time.sleep(3)
 			time.sleep(60)  # 避免在同一分鐘內重複多次發送
-		time.sleep(1)  # 每秒檢查一次
+		time.sleep(5)  # 每秒檢查一次
 
+
+@app.route('/switchImgFlag', methods=['POST'])
+def switchImgFlag():
+	global img_flag
+	data = request.json
+	if 'toggle' in data:
+		try:
+			img_flag = not img_flag
+			print("img_flag after switch:  ", img_flag)
+		except Exception as e:
+			print("switchImgFlag error", e)
+	return "ok"
 # QRcode
 @app.route('/', methods=['GET'])
 def show_qrcode():
@@ -542,7 +556,7 @@ def callback():
 if __name__ == "__main__":
 	# 啟動線程，保持運行，檢查時間
 	threading.Thread(target=send_at_every_hour, daemon=True).start()
-	socketio.run(app, debug=True)
+	socketio.run(app, debug=False)
 
 # ------------------- 測試用 -------------------------------
 # 有問必答hello world

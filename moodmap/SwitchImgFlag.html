@@ -10,22 +10,24 @@
     <p id="text"></p>
 </body>
 <script>
-    const url = "moodcat.ngrok.app";
-    var imgFlag = 0;
+    const url = "https://moodcat.ngrok.app";
 
     function switchImgFlag() {
-        imgFlag = 1 - imgFlag;
         fetch(url + "/switchImgFlag", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                "imgFlag": imgFlag
+                toggle: true
             })
         })
-        var text = document.getElementById("text");
-        text.innerHTML = "switch complete to " + imgFlag;
+        .then((response) => {
+            console.log(response);
+            var text = document.getElementById("text");
+            text.innerHTML = "switch complete";
+        })
+        
     }
 </script>
 </html>
