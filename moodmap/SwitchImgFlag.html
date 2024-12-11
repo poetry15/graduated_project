@@ -6,11 +6,29 @@
     <title>Switch imgflag</title>
 </head>
 <body>
+    <button onclick="valid_gen()">Valid gen</button>
     <button onclick="switchImgFlag()">Switch imgflag</button>
     <p id="text"></p>
 </body>
 <script>
     const url = "https://moodcat.ngrok.app";
+
+    function valid_gen() {
+        fetch(url + "/valid_gen", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                toggle: true
+            })
+        })
+        .then((response) => {
+            console.log(response);
+            var text = document.getElementById("text");
+            text.innerHTML = "valid gen complete";
+        })
+    }
 
     function switchImgFlag() {
         fetch(url + "/switchImgFlag", {

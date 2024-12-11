@@ -76,7 +76,6 @@ retry_time = 3
 # 定義一個函數，用於每小時檢查並發送消息
 def send_at_every_hour():
 	while True:
-		print("img_flag", img_flag)
 		now = datetime.datetime.now()
 		# 檢查是否是整點（分鐘為 0）且是在工作時間（9:00 ~ 19:00）
 		if((9 <= now.hour <= 19) and now.minute == gen_min and now.second == 0):
@@ -84,7 +83,7 @@ def send_at_every_hour():
 				threading.Thread(target=validate_gen, args=()).start() # 避免阻塞主要程式
 			except Exception as e:
 				print("valid gen error", e)
-		if (now.minute == (gen_min+1)%60 and 50 >= now.second >= 30):
+		if img_flag or (now.minute == (gen_min+1)%60 and 50 >= now.second >= 30):
 			# print("gen_pic", now.minute, now.second)
 			map_info = list(map.find({"state": "active"}))
 			for info in map_info:
@@ -113,6 +112,15 @@ def switchImgFlag():
 		except Exception as e:
 			print("switchImgFlag error", e)
 	return "ok"
+
+@app.route('/valid_gen', methods=['POST'])
+def try_valid_gen():
+	try:
+		threading.Thread(target=validate_gen, args=()).start()
+	except Exception as e:
+		print("valid gen error", e)
+	return "ok"
+
 # QRcode
 @app.route('/', methods=['GET'])
 def show_qrcode():
